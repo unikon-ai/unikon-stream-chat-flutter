@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/src/message_widget/sending_indicator_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template messageCard}
@@ -36,6 +37,7 @@ class MessageCard extends StatefulWidget {
     this.onLinkTap,
     this.onMentionTap,
     this.onQuotedMessageTap,
+    required this.showSendingIndicator,
   });
 
   /// {@macro isFailedState}
@@ -116,6 +118,9 @@ class MessageCard extends StatefulWidget {
   /// {@macro reverse}
   final bool reverse;
 
+  /// {@macro showSendingIndicator}
+  final bool showSendingIndicator;
+
   @override
   State<MessageCard> createState() => _MessageCardState();
 }
@@ -157,7 +162,9 @@ class _MessageCardState extends State<MessageCard> {
   Widget build(BuildContext context) {
     final onQuotedMessageTap = widget.onQuotedMessageTap;
     final quotedMessageBuilder = widget.quotedMessageBuilder;
-
+    final streamChat = StreamChat.of(context);
+    final streamChatTheme = StreamChatTheme.of(context);
+    final isMyMessage = widget.message.user?.id == streamChat.currentUser?.id;
     return Container(
       constraints: const BoxConstraints().copyWith(maxWidth: widthLimit),
       margin: EdgeInsets.symmetric(
@@ -179,48 +186,65 @@ class _MessageCardState extends State<MessageCard> {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (widget.hasQuotedMessage)
-            InkWell(
-              onTap: !widget.message.quotedMessage!.isDeleted &&
-                      onQuotedMessageTap != null
-                  ? () => onQuotedMessageTap(widget.message.quotedMessageId)
-                  : null,
-              child: quotedMessageBuilder?.call(
-                    context,
-                    widget.message.quotedMessage!,
-                  ) ??
-                  QuotedMessage(
-                    message: widget.message,
-                    textBuilder: widget.textBuilder,
-                    hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                  ),
-            ),
-          if (hasAttachments)
-            ParseAttachments(
-              key: attachmentsKey,
-              message: widget.message,
-              attachmentBuilders: widget.attachmentBuilders,
-              attachmentPadding: widget.attachmentPadding,
-              attachmentShape: widget.attachmentShape,
-              onAttachmentTap: widget.onAttachmentTap,
-              onShowMessage: widget.onShowMessage,
-              onReplyTap: widget.onReplyTap,
-              attachmentActionsModalBuilder:
-                  widget.attachmentActionsModalBuilder,
-            ),
-          TextBubble(
-            messageTheme: widget.messageTheme,
-            message: widget.message,
-            textPadding: widget.textPadding,
-            textBuilder: widget.textBuilder,
-            isOnlyEmoji: widget.isOnlyEmoji,
-            hasQuotedMessage: widget.hasQuotedMessage,
-            hasUrlAttachments: widget.hasUrlAttachments,
-            onLinkTap: widget.onLinkTap,
-            onMentionTap: widget.onMentionTap,
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.hasQuotedMessage)
+                InkWell(
+                  onTap: !widget.message.quotedMessage!.isDeleted &&
+                          onQuotedMessageTap != null
+                      ? () => onQuotedMessageTap(widget.message.quotedMessageId)
+                      : null,
+                  child: quotedMessageBuilder?.call(
+                        context,
+                        widget.message.quotedMessage!,
+                      ) ??
+                      QuotedMessage(
+                        message: widget.message,
+                        textBuilder: widget.textBuilder,
+                        hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                      ),
+                ),
+              if (hasAttachments)
+                ParseAttachments(
+                  key: attachmentsKey,
+                  message: widget.message,
+                  attachmentBuilders: widget.attachmentBuilders,
+                  attachmentPadding: widget.attachmentPadding,
+                  attachmentShape: widget.attachmentShape,
+                  onAttachmentTap: widget.onAttachmentTap,
+                  onShowMessage: widget.onShowMessage,
+                  onReplyTap: widget.onReplyTap,
+                  attachmentActionsModalBuilder:
+                      widget.attachmentActionsModalBuilder,
+                ),
+              TextBubble(
+                messageTheme: widget.messageTheme,
+                message: widget.message,
+                textPadding: widget.textPadding,
+                textBuilder: widget.textBuilder,
+                isOnlyEmoji: widget.isOnlyEmoji,
+                hasQuotedMessage: widget.hasQuotedMessage,
+                hasUrlAttachments: widget.hasUrlAttachments,
+                onLinkTap: widget.onLinkTap,
+                onMentionTap: widget.onMentionTap,
+              ),
+            ],
           ),
+          if (widget.showSendingIndicator)
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: SendingIndicatorBuilder(
+                messageTheme: widget.messageTheme,
+                message: widget.message,
+                hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                streamChat: streamChat,
+                streamChatTheme: streamChatTheme,
+              ),
+            ),
         ],
       ),
     );
