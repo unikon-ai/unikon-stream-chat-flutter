@@ -198,7 +198,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
         shape: BoxShape.circle,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: IconButton(
           onPressed: () async {
             if (_isRecording) {

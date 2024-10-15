@@ -65,7 +65,7 @@ class StreamMessageSendButton extends StatelessWidget {
 
   Widget _buildIdleSendButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: UnikonColorTheme.sendMessageInactiveStateColor,
@@ -93,7 +93,7 @@ class StreamMessageSendButton extends StatelessWidget {
 
   Widget _buildSendButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: UnikonColorTheme.primaryColor,
