@@ -3,17 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-import 'package:stream_chat_flutter_example/debug/error_dialog.dart';
+import '../error_dialog.dart';
 
-class DebugAddUser extends StatelessWidget {
-  const DebugAddUser({
+class DebugUnbanUser extends StatelessWidget {
+  const DebugUnbanUser({
     super.key,
     required this.client,
-    required this.channel,
   });
 
   final StreamChatClient client;
-  final Channel channel;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +19,7 @@ class DebugAddUser extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: TextField(
         decoration: const InputDecoration(
-          labelText: 'Add User',
+          labelText: 'Unban User',
           hintText: 'User Id',
           isDense: true,
           border: OutlineInputBorder(),
@@ -29,16 +27,12 @@ class DebugAddUser extends StatelessWidget {
         onSubmitted: (value) async {
           final userId = value.trim();
           try {
-            debugPrint('[addUser] userId: $userId');
-            final result = await client.addChannelMembers(
-              channel.id!,
-              channel.type,
-              [userId],
-            );
-            debugPrint('[addUser] result: $result');
+            debugPrint('[unbanUser] userId: $userId');
+            final result = await client.unbanUser(userId);
+            debugPrint('[unbanUser] completed: $result');
           } catch (e) {
-            debugPrint('[addUser] failed: $e');
-            showErrorDialog(context, e, 'Add User');
+            debugPrint('[unbanUser] failed: $e');
+            showErrorDialog(context, e, 'Unban User');
           }
         },
       ),

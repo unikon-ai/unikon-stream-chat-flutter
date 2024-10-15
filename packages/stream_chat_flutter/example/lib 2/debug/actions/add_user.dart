@@ -3,15 +3,17 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-import 'package:stream_chat_flutter_example/debug/error_dialog.dart';
+import '../error_dialog.dart';
 
-class DebugShadowBan extends StatelessWidget {
-  const DebugShadowBan({
+class DebugAddUser extends StatelessWidget {
+  const DebugAddUser({
     super.key,
     required this.client,
+    required this.channel,
   });
 
   final StreamChatClient client;
+  final Channel channel;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class DebugShadowBan extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: TextField(
         decoration: const InputDecoration(
-          labelText: 'Shadow Ban',
+          labelText: 'Add User',
           hintText: 'User Id',
           isDense: true,
           border: OutlineInputBorder(),
@@ -27,12 +29,16 @@ class DebugShadowBan extends StatelessWidget {
         onSubmitted: (value) async {
           final userId = value.trim();
           try {
-            debugPrint('[shadowBan] userId: $userId');
-            final result = await client.shadowBan(userId);
-            debugPrint('[shadowBan] completed: $result');
+            debugPrint('[addUser] userId: $userId');
+            final result = await client.addChannelMembers(
+              channel.id!,
+              channel.type,
+              [userId],
+            );
+            debugPrint('[addUser] result: $result');
           } catch (e) {
-            debugPrint('[shadowBan] failed: $e');
-            showErrorDialog(context, e, 'Shadow Ban');
+            debugPrint('[addUser] failed: $e');
+            showErrorDialog(context, e, 'Add User');
           }
         },
       ),
