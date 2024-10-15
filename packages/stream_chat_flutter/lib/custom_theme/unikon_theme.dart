@@ -41,11 +41,11 @@ class UnikonColorTheme {
 
   static const Color optionsCardBGColor = Color.fromRGBO(29, 30, 37, 1);
 
-  static const replyIcon = "images/reply.png";
+  static const replyIcon = "assets/images/reply.png";
 
-  static const deleteIcon = "images/delete.png";
+  static const deleteIcon = "assets/images/delete.png";
 
-  static const recordingIcon = "images/recording.png";
+  static const recordingIcon = "assets/images/recording.png";
 
-  static const folderIcon = "images/folder.png";
+  static const folderIcon = "assets/images/folder.png";
 }
