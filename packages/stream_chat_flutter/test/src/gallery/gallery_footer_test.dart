@@ -70,7 +70,7 @@ void main() {
             child: StreamChannel(
               channel: channel,
               child: PopScope(
-                onPopInvokedWithResult: (bool didPop, res) async => false,
+                // onPopInvokedWithResult: (bool didPop, res) async => false,
                 child: const Scaffold(
                   body: StreamGalleryFooter(
                     mediaAttachmentPackages: [],
@@ -94,7 +94,7 @@ void main() {
           child: StreamChannel(
             channel: channel,
             child: PopScope(
-              onPopInvokedWithResult: (bool didPop, res) async => false,
+              // onPopInvokedWithResult: (bool didPop, res) async => false,
               child: const Scaffold(
                 body: StreamGalleryFooter(
                   mediaAttachmentPackages: [],

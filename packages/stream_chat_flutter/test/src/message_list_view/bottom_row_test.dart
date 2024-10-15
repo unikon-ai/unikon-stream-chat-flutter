@@ -46,7 +46,7 @@ void main() {
                 showInChannel: true,
                 showTimeStamp: false,
                 reverse: false,
-                showSendingIndicator: false,
+                // showSendingIndicator: false,
                 hasUrlAttachments: false,
                 isGiphy: false,
                 isOnlyEmoji: false,

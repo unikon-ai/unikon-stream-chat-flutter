@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-import 'package:stream_chat_flutter_example/debug/error_dialog.dart';
+import '../error_dialog.dart';
 
-class DebugBanUser extends StatelessWidget {
-  const DebugBanUser({
+class DebugShadowBan extends StatelessWidget {
+  const DebugShadowBan({
     super.key,
     required this.client,
   });
@@ -19,7 +19,7 @@ class DebugBanUser extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: TextField(
         decoration: const InputDecoration(
-          labelText: 'Ban User',
+          labelText: 'Shadow Ban',
           hintText: 'User Id',
           isDense: true,
           border: OutlineInputBorder(),
@@ -27,12 +27,12 @@ class DebugBanUser extends StatelessWidget {
         onSubmitted: (value) async {
           final userId = value.trim();
           try {
-            debugPrint('[banUser] userId: $userId');
-            final result = await client.banUser(userId);
-            debugPrint('[banUser] completed: $result');
+            debugPrint('[shadowBan] userId: $userId');
+            final result = await client.shadowBan(userId);
+            debugPrint('[shadowBan] completed: $result');
           } catch (e) {
-            debugPrint('[banUser] failed: $e');
-            showErrorDialog(context, e, 'Ban User');
+            debugPrint('[shadowBan] failed: $e');
+            showErrorDialog(context, e, 'Shadow Ban');
           }
         },
       ),
