@@ -2,15 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart' as image_picker;
 import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/src/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_button.dart';
-import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
+import 'package:stream_chat_flutter/src/message_input/camera_attachment_options.dart';
 import 'package:stream_chat_flutter/src/message_input/command_button.dart';
 import 'package:stream_chat_flutter/src/message_input/dm_checkbox.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/gallery_picker_screen.dart';
@@ -1035,41 +1033,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
                                   null &&
                               _effectiveController.text.isEmpty)
                             IconButton(
-                              onPressed: () async {
-                                StreamAttachmentPickerController
-                                    attachmentController =
-                                    StreamAttachmentPickerController();
-
-                                final pickedImage =
-                                    await runInPermissionRequestLock(() {
-                                  return StreamAttachmentHandler.instance
-                                      .pickImage(
-                                    source: image_picker.ImageSource.camera,
-                                    preferredCameraDevice:
-                                        image_picker.CameraDevice.rear,
-                                  );
-                                });
-                                if (pickedImage != null) {
-                                  final channel =
-                                      StreamChannel.of(context).channel;
-
-                                  await attachmentController
-                                      .addAttachment(pickedImage);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AttachmentPreviewScreen(
-                                        attachmentController:
-                                            attachmentController,
-                                        effectiveController:
-                                            _effectiveController,
-                                        channel: channel,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
+                              onPressed: () => galleryAndCameraOptionChooser(
+                                  mainContext: context,
+                                  effectiveController: _effectiveController),
                               icon: const Icon(
                                 Icons.camera_alt,
                                 color: UnikonColorTheme.darkGreyColor,

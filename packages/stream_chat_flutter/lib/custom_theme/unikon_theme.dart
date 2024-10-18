@@ -39,7 +39,15 @@ class UnikonColorTheme {
   static const Color backButtonLinearGradientColor2 =
       Color.fromRGBO(170, 170, 170, 0.15);
 
+  static const Color bottomSheetLinearGradientColor1 =
+      Color.fromRGBO(255, 255, 255, 0.1);
+
+  static const Color bottomSheetLinearGradientColor2 =
+      Color.fromRGBO(125, 125, 125, 0.1);
+
   static const Color optionsCardBGColor = Color.fromRGBO(29, 30, 37, 1);
+
+  static const Color bottomSheetBGColor = Color.fromRGBO(24, 24, 24, 1);
 
   static const replyIcon = "assets/images/reply.png";
 

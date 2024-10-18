@@ -52,63 +52,66 @@ class _AttachmentPreviewScreenState extends State<AttachmentPreviewScreen> {
     if (nonOGAttachments.isEmpty) return const Offstage();
 
     // Otherwise, use the default attachment list builder.
-    return GestureDetector(
-      onTap: () {
-        if (focusNode.hasFocus) {
-          focusNode.unfocus();
-        }
-      },
-      child: TranslucentScaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: AppBar(
-            backgroundColor: UnikonColorTheme.transparent,
-            leading: IconButton(
-              icon: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  gradient: const LinearGradient(
-                    colors: [
-                      UnikonColorTheme.backButtonLinearGradientColor1,
-                      UnikonColorTheme.backButtonLinearGradientColor2
-                    ],
+    return StreamChannel(
+      channel: widget.channel,
+      child: GestureDetector(
+        onTap: () {
+          if (focusNode.hasFocus) {
+            focusNode.unfocus();
+          }
+        },
+        child: TranslucentScaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: AppBar(
+              backgroundColor: UnikonColorTheme.transparent,
+              leading: IconButton(
+                icon: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    gradient: const LinearGradient(
+                      colors: [
+                        UnikonColorTheme.backButtonLinearGradientColor1,
+                        UnikonColorTheme.backButtonLinearGradientColor2
+                      ],
+                    ),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: UnikonColorTheme.messageSentIndicatorColor,
+                      size: 16,
+                    ),
                   ),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: UnikonColorTheme.messageSentIndicatorColor,
-                    size: 16,
-                  ),
-                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              actions: [
+                Text(
+                  '${widget.attachmentController.value.length} media selected',
+                  style: const TextStyle(color: UnikonColorTheme.dividerColor),
+                ),
+              ],
             ),
-            actions: [
-              Text(
-                '${widget.attachmentController.value.length} media selected',
-                style: const TextStyle(color: UnikonColorTheme.dividerColor),
+          ),
+          body: Stack(
+            alignment: AlignmentDirectional.bottomCenter,
+            children: [
+              StreamMessageInputAttachmentList(
+                attachments: nonOGAttachments,
+                onRemovePressed: _onAttachmentRemovePressed,
+              ),
+              BuildTextInputWidget(
+                nonOGAttachments: nonOGAttachments,
+                focusNode: focusNode,
+                channel: widget.channel,
               ),
             ],
           ),
-        ),
-        body: Stack(
-          alignment: AlignmentDirectional.bottomCenter,
-          children: [
-            StreamMessageInputAttachmentList(
-              attachments: nonOGAttachments,
-              onRemovePressed: _onAttachmentRemovePressed,
-            ),
-            BuildTextInputWidget(
-              nonOGAttachments: nonOGAttachments,
-              focusNode: focusNode,
-              channel: widget.channel,
-            ),
-          ],
         ),
       ),
     );
