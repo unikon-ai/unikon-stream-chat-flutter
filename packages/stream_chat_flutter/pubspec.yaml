@@ -66,7 +66,7 @@ flutter:
         default_package: stream_chat_flutter
 
   assets:
-    - images/
+    - assets/images/
     - svgs/
     - lib/svgs/
     - animations/
