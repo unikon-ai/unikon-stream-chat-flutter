@@ -1026,6 +1026,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                         child: child!,
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Flexible(
                             child: StreamMessageTextField(
