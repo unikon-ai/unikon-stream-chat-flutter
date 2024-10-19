@@ -64,18 +64,15 @@ abstract class StreamAttachmentWidgetBuilder {
   /// widget.
   static List<StreamAttachmentWidgetBuilder> defaultBuilders({
     required Message message,
-    required String? userId,
     ShapeBorder? shape,
     EdgeInsetsGeometry padding = const EdgeInsets.all(4),
     StreamAttachmentWidgetTapCallback? onAttachmentTap,
     List<StreamAttachmentWidgetBuilder>? customAttachmentBuilders,
   }) {
-    final isMyMessage = message.user?.id == userId;
     return [
       ...?customAttachmentBuilders,
 
       AudioAttachmentBuilder(
-        isMyMessage: isMyMessage,
       ),
       // Handles a mix of image, gif, video, url and file attachments.
       MixedAttachmentBuilder(

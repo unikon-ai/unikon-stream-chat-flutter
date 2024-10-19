@@ -5,8 +5,7 @@ import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_player_m
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class AudioAttachmentBuilder extends StreamAttachmentWidgetBuilder {
-  final bool isMyMessage;
-  const AudioAttachmentBuilder({required this.isMyMessage});
+  const AudioAttachmentBuilder();
   @override
   Widget build(BuildContext context, Message message,
       Map<String, List<Attachment>> attachments) {
@@ -22,6 +21,8 @@ class AudioAttachmentBuilder extends StreamAttachmentWidgetBuilder {
     if (waveFormData != null) {
       waveData = waveFormData.map((e) => (e as num).toDouble()).toList();
     }
+    final isMyMessage =
+        message.user?.id == StreamChat.of(context).currentUser?.id;
 
     late final Widget widget;
     if (url == null) {
@@ -33,6 +34,7 @@ class AudioAttachmentBuilder extends StreamAttachmentWidgetBuilder {
         id: message.id,
         fileWaveFormData: waveData,
         isMyMessage: isMyMessage,
+        message: message,
       );
     }
     return SizedBox(

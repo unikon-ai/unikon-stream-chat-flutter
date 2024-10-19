@@ -70,6 +70,16 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
         setState(() {
           _isRecording = _controller.isRecording;
         });
+      } else {
+        if (_isRecording) {
+          await _stop();
+          recordedFilePath != null;
+        } else if (recordedFilePath != null) {
+          setState(() {
+            recordedFilePath = null;
+          });
+        }
+        widget.onRecordingAborted();
       }
     } catch (e) {
       dev.log(e.toString());

@@ -49,6 +49,8 @@ class UnikonColorTheme {
 
   static const Color bottomSheetBGColor = Color.fromRGBO(24, 24, 24, 1);
 
+  static const Color audioWaveFormBGColor = Color.fromRGBO(83, 100, 113, 1);
+
   static const replyIcon = "assets/images/reply.png";
 
   static const deleteIcon = "assets/images/delete.png";
@@ -56,4 +58,6 @@ class UnikonColorTheme {
   static const recordingIcon = "assets/images/recording.png";
 
   static const folderIcon = "assets/images/folder.png";
+
+  static const placeholder = "assets/images/placeholder.png";
 }

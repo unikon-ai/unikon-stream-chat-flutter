@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:stream_chat_flutter_example/utils/translucent_scafold.dart';
-import 'package:stream_chat_flutter_example/widgets/message_input_widget.dart';
 
 /// Displays the list of messages inside the channel
 class MessagePage extends StatefulWidget {
@@ -100,11 +99,7 @@ class _MessagePageState extends State<MessagePage> {
                       ),
                       showUsername: false,
                       attachmentBuilders: [
-                        // AudioAttachmentBuilder(
-                        //   isMyMessage: details.isMyMessage,
-                        // ),
                         ...StreamAttachmentWidgetBuilder.defaultBuilders(
-                          userId: userId,
                           message: details.message,
                         ),
                       ]);

@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 
@@ -83,7 +84,7 @@ class StreamPhotoGalleryTile extends StatelessWidget {
           child: FadeInImage(
             fadeInDuration: const Duration(milliseconds: 300),
             placeholder: const AssetImage(
-              'images/placeholder.png',
+              UnikonColorTheme.placeholder,
               package: 'stream_chat_flutter',
             ),
             fit: BoxFit.cover,

@@ -1,8 +1,12 @@
 import 'dart:async';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'audio_wave_bars.dart';
-import 'audio_loading_message.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
+import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_loading_message.dart';
+import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_wave_bars.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class AudioPlayerMessage extends StatefulWidget {
   const AudioPlayerMessage({
@@ -12,6 +16,7 @@ class AudioPlayerMessage extends StatefulWidget {
     this.localFilePath,
     this.fileWaveFormData,
     required this.isMyMessage,
+    required this.message,
   });
 
   final AudioSource source;
@@ -19,6 +24,7 @@ class AudioPlayerMessage extends StatefulWidget {
   final String id;
   final List<double>? fileWaveFormData;
   final bool isMyMessage;
+  final Message message;
 
   @override
   AudioPlayerMessageState createState() => AudioPlayerMessageState();
@@ -26,18 +32,14 @@ class AudioPlayerMessage extends StatefulWidget {
 
 class AudioPlayerMessageState extends State<AudioPlayerMessage> {
   final _audioPlayer = AudioPlayer();
-  late StreamSubscription<PlayerState> _playerStateChangedSubscription;
 
   late Future<Duration?> futureDuration;
   double _progress = 0.0;
   Duration? _totalDuration;
-
+  String audioDuration = "0:00";
   @override
   void initState() {
     super.initState();
-
-    _playerStateChangedSubscription =
-        _audioPlayer.playerStateStream.listen(playerStateListener);
 
     futureDuration = _audioPlayer.setAudioSource(widget.source);
 
@@ -46,12 +48,14 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
       if (duration != null) {
         setState(() {
           _totalDuration = duration;
+          audioDuration = _totalDuration?.toString().split('.').first ?? '0:00';
+          audioDuration = audioDuration.split(':').sublist(1).join(':');
         });
       }
     });
 
     // Update progress based on current position and total duration
-    _audioPlayer.positionStream.listen((position) {
+    _audioPlayer.positionStream.listen((position) async {
       final totalDuration = _totalDuration;
       if (totalDuration != null && totalDuration.inMilliseconds > 0) {
         setState(() {
@@ -59,6 +63,9 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
               totalDuration.inMilliseconds.toDouble();
           _progress = progress.clamp(0.0, 1.0);
         });
+        if (_progress == 1.0) {
+          await reset();
+        }
       } else {
         // Duration is not yet available
         setState(() {
@@ -68,53 +75,102 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
     });
   }
 
-  void playerStateListener(PlayerState state) async {
-    if (state.processingState == ProcessingState.completed) {
-      setState(() {
-        _progress = 1.0;
-      });
-      await reset();
-    }
-  }
-
   @override
   void dispose() {
-    _playerStateChangedSubscription.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> audioWidget = <Widget>[
+      Padding(
+        padding: const EdgeInsets.only(right: 4.0),
+        child: Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            if (widget.message.user?.image != null)
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: CachedNetworkImage(
+                    height: 40,
+                    width: 40,
+                    imageUrl: widget.message.user!.image!,
+                  ),
+                ),
+              )
+            else
+              Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: widget.isMyMessage
+                          ? UnikonColorTheme.whiteHintTextColor
+                          : UnikonColorTheme.primaryColor,
+                    ),
+                    child: Center(
+                      child: Text(
+                        widget.message.user!.name[0].toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )),
+            const Icon(
+              Icons.mic,
+              size: 20,
+              color: UnikonColorTheme.messageSentIndicatorColor,
+            ),
+          ],
+        ),
+      ),
+      if (widget.fileWaveFormData != null)
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _controlButtons(),
+                  AudioWaveBars(
+                    amplitudes: widget.fileWaveFormData!,
+                    height: 35,
+                    barSpacing: 2,
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    progress: _progress,
+                    barBorderRadius: 10,
+                  ),
+                ],
+              ),
+              Text(
+                audioDuration,
+                style: const TextStyle(color: Colors.white, fontSize: 10),
+              ),
+            ],
+          ),
+        ),
+    ];
     return FutureBuilder<Duration?>(
       future: futureDuration,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const SizedBox(width: 8),
-              _controlButtons(snapshot.data),
-              if (widget.fileWaveFormData != null) ...[
-                Expanded(
-                  child: AudioWaveBars(
-                    amplitudes: widget.fileWaveFormData!,
-                    height: 35,
-                    barColor: widget.isMyMessage ? Colors.white : Colors.teal,
-                    barSpacing: 2,
-                    barColorActive: Colors.white,
-                    progress: _progress,
-                    barBorderRadius: 10,
-                    barWidth: 2,
-                  ),
-                ),
-              ],
-              const SizedBox(
-                width: 16,
-              )
-            ],
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: widget.isMyMessage
+                  ? audioWidget
+                  : audioWidget.reversed.toList(),
+            ),
           );
         }
         return const AudioLoadingMessage();
@@ -122,37 +178,22 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
     );
   }
 
-  Widget _controlButtons(Duration? duration) {
+  Widget _controlButtons() {
     return StreamBuilder<bool>(
       stream: _audioPlayer.playingStream,
-      builder: (context, _) {
+      builder: (context, snapshot) {
         const color = Colors.white;
-        final icon =
-            _audioPlayer.playerState.playing ? Icons.pause : Icons.play_arrow;
-        String audioDuration =
-            _totalDuration?.toString().split('.').first ?? '0:00';
-        audioDuration = audioDuration.split(':').sublist(1).join(':');
-        return Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: GestureDetector(
-            onTap: () {
-              if (_audioPlayer.playerState.playing) {
-                pause();
-              } else {
-                play();
-              }
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: color, size: 30),
-                Text(
-                  audioDuration,
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                ),
-              ],
-            ),
-          ),
+        final icon = snapshot.data == true ? Icons.pause : Icons.play_arrow;
+
+        return GestureDetector(
+          onTap: () {
+            if (snapshot.data == true) {
+              pause();
+            } else {
+              play();
+            }
+          },
+          child: Icon(icon, color: color, size: 30),
         );
       },
     );
