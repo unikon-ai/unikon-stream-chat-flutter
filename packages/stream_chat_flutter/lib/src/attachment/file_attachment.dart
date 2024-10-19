@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
 import 'package:stream_chat_flutter/src/indicators/upload_progress_indicator.dart';
 import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
+import 'package:stream_chat_flutter/src/stream_chat.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/utils/utils.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
@@ -164,11 +166,17 @@ class _Trailing extends StatelessWidget {
     final theme = StreamChatTheme.of(context);
     final channel = StreamChannel.of(context).channel;
     final attachmentId = attachment.id;
+    bool isMyMessage =
+        message.user?.id == StreamChat.of(context).currentUser?.id;
 
     if (message.state.isCompleted) {
       return IconButton(
-        icon: StreamSvgIcon.cloudDownload(
-          color: theme.colorTheme.textHighEmphasis,
+        icon: Image.asset(
+          UnikonColorTheme.downloadIcon,
+          height: 24,
+          color: isMyMessage
+              ? UnikonColorTheme.messageSentIndicatorColor
+              : UnikonColorTheme.primaryColor,
         ),
         visualDensity: VisualDensity.compact,
         splashRadius: 16,
