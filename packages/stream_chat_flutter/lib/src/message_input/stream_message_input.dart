@@ -8,10 +8,10 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/src/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_button.dart';
+import 'package:stream_chat_flutter/src/message_input/attachment_preview/gallery_picker_screen.dart';
 import 'package:stream_chat_flutter/src/message_input/camera_attachment_options.dart';
 import 'package:stream_chat_flutter/src/message_input/command_button.dart';
 import 'package:stream_chat_flutter/src/message_input/dm_checkbox.dart';
-import 'package:stream_chat_flutter/src/message_input/attachment_preview/gallery_picker_screen.dart';
 import 'package:stream_chat_flutter/src/message_input/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
@@ -155,6 +155,7 @@ class StreamMessageInput extends StatefulWidget {
     this.hintGetter = _defaultHintGetter,
     this.contentInsertionConfiguration,
     this.useNativeAttachmentPickerOnMobile = false,
+    this.onChatExpired,
   });
 
   /// The predicate used to send a message on desktop/web
@@ -353,6 +354,8 @@ class StreamMessageInput extends StatefulWidget {
   /// Forces use of native attachment picker on mobile instead of the custom
   /// Stream attachment picker.
   final bool useNativeAttachmentPickerOnMobile;
+
+  final VoidCallback? onChatExpired;
 
   static String? _defaultHintGetter(
     BuildContext context,
@@ -575,17 +578,46 @@ class StreamMessageInputState extends State<StreamMessageInput>
   @override
   Widget build(BuildContext context) {
     final channel = StreamChannel.of(context).channel;
+    final otherUser = channel.state?.members.firstWhere((element) =>
+        element.userId != channel.state?.currentUserMember?.userId);
+
     if (channel.state != null &&
         !channel.ownCapabilities.contains(PermissionType.sendMessage)) {
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 15,
+      return Container(
+        margin: const EdgeInsets.all(20),
+        decoration: ShapeDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              UnikonColorTheme.bottomSheetLinearGradientColor1,
+              UnikonColorTheme.bottomSheetLinearGradientColor2,
+            ],
           ),
-          child: Text(
-            context.translations.sendMessagePermissionError,
-            style: _messageInputTheme.inputTextStyle,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(
+              width: 0.50,
+              color: UnikonColorTheme.bottomSheetBorderColor,
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                UnikonColorTheme.emergencyIcon,
+                width: 20,
+                height: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                "${otherUser?.user?.name}'s chat has been blocked.",
+                style: _messageInputTheme.inputTextStyle,
+              ),
+            ],
           ),
         ),
       );
@@ -760,26 +792,31 @@ class StreamMessageInputState extends State<StreamMessageInput>
       width: MediaQuery.of(context).size.width,
       child: VoiceRecordingWidget(
         onRecordingSend: (recordedFilePath, fileWebFormData) {
+          final channel = StreamChannel.of(context).channel;
+          if (channel.frozen) {
+            widget.onChatExpired?.call();
+            return;
+          }
           final uri = Uri.parse(recordedFilePath);
           File file = File(uri.path);
           file.length().then(
             (fileSize) {
-              StreamChannel.of(context).channel.sendMessage(
-                    Message(
-                      attachments: [
-                        Attachment(
-                          type: 'voicenote',
-                          file: AttachmentFile(
-                            size: fileSize,
-                            path: uri.path,
-                          ),
-                          extraData: {
-                            'waveForm': fileWebFormData,
-                          },
-                        )
-                      ],
-                    ),
-                  );
+              channel.sendMessage(
+                Message(
+                  attachments: [
+                    Attachment(
+                      type: 'voicenote',
+                      file: AttachmentFile(
+                        size: fileSize,
+                        path: uri.path,
+                      ),
+                      extraData: {
+                        'waveForm': fileWebFormData,
+                      },
+                    )
+                  ],
+                ),
+              );
             },
           );
 
@@ -823,9 +860,14 @@ class StreamMessageInputState extends State<StreamMessageInput>
     if (widget.sendButtonBuilder != null) {
       return widget.sendButtonBuilder!(context, _effectiveController);
     }
-
+    final channel = StreamChannel.of(context).channel;
     return StreamMessageSendButton(
-      onSendMessage: sendMessage,
+      onSendMessage: channel.frozen
+          ? () {
+              widget.onChatExpired?.call();
+              return;
+            }
+          : sendMessage,
       timeOut: _timeOut,
       isIdle: !widget.validator(_effectiveController.message),
       isEditEnabled: _isEditing,
@@ -991,7 +1033,13 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               maxLines: widget.maxLines,
                               minLines: widget.minLines,
                               textInputAction: widget.textInputAction,
-                              onSubmitted: (_) => sendMessage(),
+                              onSubmitted: (_) =>
+                                  StreamChannel.of(context).channel.frozen
+                                      ? () {
+                                          widget.onChatExpired?.call();
+                                          return;
+                                        }
+                                      : sendMessage(),
                               keyboardType: widget.keyboardType,
                               controller: _effectiveController,
                               focusNode: _effectiveFocusNode,
@@ -1014,6 +1062,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               onPressed: () {
                                 final channel =
                                     StreamChannel.of(context).channel;
+                                if (channel.frozen) {
+                                  widget.onChatExpired?.call();
+                                  return;
+                                }
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -1033,9 +1085,16 @@ class StreamMessageInputState extends State<StreamMessageInput>
                                   null &&
                               _effectiveController.text.isEmpty)
                             IconButton(
-                              onPressed: () => galleryAndCameraOptionChooser(
-                                  mainContext: context,
-                                  effectiveController: _effectiveController),
+                              onPressed: () =>
+                                  (StreamChannel.of(context).channel.frozen)
+                                      ? () {
+                                          widget.onChatExpired?.call();
+                                          return;
+                                        }
+                                      : galleryAndCameraOptionChooser(
+                                          mainContext: context,
+                                          effectiveController:
+                                              _effectiveController),
                               icon: const Icon(
                                 Icons.camera_alt,
                                 color: UnikonColorTheme.darkGreyColor,

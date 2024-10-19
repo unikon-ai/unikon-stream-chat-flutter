@@ -45,6 +45,9 @@ class UnikonColorTheme {
   static const Color bottomSheetLinearGradientColor2 =
       Color.fromRGBO(125, 125, 125, 0.1);
 
+  static const Color bottomSheetBorderColor =
+      const Color.fromRGBO(83, 83, 83, 0.1);
+
   static const Color optionsCardBGColor = Color.fromRGBO(29, 30, 37, 1);
 
   static const Color bottomSheetBGColor = Color.fromRGBO(24, 24, 24, 1);
@@ -60,4 +63,6 @@ class UnikonColorTheme {
   static const folderIcon = "assets/images/folder.png";
 
   static const placeholder = "assets/images/placeholder.png";
+
+  static const emergencyIcon = "assets/images/emergency.png";
 }
