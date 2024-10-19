@@ -63,6 +63,4 @@ class UnikonColorTheme {
   static const folderIcon = "assets/images/folder.png";
 
   static const placeholder = "assets/images/placeholder.png";
-
-  static const emergencyIcon = "assets/images/emergency.png";
 }
