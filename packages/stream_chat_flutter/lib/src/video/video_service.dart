@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/utils/device_segmentation.dart';
 import 'package:thumblr/thumblr.dart' as thumblr;
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -77,8 +78,9 @@ class _IVideoService {
 
   /// Generates a placeholder thumbnail by loading placeholder.png from assets.
   Future<Uint8List> generatePlaceholderThumbnail() async {
-    final placeholder = await rootBundle
-        .load('packages/stream_chat_flutter/images/placeholder.png');
+    final placeholder = await rootBundle.load(
+      UnikonColorTheme.placeholder,
+    );
     return placeholder.buffer.asUint8List();
   }
 }

@@ -39,13 +39,30 @@ class UnikonColorTheme {
   static const Color backButtonLinearGradientColor2 =
       Color.fromRGBO(170, 170, 170, 0.15);
 
+  static const Color bottomSheetLinearGradientColor1 =
+      Color.fromRGBO(255, 255, 255, 0.1);
+
+  static const Color bottomSheetLinearGradientColor2 =
+      Color.fromRGBO(125, 125, 125, 0.1);
+
+  static const Color bottomSheetBorderColor =
+      const Color.fromRGBO(83, 83, 83, 0.1);
+
   static const Color optionsCardBGColor = Color.fromRGBO(29, 30, 37, 1);
 
-  static const replyIcon = "images/reply.png";
+  static const Color bottomSheetBGColor = Color.fromRGBO(24, 24, 24, 1);
 
-  static const deleteIcon = "images/delete.png";
+  static const Color audioWaveFormBGColor = Color.fromRGBO(83, 100, 113, 1);
 
-  static const recordingIcon = "images/recording.png";
+  static const replyIcon = "assets/images/reply.png";
 
-  static const folderIcon = "images/folder.png";
+  static const deleteIcon = "assets/images/delete.png";
+
+  static const recordingIcon = "assets/images/recording.png";
+
+  static const folderIcon = "assets/images/folder.png";
+
+  static const placeholder = "assets/images/placeholder.png";
+
+  static const downloadIcon = "assets/images/download.png";
 }

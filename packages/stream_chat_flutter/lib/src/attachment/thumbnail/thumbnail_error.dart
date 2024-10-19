@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 
 /// {@template thumbnailErrorBuilder}
 /// Signature for the builder callback used by [ThumbnailError.builder].
@@ -44,7 +45,7 @@ class ThumbnailError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'images/placeholder.png',
+      UnikonColorTheme.placeholder,
       width: width,
       height: height,
       fit: fit,

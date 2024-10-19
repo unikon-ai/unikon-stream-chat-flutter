@@ -164,7 +164,6 @@ class _MessageCardState extends State<MessageCard> {
     final quotedMessageBuilder = widget.quotedMessageBuilder;
     final streamChat = StreamChat.of(context);
     final streamChatTheme = StreamChatTheme.of(context);
-    final isMyMessage = widget.message.user?.id == streamChat.currentUser?.id;
     return Container(
       constraints: const BoxConstraints().copyWith(maxWidth: widthLimit),
       margin: EdgeInsets.symmetric(
@@ -184,9 +183,8 @@ class _MessageCardState extends State<MessageCard> {
               borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
             ),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Stack(
+        alignment: Alignment.bottomRight,
         children: [
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -236,7 +234,7 @@ class _MessageCardState extends State<MessageCard> {
           ),
           if (widget.showSendingIndicator)
             Padding(
-              padding: const EdgeInsets.only(right: 8.0),
+              padding: const EdgeInsets.only(right: 6, bottom: 4),
               child: SendingIndicatorBuilder(
                 messageTheme: widget.messageTheme,
                 message: widget.message,

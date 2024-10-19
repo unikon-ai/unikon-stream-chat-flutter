@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import '../../test_utils/data_generator.dart';
@@ -96,7 +97,9 @@ void main() {
                 messageListViewTheme: const StreamMessageListViewThemeData(
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
-                    image: AssetImage('images/placeholder.png'),
+                    image: AssetImage(
+                      UnikonColorTheme.placeholder,
+                    ),
                     fit: BoxFit.none,
                   ),
                 ),
@@ -162,7 +165,9 @@ void main() {
                 messageListViewTheme: const StreamMessageListViewThemeData(
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
-                    image: AssetImage('images/placeholder.png'),
+                    image: AssetImage(
+                      UnikonColorTheme.placeholder,
+                    ),
                     fit: BoxFit.none,
                   ),
                 ),
@@ -206,7 +211,9 @@ void main() {
                 messageListViewTheme: const StreamMessageListViewThemeData(
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
-                    image: AssetImage('images/placeholder.png'),
+                    image: AssetImage(
+                      UnikonColorTheme.placeholder,
+                    ),
                     fit: BoxFit.none,
                   ),
                 ),

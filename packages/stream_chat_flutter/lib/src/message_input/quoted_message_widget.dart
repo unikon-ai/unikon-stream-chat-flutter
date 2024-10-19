@@ -169,7 +169,9 @@ class _QuotedMessage extends StatelessWidget {
           Flexible(
             child: textBuilder?.call(context, msg) ??
                 StreamMessageText(
+                  maxLines: 2,
                   message: msg,
+                  showReadMore: false,
                   messageTheme: isOnlyEmoji && _containsText
                       ? messageTheme.copyWith(
                           messageTextStyle:

@@ -70,6 +70,16 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
         setState(() {
           _isRecording = _controller.isRecording;
         });
+      } else {
+        if (_isRecording) {
+          await _stop();
+          recordedFilePath != null;
+        } else if (recordedFilePath != null) {
+          setState(() {
+            recordedFilePath = null;
+          });
+        }
+        widget.onRecordingAborted();
       }
     } catch (e) {
       dev.log(e.toString());
@@ -85,7 +95,6 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40,
       child: Row(
         children: [
           const SizedBox(width: 16),
@@ -114,7 +123,10 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
                   ] else ...[
                     Padding(
                       padding: const EdgeInsets.all(2.0),
-                      child: Image.asset(UnikonColorTheme.recordingIcon),
+                      child: Image.asset(
+                        UnikonColorTheme.recordingIcon,
+                        width: 40,
+                      ),
                     ),
                     Expanded(
                       child: AudioWaveforms(
@@ -170,13 +182,17 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
                     },
                     icon: Image.asset(
                       UnikonColorTheme.deleteIcon,
+                      width: 24,
                     ),
                   ),
                 ]),
               ),
             ),
           ),
-          _buildStopAndSendButton(),
+          const SizedBox(
+            width: 8,
+          ),
+          SizedBox(width: 50, child: _buildStopAndSendButton()),
         ],
       ),
     );
@@ -192,7 +208,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
         shape: BoxShape.circle,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: IconButton(
           onPressed: () async {
             if (_isRecording) {
