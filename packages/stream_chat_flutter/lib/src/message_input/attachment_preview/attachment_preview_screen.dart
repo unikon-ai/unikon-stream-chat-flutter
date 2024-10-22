@@ -90,6 +90,7 @@ class _AttachmentPreviewScreenState extends State<AttachmentPreviewScreen> {
                     nonOGAttachments: nonOGAttachments,
                     focusNode: focusNode,
                     channel: widget.channel,
+                    effectiveController: widget.effectiveController,
                   ),
                 ),
               ],
@@ -141,6 +142,8 @@ class UnikonBackButton extends StatelessWidget {
         Navigator.of(context).pop();
       },
       child: Container(
+        width: 36,
+        height: 36,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -168,24 +171,25 @@ class BuildTextInputWidget extends StatefulWidget {
     required this.nonOGAttachments,
     required this.focusNode,
     required this.channel,
+    required this.effectiveController,
   });
+
   final List<Attachment> nonOGAttachments;
   final FocusNode focusNode;
   final Channel channel;
+  final StreamMessageInputController effectiveController;
   @override
   State<BuildTextInputWidget> createState() => _BuildTextInputWidgetState();
 }
 
 class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
-  final StreamMessageInputController messageInputController =
-      StreamMessageInputController();
   late StreamMessageInputThemeData _messageInputTheme;
 
   @override
   void initState() {
-    messageInputController.addListener(() {
+    widget.effectiveController.addListener(() {
       if (mounted &&
-          [0, 1].contains(messageInputController.text.trim().length)) {
+          [0, 1].contains(widget.effectiveController.text.trim().length)) {
         setState(() {});
       }
     });
@@ -239,21 +243,22 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
   Future<void> _sendMessage(List<Attachment> nonOGAttachments) async {
     widget.channel.sendMessage(
       Message(
-        text: messageInputController.text.trim().isEmpty
+        text: widget.effectiveController.text.trim().isEmpty
             ? null
-            : messageInputController.text.trim(),
+            : widget.effectiveController.text.trim(),
         attachments: nonOGAttachments,
       ),
     );
-
+    widget.effectiveController.clear();
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final double borderRadius = messageInputController.text.trim().isNotEmpty
-        ? UnikonColorTheme.focusTextfieldBorderRadius
-        : UnikonColorTheme.unfocusTextfieldBorderRadius;
+    final double borderRadius =
+        widget.effectiveController.text.trim().isNotEmpty
+            ? UnikonColorTheme.focusTextfieldBorderRadius
+            : UnikonColorTheme.unfocusTextfieldBorderRadius;
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -275,7 +280,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
                 child: StreamMessageTextField(
                   key: const Key('messageInputText'),
                   onSubmitted: (_) => _sendMessage(widget.nonOGAttachments),
-                  controller: messageInputController,
+                  controller: widget.effectiveController,
                   focusNode: widget.focusNode,
                   style: _messageInputTheme.inputTextStyle?.copyWith(
                     color: UnikonColorTheme.messageInputHintColor,

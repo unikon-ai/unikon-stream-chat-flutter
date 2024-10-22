@@ -481,7 +481,7 @@ class RemoveAttachmentButton extends StatelessWidget {
         child: const Icon(
           Icons.close,
           size: 24,
-          color: UnikonColorTheme.dividerColor,
+          color: UnikonColorTheme.whiteHintTextColor,
         ),
       ),
     );

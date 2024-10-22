@@ -33,97 +33,132 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
         final selectedIds =
             attachmentController.value.map((it) => it.id).toList();
         return TranslucentScaffold(
-          appBar: AppBar(
-            backgroundColor: UnikonColorTheme.transparent,
-            leading: const UnikonBackButton(),
-            title: const Text('Select your file',
-                style: TextStyle(
-                    color: UnikonColorTheme.messageSentIndicatorColor)),
-          ),
-          body: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'Choose file from your folder',
-                      style: TextStyle(color: UnikonColorTheme.dividerColor),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: BuildMediaAttachment(
-                      effectiveController: widget.effectiveController,
-                      channel: widget.channel,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.symmetric(vertical: 12),
                     child: Row(
                       children: [
-                        const Text(
-                          'Select from your phone gallery',
-                          style:
-                              TextStyle(color: UnikonColorTheme.dividerColor),
+                        UnikonBackButton(),
+                        SizedBox(
+                          width: 8,
                         ),
-                        const Spacer(),
                         Text(
-                          '(${selectedIds.length}) Selected',
-                          style: const TextStyle(
-                              color: UnikonColorTheme.dividerColor),
+                          'Select your file',
+                          style: TextStyle(
+                            color: UnikonColorTheme.messageSentIndicatorColor,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Expanded(
-                    child: GalleryPickerWidget(
-                      selectedMediaItems: selectedIds,
-                      onMediaItemSelected: (AssetEntity media) async {
-                        if (selectedIds.contains(media.id)) {
-                          return await attachmentController
-                              .removeAssetAttachment(media);
-                        }
-                        await attachmentController.addAssetAttachment(media);
-                      },
+                    child: Stack(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Text(
+                                'Choose file from your folder',
+                                style: TextStyle(
+                                  color: UnikonColorTheme.dividerColor,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: BuildMediaAttachment(
+                                effectiveController: widget.effectiveController,
+                                channel: widget.channel,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    'Select from your phone gallery',
+                                    style: TextStyle(
+                                        color: UnikonColorTheme.dividerColor),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    '(${selectedIds.length}) Selected',
+                                    style: const TextStyle(
+                                        color: UnikonColorTheme.dividerColor),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                child: GalleryPickerWidget(
+                                  selectedMediaItems: selectedIds,
+                                  onMediaItemSelected:
+                                      (AssetEntity media) async {
+                                    if (selectedIds.contains(media.id)) {
+                                      return await attachmentController
+                                          .removeAssetAttachment(media);
+                                    }
+                                    await attachmentController
+                                        .addAssetAttachment(media);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (attachmentController.value.isNotEmpty)
+                          Positioned(
+                            bottom: 10,
+                            right: 10,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AttachmentPreviewScreen(
+                                      attachmentController:
+                                          attachmentController,
+                                      effectiveController:
+                                          widget.effectiveController,
+                                      channel: widget.channel,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 36, vertical: 13),
+                                decoration: BoxDecoration(
+                                    color: UnikonColorTheme.primaryColor,
+                                    borderRadius: BorderRadius.circular(100)),
+                                child: const Text(
+                                  'Next',
+                                  style: TextStyle(
+                                    color: UnikonColorTheme
+                                        .messageSentIndicatorColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                      ],
                     ),
                   ),
                 ],
               ),
-              if (attachmentController.value.isNotEmpty)
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AttachmentPreviewScreen(
-                            attachmentController: attachmentController,
-                            effectiveController: widget.effectiveController,
-                            channel: widget.channel,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 36, vertical: 13),
-                      decoration: BoxDecoration(
-                          color: UnikonColorTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(100)),
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(
-                          color: UnikonColorTheme.messageSentIndicatorColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-            ],
+            ),
           ),
         );
       },
@@ -214,7 +249,7 @@ class BuildMediaAttachment extends StatelessWidget {
                   height: 32,
                 ),
                 const SizedBox(
-                  width: 4,
+                  width: 10,
                 ),
                 const Text(
                   'Browse your phone',
