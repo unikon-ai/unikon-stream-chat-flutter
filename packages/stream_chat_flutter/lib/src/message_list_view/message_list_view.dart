@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stream_chat_flutter/src/message_list_view/floating_date_divider.dart';
 import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart';
@@ -1204,7 +1205,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               height: 40,
               decoration: BoxDecoration(
-                color: _streamTheme.colorTheme.textLowEmphasis,
+                color: UnikonColorTheme.darkGreyColor,
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Row(
@@ -1213,14 +1214,17 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   Text(
                     context.translations
                         .unreadCountIndicatorLabel(unreadCount: unreadCount),
-                    style: TextStyle(color: _streamTheme.colorTheme.barsBg),
+                    style: TextStyle(
+                      color: UnikonColorTheme.greyColor,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   GestureDetector(
                     onTap: dismissIndicatorDefaultTapAction,
-                    child: Icon(
+                    child: const Icon(
                       Icons.close,
-                      color: _streamTheme.colorTheme.barsBg,
+                      size: 24,
+                      color: UnikonColorTheme.greyColor,
                     ),
                   ),
                 ],
