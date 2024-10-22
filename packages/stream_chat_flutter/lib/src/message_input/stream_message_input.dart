@@ -770,7 +770,12 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 ? <Widget>[_buildAudioRecordingWidget(context)]
                 : <Widget>[
                     _buildTextInput(context),
-                    if (_effectiveController.text.trim().isNotEmpty)
+                    if (_hasQuotedMessage &&
+                        _effectiveController.text.trim().isEmpty)
+                      _buildIdleSendButton(
+                        context,
+                      )
+                    else if (widget.validator(_effectiveController.message))
                       _buildSendButton(context)
                     else
                       _buildSendAudioButton(context)
@@ -852,6 +857,23 @@ class StreamMessageInputState extends State<StreamMessageInput>
               color: UnikonColorTheme.messageSentIndicatorColor,
             )),
       ),
+    );
+  }
+
+  Widget _buildIdleSendButton(BuildContext context) {
+    if (widget.sendButtonBuilder != null) {
+      return widget.sendButtonBuilder!(context, _effectiveController);
+    }
+    final channel = StreamChannel.of(context).channel;
+    return StreamMessageSendButton(
+      onSendMessage: channel.frozen
+          ? () {
+              widget.onChatExpired?.call();
+              return;
+            }
+          : () {},
+      timeOut: _timeOut,
+      isEditEnabled: _isEditing,
     );
   }
 
