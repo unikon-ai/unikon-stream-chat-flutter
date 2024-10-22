@@ -187,41 +187,44 @@ class AttachmentActionsModal extends StatelessWidget {
                         );
                       },
                     ),
-                  if (StreamChat.of(context).currentUser?.id ==
-                          message.user?.id &&
-                      showDelete)
-                    _buildButton(
-                      context,
-                      context.translations.deleteLabel.capitalize(),
-                      StreamSvgIcon.delete(
-                        size: 24,
-                        color: theme.colorTheme.accentError,
-                      ),
-                      () {
-                        final channel = StreamChannel.of(context).channel;
-                        if (message.attachments.length > 1 ||
-                            message.text?.isNotEmpty == true) {
-                          final currentAttachmentIndex =
-                              message.attachments.indexWhere(
-                            (element) => element.id == attachment.id,
-                          );
-                          final remainingAttachments = [...message.attachments]
-                            ..removeAt(currentAttachmentIndex);
-                          channel.updateMessage(message.copyWith(
-                            attachments: remainingAttachments,
-                          ));
-                          Navigator.of(context)
-                            ..pop()
-                            ..maybePop();
-                        } else {
-                          channel.deleteMessage(message);
-                          Navigator.of(context)
-                            ..pop()
-                            ..maybePop();
-                        }
-                      },
-                      color: theme.colorTheme.accentError,
-                    ),
+
+                  //Removed Message Delete Functionality
+                  // if (StreamChat.of(context).currentUser?.id ==
+                  //         message.user?.id &&
+                  //     showDelete)
+                  //   _buildButton(
+                  //     context,
+                  //     context.translations.deleteLabel.capitalize(),
+                  //     StreamSvgIcon.delete(
+                  //       size: 24,
+                  //       color: theme.colorTheme.accentError,
+                  //     ),
+                  //     () {
+                  //       final channel = StreamChannel.of(context).channel;
+                  //       if (message.attachments.length > 1 ||
+                  //           message.text?.isNotEmpty == true) {
+                  //         final currentAttachmentIndex =
+                  //             message.attachments.indexWhere(
+                  //           (element) => element.id == attachment.id,
+                  //         );
+                  //         final remainingAttachments = [...message.attachments]
+                  //           ..removeAt(currentAttachmentIndex);
+                  //         channel.updateMessage(message.copyWith(
+                  //           attachments: remainingAttachments,
+                  //         ));
+                  //         Navigator.of(context)
+                  //           ..pop()
+                  //           ..maybePop();
+                  //       } else {
+                  //         channel.deleteMessage(message);
+                  //         Navigator.of(context)
+                  //           ..pop()
+                  //           ..maybePop();
+                  //       }
+                  //     },
+                  //     color: theme.colorTheme.accentError,
+                  //   ),
+
                   ...customActions
                       .map(
                         (e) => _buildButton(
