@@ -159,17 +159,13 @@ class _QuotedMessage extends StatelessWidget {
     } else {
       // Show quoted message
       children = [
-        if (_hasAttachments)
-          _ParseAttachments(
-            message: message,
-            messageTheme: messageTheme,
-            attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-          ),
         if (msg.text!.isNotEmpty && !_isGiphy)
           Flexible(
             child: textBuilder?.call(context, msg) ??
                 StreamMessageText(
+                  maxLines: 2,
                   message: msg,
+                  showReadMore: false,
                   messageTheme: isOnlyEmoji && _containsText
                       ? messageTheme.copyWith(
                           messageTextStyle:
@@ -212,61 +208,74 @@ class _QuotedMessage extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              if (message.user != null)
-                Text(
-                  isMyMessage ? 'You' : message.user!.name,
-                  style: messageTheme.messageTextStyle?.copyWith(
-                    color: isMyMessage
-                        ? UnikonColorTheme.primaryColor
-                        : UnikonColorTheme.messageSentIndicatorColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              if (isReplying)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4),
-                      child: SizedBox(
-                        height: 10,
-                        width: 10,
-                        child: VerticalDivider(
-                          color: UnikonColorTheme.dividerColor,
-                          thickness: 1,
-                          width: 1,
+                    if (message.user != null)
+                      Text(
+                        isMyMessage ? 'You' : message.user!.name,
+                        style: messageTheme.messageTextStyle?.copyWith(
+                          color: isMyMessage
+                              ? UnikonColorTheme.primaryColor
+                              : UnikonColorTheme.messageSentIndicatorColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Image.asset(
-                        UnikonColorTheme.replyIcon,
+                    if (isReplying)
+                      Row(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(left: 4),
+                            child: SizedBox(
+                              height: 10,
+                              width: 10,
+                              child: VerticalDivider(
+                                color: UnikonColorTheme.dividerColor,
+                                thickness: 1,
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Image.asset(
+                              UnikonColorTheme.replyIcon,
+                            ),
+                          ),
+                          Text(
+                            'Replying',
+                            style: messageTheme.messageTextStyle?.copyWith(
+                              color: UnikonColorTheme.dividerColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Text(
-                      'Replying',
-                      style: messageTheme.messageTextStyle?.copyWith(
-                        color: UnikonColorTheme.dividerColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
                   ],
                 ),
-            ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: children,
+                ),
+              ],
+            ),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment:
-                reverse ? MainAxisAlignment.end : MainAxisAlignment.start,
-            children: reverse ? children.reversed.toList() : children,
-          ),
+          if (_hasAttachments)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: _ParseAttachments(
+                message: message,
+                messageTheme: messageTheme,
+                attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+              ),
+            ),
         ],
       ),
     );
@@ -321,7 +330,7 @@ class _ParseAttachments extends StatelessWidget {
       key: Key(attachment.id),
       clipBehavior: clipBehavior,
       decoration: decoration,
-      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+      constraints: const BoxConstraints.tightFor(width: 45, height: 60),
       child: AbsorbPointer(child: attachmentWidget),
     );
   }

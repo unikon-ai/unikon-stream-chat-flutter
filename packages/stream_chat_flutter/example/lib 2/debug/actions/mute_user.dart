@@ -3,17 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-import 'package:stream_chat_flutter_example/debug/error_dialog.dart';
+import '../error_dialog.dart';
 
-class DebugRemoveUser extends StatelessWidget {
-  const DebugRemoveUser({
+class DebugMuteUser extends StatelessWidget {
+  const DebugMuteUser({
     super.key,
     required this.client,
-    required this.channel,
   });
 
   final StreamChatClient client;
-  final Channel channel;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +19,7 @@ class DebugRemoveUser extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: TextField(
         decoration: const InputDecoration(
-          labelText: 'Remove User',
+          labelText: 'Mute User',
           hintText: 'User Id',
           isDense: true,
           border: OutlineInputBorder(),
@@ -29,16 +27,12 @@ class DebugRemoveUser extends StatelessWidget {
         onSubmitted: (value) async {
           final userId = value.trim();
           try {
-            debugPrint('[removeUser] userId: $userId');
-            final result = await client.removeChannelMembers(
-              channel.id!,
-              channel.type,
-              [userId],
-            );
-            debugPrint('[removeUser] result: $result');
+            debugPrint('[muteUser] userId: $userId');
+            final result = await client.muteUser(userId);
+            debugPrint('[muteUser] completed: $result');
           } catch (e) {
-            debugPrint('[removeUser] failed: $e');
-            showErrorDialog(context, e, 'Remove User');
+            debugPrint('[muteUser] failed: $e');
+            showErrorDialog(context, e, 'Mute User');
           }
         },
       ),

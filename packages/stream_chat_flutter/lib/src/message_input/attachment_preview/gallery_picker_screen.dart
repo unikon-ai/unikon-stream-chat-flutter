@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
@@ -11,8 +12,10 @@ class GalleryPickerScreen extends StatefulWidget {
   const GalleryPickerScreen({
     super.key,
     required this.effectiveController,
+    required this.channel,
   });
   final StreamMessageInputController effectiveController;
+  final Channel channel;
 
   @override
   State<GalleryPickerScreen> createState() => _GalleryPickerScreenState();
@@ -32,30 +35,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
         return TranslucentScaffold(
           appBar: AppBar(
             backgroundColor: UnikonColorTheme.transparent,
-            leading: IconButton(
-              icon: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  gradient: const LinearGradient(
-                    colors: [
-                      UnikonColorTheme.backButtonLinearGradientColor1,
-                      UnikonColorTheme.backButtonLinearGradientColor2
-                    ],
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: UnikonColorTheme.messageSentIndicatorColor,
-                    size: 16,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
+            leading: const UnikonBackButton(),
             title: const Text('Select your file',
                 style: TextStyle(
                     color: UnikonColorTheme.messageSentIndicatorColor)),
@@ -76,6 +56,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                     padding: const EdgeInsets.all(16),
                     child: BuildMediaAttachment(
                       effectiveController: widget.effectiveController,
+                      channel: widget.channel,
                     ),
                   ),
                   Padding(
@@ -122,6 +103,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                           builder: (context) => AttachmentPreviewScreen(
                             attachmentController: attachmentController,
                             effectiveController: widget.effectiveController,
+                            channel: widget.channel,
                           ),
                         ),
                       );
@@ -153,8 +135,10 @@ class BuildMediaAttachment extends StatelessWidget {
   const BuildMediaAttachment({
     super.key,
     required this.effectiveController,
+    required this.channel,
   });
   final StreamMessageInputController effectiveController;
+  final Channel channel;
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +149,39 @@ class BuildMediaAttachment extends StatelessWidget {
       onTap: () async {
         final pickedFile = await StreamAttachmentHandler.instance.pickFile(
           dialogTitle: 'Select file',
-          allowCompression: true,
+          type: FileType.custom,
+          allowedExtensions: [
+            'mp4',
+            'mov',
+            'wmv',
+            'avi',
+            'flv',
+            'mkv',
+            'mpeg',
+            'webm',
+            '3gp',
+            'ogg',
+            'jpeg',
+            'jpg',
+            'png',
+            'gif',
+            'bmp',
+            'tiff',
+            'svg',
+            'pdf',
+            'doc',
+            'docx',
+            'ppt',
+            'pptx',
+            'xls',
+            'xlsx',
+            'txt',
+            'rtf',
+            'odt',
+            'ods',
+            'odp',
+            'epub'
+          ],
         );
         if (pickedFile != null) {
           await attachmentController.addAttachment(pickedFile);
@@ -175,6 +191,7 @@ class BuildMediaAttachment extends StatelessWidget {
               builder: (context) => AttachmentPreviewScreen(
                 attachmentController: attachmentController,
                 effectiveController: effectiveController,
+                channel: channel,
               ),
             ),
           );

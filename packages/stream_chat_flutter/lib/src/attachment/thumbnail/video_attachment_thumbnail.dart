@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/thumbnail_error.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/video/video_thumbnail_image.dart';
@@ -63,7 +64,7 @@ class StreamVideoAttachmentThumbnail extends StatelessWidget {
         fit: fit,
         placeholder: (context, __) {
           final image = Image.asset(
-            'images/placeholder.png',
+            UnikonColorTheme.placeholder,
             width: width,
             height: height,
             fit: BoxFit.cover,
@@ -101,7 +102,7 @@ class StreamVideoAttachmentThumbnail extends StatelessWidget {
           }
 
           final image = Image.asset(
-            'images/placeholder.png',
+            UnikonColorTheme.placeholder,
             width: width,
             height: height,
             fit: BoxFit.cover,

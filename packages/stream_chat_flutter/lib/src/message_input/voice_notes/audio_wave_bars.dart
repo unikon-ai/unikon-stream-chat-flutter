@@ -1,58 +1,64 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 
 class AudioWaveBars extends StatelessWidget {
   final List<double> amplitudes;
   final double barWidth;
   final Color barColor;
   final Color backgroundColor;
-  final Color barColorActive; // Color for active part of the audio
+  final Color barColorActive;
   final double height;
   final double? width;
   final double barBorderRadius;
   final double barSpacing;
   final EdgeInsets? margin;
-  final double progress; // Parameter for audio progress
-  final double minBarHeight; // New parameter for minimum height of the bars
+  final double progress;
+  final double minBarHeight;
 
   const AudioWaveBars({
     super.key,
     required this.amplitudes,
     this.barWidth = 2.0,
-    this.barColor = Colors.white,
-    this.barColorActive = Colors.blue, // Default color for active part
-    this.backgroundColor = Colors.transparent,
+    this.barColor = UnikonColorTheme.audioWaveFormBGColor,
+    this.barColorActive = UnikonColorTheme.messageSentIndicatorColor,
+    this.backgroundColor = UnikonColorTheme.transparent,
     required this.height,
     this.width,
     this.barBorderRadius = 0.0,
-    this.barSpacing = 0.0,
+    this.barSpacing = 1.0,
     this.margin,
-    this.progress = 0.0, // Default progress
-    this.minBarHeight = 2.0, // Default minimum height
+    required this.progress,
+    this.minBarHeight = 2.0,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width ?? double.infinity,
-      height: height,
-      color: backgroundColor,
-      margin: margin,
-      alignment: Alignment.center,
-      child: ClipRect(
-        child: CustomPaint(
-          size: Size.infinite,
-          painter: AudioWaveBarsPainter(
-            amplitudes,
-            barWidth,
-            barColor,
-            barColorActive,
-            barBorderRadius,
-            barSpacing,
-            progress, // Pass progress to the painter
-            minBarHeight, // Pass minimum bar height to the painter
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final containerWidth = width ?? constraints.maxWidth;
+
+        return Container(
+          width: containerWidth,
+          height: height,
+          color: backgroundColor,
+          margin: margin,
+          alignment: Alignment.center,
+          child: CustomPaint(
+            size: Size(containerWidth, height),
+            painter: AudioWaveBarsPainter(
+              amplitudes: amplitudes,
+              barWidth: barWidth,
+              barColor: barColor,
+              barColorActive: barColorActive,
+              barBorderRadius: barBorderRadius,
+              barSpacing: barSpacing,
+              progress: progress,
+              minBarHeight: minBarHeight,
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -61,59 +67,75 @@ class AudioWaveBarsPainter extends CustomPainter {
   final List<double> amplitudes;
   final double barWidth;
   final Color barColor;
-  final Color barColorActive; // Color for active part
+  final Color barColorActive;
   final double barBorderRadius;
   final double barSpacing;
-  final double progress; // Progress parameter
-  final double minBarHeight; // Minimum height of the bars
+  final double progress;
+  final double minBarHeight;
 
-  AudioWaveBarsPainter(
-    this.amplitudes,
-    this.barWidth,
-    this.barColor,
-    this.barColorActive,
-    this.barBorderRadius,
-    this.barSpacing,
-    this.progress,
-    this.minBarHeight, // Receive minimum height
-  );
+  AudioWaveBarsPainter({
+    required this.amplitudes,
+    required this.barWidth,
+    required this.barColor,
+    required this.barColorActive,
+    required this.barBorderRadius,
+    required this.barSpacing,
+    required this.progress,
+    required this.minBarHeight,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final maxAmplitude =
-        amplitudes.isNotEmpty ? amplitudes.reduce((a, b) => a > b ? a : b) : 1;
-    final centerY = size.height / 2; // Center Y position
+    final maxAmplitude = amplitudes.isNotEmpty ? amplitudes.reduce(max) : 1;
+    final centerY = size.height / 2;
 
-    for (int i = 0; i < amplitudes.length; i++) {
-      final amplitude = amplitudes[i];
-      final height =
-          (amplitude / maxAmplitude) * centerY; // Adjust height calculation
+    // Determine how many bars can fit within the width of the container
+    final visibleBarsCount = (size.width / (barWidth + barSpacing)).floor();
 
-      // Ensure the height respects the minimum bar height
+    // Scale amplitudes to fit into the visibleBarsCount
+    final scaledAmplitudes = List.generate(visibleBarsCount, (i) {
+      final index = (i / visibleBarsCount * amplitudes.length).floor();
+      return amplitudes[index];
+    });
+
+    // Draw bars
+    for (int i = 0; i < visibleBarsCount; i++) {
+      final amplitude = scaledAmplitudes[i];
+      final height = (amplitude / maxAmplitude) * centerY;
       final barHeight = height < minBarHeight ? minBarHeight : height;
 
-      // Draw the bar starting from center with border radius
-      final rect = Rect.fromLTWH(
-          (i * (barWidth + barSpacing)).toDouble(),
-          centerY - barHeight,
-          barWidth,
-          barHeight * 2); // Double height for both directions
-      final rRect =
-          RRect.fromRectAndRadius(rect, Radius.circular(barBorderRadius));
+      final xOffset = i * (barWidth + barSpacing);
 
-      // Determine the color based on the progress
+      final rect = Rect.fromLTWH(
+        xOffset.toDouble(),
+        centerY - barHeight,
+        barWidth,
+        barHeight * 2,
+      );
+
+      final rRect = RRect.fromRectAndRadius(
+        rect,
+        Radius.circular(barBorderRadius),
+      );
+
+      // Determine if this bar is in the "played" portion based on progress
+      final progressThreshold = progress * visibleBarsCount;
+      final currentBarColor = i < progressThreshold ? barColorActive : barColor;
+
       final paint = Paint()
-        ..color =
-            (i / amplitudes.length <= progress) ? barColorActive : barColor
+        ..color = currentBarColor
         ..style = PaintingStyle.fill;
 
-      // Draw the rounded rectangle
+      // Draw the bar
       canvas.drawRRect(rRect, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(covariant AudioWaveBarsPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.amplitudes != amplitudes ||
+        oldDelegate.barColor != barColor ||
+        oldDelegate.barColorActive != barColorActive;
   }
 }

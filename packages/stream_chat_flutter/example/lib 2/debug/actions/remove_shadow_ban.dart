@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-import 'package:stream_chat_flutter_example/debug/error_dialog.dart';
+import '../error_dialog.dart';
 
-class DebugUnbanUser extends StatelessWidget {
-  const DebugUnbanUser({
+class DebugRemoveShadowBan extends StatelessWidget {
+  const DebugRemoveShadowBan({
     super.key,
     required this.client,
   });
@@ -19,7 +19,7 @@ class DebugUnbanUser extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: TextField(
         decoration: const InputDecoration(
-          labelText: 'Unban User',
+          labelText: 'Remove Shadow Ban',
           hintText: 'User Id',
           isDense: true,
           border: OutlineInputBorder(),
@@ -27,12 +27,12 @@ class DebugUnbanUser extends StatelessWidget {
         onSubmitted: (value) async {
           final userId = value.trim();
           try {
-            debugPrint('[unbanUser] userId: $userId');
-            final result = await client.unbanUser(userId);
-            debugPrint('[unbanUser] completed: $result');
+            debugPrint('[removeShadowBan] userId: $userId');
+            final result = await client.removeShadowBan(userId);
+            debugPrint('[removeShadowBan] result: $result');
           } catch (e) {
-            debugPrint('[unbanUser] failed: $e');
-            showErrorDialog(context, e, 'Unban User');
+            debugPrint('[removeShadowBan] failed: $e');
+            showErrorDialog(context, e, 'Remove Shadow Ban');
           }
         },
       ),
