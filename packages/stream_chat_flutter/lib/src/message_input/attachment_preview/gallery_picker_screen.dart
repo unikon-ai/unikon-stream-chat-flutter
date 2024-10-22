@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
@@ -171,7 +172,39 @@ class BuildMediaAttachment extends StatelessWidget {
       onTap: () async {
         final pickedFile = await StreamAttachmentHandler.instance.pickFile(
           dialogTitle: 'Select file',
-          allowCompression: true,
+          type: FileType.custom,
+          allowedExtensions: [
+            'mp4',
+            'mov',
+            'wmv',
+            'avi',
+            'flv',
+            'mkv',
+            'mpeg',
+            'webm',
+            '3gp',
+            'ogg',
+            'jpeg',
+            'jpg',
+            'png',
+            'gif',
+            'bmp',
+            'tiff',
+            'svg',
+            'pdf',
+            'doc',
+            'docx',
+            'ppt',
+            'pptx',
+            'xls',
+            'xlsx',
+            'txt',
+            'rtf',
+            'odt',
+            'ods',
+            'odp',
+            'epub'
+          ],
         );
         if (pickedFile != null) {
           await attachmentController.addAttachment(pickedFile);
