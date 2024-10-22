@@ -59,8 +59,11 @@ class StreamFileAttachment extends StatelessWidget {
     final chatTheme = StreamChatTheme.of(context);
     final textTheme = chatTheme.textTheme;
     final colorTheme = chatTheme.colorTheme;
+    final isMyMessage =
+        message.user?.id == StreamChat.of(context).currentUser!.id;
 
-    final backgroundColor = this.backgroundColor ?? colorTheme.barsBg;
+    final backgroundColor = this.backgroundColor ??
+        (isMyMessage ? UnikonColorTheme.primaryColor : colorTheme.barsBg);
     final shape = this.shape ??
         RoundedRectangleBorder(
           side: BorderSide(
@@ -94,7 +97,11 @@ class StreamFileAttachment extends StatelessWidget {
                 Text(
                   file.title ?? context.translations.fileText,
                   maxLines: 1,
-                  style: textTheme.bodyBold,
+                  style: textTheme.bodyBold.copyWith(
+                    color: isMyMessage
+                        ? UnikonColorTheme.messageSentIndicatorColor
+                        : colorTheme.textHighEmphasis,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 3),
@@ -275,7 +282,7 @@ class _FileAttachmentSubtitle extends StatelessWidget {
     final theme = StreamChatTheme.of(context);
     final size = attachment.file?.size ?? attachment.extraData['file_size'];
     final textStyle = theme.textTheme.footnote.copyWith(
-      color: theme.colorTheme.textLowEmphasis,
+      color: Colors.white,
     );
     return attachment.uploadState.when(
       preparing: () => Text(fileSize(size), style: textStyle),
