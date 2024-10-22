@@ -62,56 +62,100 @@ class _AttachmentPreviewScreenState extends State<AttachmentPreviewScreen> {
         },
         child: TranslucentScaffold(
           resizeToAvoidBottomInset: false,
-          appBar: Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: AppBar(
-              backgroundColor: UnikonColorTheme.transparent,
-              leading: IconButton(
-                icon: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    gradient: const LinearGradient(
-                      colors: [
-                        UnikonColorTheme.backButtonLinearGradientColor1,
-                        UnikonColorTheme.backButtonLinearGradientColor2
-                      ],
-                    ),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: UnikonColorTheme.messageSentIndicatorColor,
-                      size: 16,
+          body: SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                AttachmentPreviewAppbar(widget: widget),
+                const SizedBox(
+                  height: 40,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: StreamMessageInputAttachmentList(
+                      attachments: nonOGAttachments,
+                      onRemovePressed: _onAttachmentRemovePressed,
                     ),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              actions: [
-                Text(
-                  '${widget.attachmentController.value.length} media selected',
-                  style: const TextStyle(color: UnikonColorTheme.dividerColor),
+
+                // Padding ensures the input field doesn't overlap with the keyboard
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: BuildTextInputWidget(
+                    nonOGAttachments: nonOGAttachments,
+                    focusNode: focusNode,
+                    channel: widget.channel,
+                  ),
                 ),
               ],
             ),
           ),
-          body: Stack(
-            alignment: AlignmentDirectional.bottomCenter,
-            children: [
-              StreamMessageInputAttachmentList(
-                attachments: nonOGAttachments,
-                onRemovePressed: _onAttachmentRemovePressed,
-              ),
-              BuildTextInputWidget(
-                nonOGAttachments: nonOGAttachments,
-                focusNode: focusNode,
-                channel: widget.channel,
-              ),
+        ),
+      ),
+    );
+  }
+}
+
+class AttachmentPreviewAppbar extends StatelessWidget {
+  const AttachmentPreviewAppbar({
+    super.key,
+    required this.widget,
+  });
+
+  final AttachmentPreviewScreen widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const UnikonBackButton(),
+          if (widget.attachmentController.value.first.type !=
+              AttachmentType.file)
+            Text(
+              '${widget.attachmentController.value.length} media selected',
+              style: const TextStyle(color: UnikonColorTheme.dividerColor),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class UnikonBackButton extends StatelessWidget {
+  const UnikonBackButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              UnikonColorTheme.backButtonLinearGradientColor1,
+              UnikonColorTheme.backButtonLinearGradientColor2
             ],
           ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(
+          Icons.arrow_back_ios_new_rounded,
+          color: Colors.white,
+          size: 16,
         ),
       ),
     );

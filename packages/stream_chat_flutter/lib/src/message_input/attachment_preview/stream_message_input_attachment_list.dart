@@ -117,29 +117,27 @@ class _StreamMessageInputAttachmentListState
       return const SizedBox();
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 80.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          if (mediaAttachments.isNotEmpty)
-            Flexible(
-              child: MessageInputMediaAttachments(
-                attachments: mediaAttachments,
-                attachmentBuilder: widget.mediaAttachmentBuilder,
-                onRemovePressed: widget.onRemovePressed,
-              ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        if (mediaAttachments.isNotEmpty)
+          Flexible(
+            child: MessageInputMediaAttachments(
+              attachments: mediaAttachments,
+              attachmentBuilder: widget.mediaAttachmentBuilder,
+              onRemovePressed: widget.onRemovePressed,
             ),
-          if (fileAttachments.isNotEmpty)
-            Flexible(
-              child: MessageInputFileAttachments(
-                attachments: fileAttachments,
-                attachmentBuilder: widget.fileAttachmentBuilder,
-                onRemovePressed: widget.onRemovePressed,
-              ),
+          ),
+        if (fileAttachments.isNotEmpty)
+          Flexible(
+            child: MessageInputFileAttachments(
+              attachments: fileAttachments,
+              attachmentBuilder: widget.fileAttachmentBuilder,
+              onRemovePressed: widget.onRemovePressed,
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
@@ -166,24 +164,27 @@ class MessageInputFileAttachments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      reverse: true,
-      physics: const NeverScrollableScrollPhysics(),
-      children: attachments.reversed.map<Widget>(
-        (attachment) {
-          // If a custom builder is provided, use it.
-          final builder = attachmentBuilder;
-          if (builder != null) {
-            return builder(context, attachment, onRemovePressed);
-          }
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.6,
+      child: PageView(
+        reverse: true,
+        physics: const NeverScrollableScrollPhysics(),
+        children: attachments.reversed.map<Widget>(
+          (attachment) {
+            // If a custom builder is provided, use it.
+            final builder = attachmentBuilder;
+            if (builder != null) {
+              return builder(context, attachment, onRemovePressed);
+            }
 
-          // Otherwise, use the default builder.
-          return StreamStorageMediaAttachmentBuilder(
-            attachment: attachment,
-            onRemovePressed: onRemovePressed,
-          );
-        },
-      ).toList(),
+            // Otherwise, use the default builder.
+            return StreamStorageMediaAttachmentBuilder(
+              attachment: attachment,
+              onRemovePressed: onRemovePressed,
+            );
+          },
+        ).toList(),
+      ),
     );
   }
 }
@@ -353,39 +354,37 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            SizedBox(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    child: FileTypeImage(
-                      file: attachment,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: FileTypeImage(
+                    file: attachment,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                if (attachment.title != null)
+                  Text(
+                    attachment.title!,
+                    style: const TextStyle(
+                      color: UnikonColorTheme.messageSentIndicatorColor,
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  if (attachment.title != null)
-                    Text(
-                      attachment.title!,
-                      style: const TextStyle(
-                        color: UnikonColorTheme.messageSentIndicatorColor,
-                      ),
+                const SizedBox(
+                  height: 4,
+                ),
+                if (attachment.fileSize != null)
+                  Text(
+                    formatFileSize(attachment.fileSize!),
+                    style: const TextStyle(
+                      color: UnikonColorTheme.messageSentIndicatorColor,
                     ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  if (attachment.fileSize != null)
-                    Text(
-                      formatFileSize(attachment.fileSize!),
-                      style: const TextStyle(
-                        color: UnikonColorTheme.messageSentIndicatorColor,
-                      ),
-                    )
-                ],
-              ),
+                  )
+              ],
             ),
             Positioned(
               top: 8,
@@ -467,9 +466,6 @@ class RemoveAttachmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = StreamChatTheme.of(context);
-    final colorTheme = theme.colorTheme;
-
     return SizedBox(
       width: 24,
       height: 24,
@@ -482,10 +478,10 @@ class RemoveAttachmentButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        fillColor: colorTheme.textHighEmphasis.withOpacity(0.5),
-        child: StreamSvgIcon.close(
+        child: const Icon(
+          Icons.close,
           size: 24,
-          color: colorTheme.barsBg,
+          color: UnikonColorTheme.dividerColor,
         ),
       ),
     );

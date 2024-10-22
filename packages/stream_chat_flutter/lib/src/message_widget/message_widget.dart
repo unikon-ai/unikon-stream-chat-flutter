@@ -678,7 +678,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             child: Portal(
               child: PlatformWidgetBuilder(
                 mobile: (context, child) {
-                  return InkWell(
+                  return GestureDetector(
                     onTap: () => widget.onMessageTap!(widget.message),
                     onLongPress: null,
                     child: child,

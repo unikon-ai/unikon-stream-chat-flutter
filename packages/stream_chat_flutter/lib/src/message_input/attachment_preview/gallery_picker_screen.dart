@@ -35,30 +35,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
         return TranslucentScaffold(
           appBar: AppBar(
             backgroundColor: UnikonColorTheme.transparent,
-            leading: IconButton(
-              icon: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  gradient: const LinearGradient(
-                    colors: [
-                      UnikonColorTheme.backButtonLinearGradientColor1,
-                      UnikonColorTheme.backButtonLinearGradientColor2
-                    ],
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: UnikonColorTheme.messageSentIndicatorColor,
-                    size: 16,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
+            leading: const UnikonBackButton(),
             title: const Text('Select your file',
                 style: TextStyle(
                     color: UnikonColorTheme.messageSentIndicatorColor)),
