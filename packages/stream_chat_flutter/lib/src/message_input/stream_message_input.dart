@@ -577,50 +577,50 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   @override
   Widget build(BuildContext context) {
-    final channel = StreamChannel.of(context).channel;
-    final otherUser = channel.state?.members.firstWhere((element) =>
-        element.userId != channel.state?.currentUserMember?.userId);
+    // final channel = StreamChannel.of(context).channel;
+    // final otherUser = channel.state?.members.firstWhere((element) =>
+    //     element.userId != channel.state?.currentUserMember?.userId);
 
-    if (channel.state != null &&
-        !channel.ownCapabilities.contains(PermissionType.sendMessage)) {
-      return Container(
-        margin: const EdgeInsets.all(20),
-        decoration: ShapeDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              UnikonColorTheme.bottomSheetLinearGradientColor1,
-              UnikonColorTheme.bottomSheetLinearGradientColor2,
-            ],
-          ),
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(
-              width: 0.50,
-              color: UnikonColorTheme.bottomSheetBorderColor,
-            ),
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.lock,
-                color: UnikonColorTheme.darkGreyColor,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                "${otherUser?.user?.name}'s chat has been blocked.",
-                style: _messageInputTheme.inputTextStyle,
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+    // if (channel.state != null &&
+    //     !channel.ownCapabilities.contains(PermissionType.sendMessage)) {
+    //   return Container(
+    //     margin: const EdgeInsets.all(20),
+    //     decoration: ShapeDecoration(
+    //       gradient: const LinearGradient(
+    //         begin: Alignment.topCenter,
+    //         end: Alignment.bottomCenter,
+    //         colors: [
+    //           UnikonColorTheme.bottomSheetLinearGradientColor1,
+    //           UnikonColorTheme.bottomSheetLinearGradientColor2,
+    //         ],
+    //       ),
+    //       shape: RoundedRectangleBorder(
+    //         side: const BorderSide(
+    //           width: 0.50,
+    //           color: UnikonColorTheme.bottomSheetBorderColor,
+    //         ),
+    //         borderRadius: BorderRadius.circular(16),
+    //       ),
+    //     ),
+    //     child: Padding(
+    //       padding: const EdgeInsets.all(8.0),
+    //       child: Row(
+    //         mainAxisSize: MainAxisSize.min,
+    //         children: [
+    //           const Icon(
+    //             Icons.lock,
+    //             color: UnikonColorTheme.darkGreyColor,
+    //           ),
+    //           const SizedBox(width: 8),
+    //           Text(
+    //             "${otherUser?.user?.name}'s chat has been blocked.",
+    //             style: _messageInputTheme.inputTextStyle,
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //   );
+    // }
 
     return StreamMessageValueListenableBuilder(
       valueListenable: _effectiveController,
