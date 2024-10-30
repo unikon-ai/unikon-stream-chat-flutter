@@ -156,6 +156,7 @@ class StreamMessageInput extends StatefulWidget {
     this.contentInsertionConfiguration,
     this.useNativeAttachmentPickerOnMobile = false,
     this.onChatExpired,
+    this.onFocusChanged,
   });
 
   /// The predicate used to send a message on desktop/web
@@ -357,6 +358,8 @@ class StreamMessageInput extends StatefulWidget {
 
   final VoidCallback? onChatExpired;
 
+  final Function(bool value)? onFocusChanged;
+
   static String? _defaultHintGetter(
     BuildContext context,
     HintType type,
@@ -541,7 +544,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
   String? get restorationId => widget.restorationId;
 
   // ignore: no-empty-block
-  void _focusNodeListener() {}
+  void _focusNodeListener() {
+    if (widget.onFocusChanged != null) {
+      widget.onFocusChanged!(_effectiveFocusNode.hasFocus);
+    }
+  }
 
   int _timeOut = 0;
   Timer? _slowModeTimer;
