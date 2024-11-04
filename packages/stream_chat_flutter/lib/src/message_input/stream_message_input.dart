@@ -881,8 +881,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
       return widget.sendButtonBuilder!(context, _effectiveController);
     }
     return StreamMessageSendButton(
-      onSendMessage:
-          widget.preMessageCallBack?.call() == true ? sendMessage : () {},
+      onSendMessage: () {
+        if (widget.preMessageCallBack?.call() == true) sendMessage();
+      },
       timeOut: _timeOut,
       isIdle: !widget.validator(_effectiveController.message),
       isEditEnabled: _isEditing,
@@ -1049,10 +1050,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               maxLines: widget.maxLines,
                               minLines: widget.minLines,
                               textInputAction: widget.textInputAction,
-                              onSubmitted: (_) =>
-                                  widget.preMessageCallBack?.call() == true
-                                      ? sendMessage()
-                                      : () {},
+                              onSubmitted: (_) {
+                                if (widget.preMessageCallBack?.call() == true) {
+                                  sendMessage();
+                                }
+                              },
                               keyboardType: widget.keyboardType,
                               controller: _effectiveController,
                               focusNode: _effectiveFocusNode,
@@ -1073,9 +1075,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               null)
                             IconButton(
                               onPressed: () {
-                                final channel =
-                                    StreamChannel.of(context).channel;
                                 if (widget.preMessageCallBack?.call() == true) {
+                                  final channel =
+                                      StreamChannel.of(context).channel;
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -1097,13 +1099,14 @@ class StreamMessageInputState extends State<StreamMessageInput>
                                   null &&
                               _effectiveController.text.isEmpty)
                             IconButton(
-                              onPressed: () =>
-                                  widget.preMessageCallBack?.call() == true
-                                      ? galleryAndCameraOptionChooser(
-                                          mainContext: context,
-                                          effectiveController:
-                                              _effectiveController)
-                                      : null,
+                              onPressed: () {
+                                if (widget.preMessageCallBack?.call() == true) {
+                                  galleryAndCameraOptionChooser(
+                                      mainContext: context,
+                                      effectiveController:
+                                          _effectiveController);
+                                }
+                              },
                               icon: const Icon(
                                 Icons.camera_alt,
                                 color: UnikonColorTheme.darkGreyColor,
