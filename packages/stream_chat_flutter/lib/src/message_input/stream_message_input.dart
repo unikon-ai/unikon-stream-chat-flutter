@@ -155,7 +155,7 @@ class StreamMessageInput extends StatefulWidget {
     this.hintGetter = _defaultHintGetter,
     this.contentInsertionConfiguration,
     this.useNativeAttachmentPickerOnMobile = false,
-    this.onChatExpired,
+    this.preMessageCallBack,
     this.onFocusChanged,
   });
 
@@ -356,7 +356,7 @@ class StreamMessageInput extends StatefulWidget {
   /// Stream attachment picker.
   final bool useNativeAttachmentPickerOnMobile;
 
-  final VoidCallback? onChatExpired;
+  final bool Function()? preMessageCallBack;
 
   final Function(bool value)? onFocusChanged;
 
@@ -803,34 +803,32 @@ class StreamMessageInputState extends State<StreamMessageInput>
       width: MediaQuery.of(context).size.width,
       child: VoiceRecordingWidget(
         onRecordingSend: (recordedFilePath, fileWebFormData) {
-          final channel = StreamChannel.of(context).channel;
-          if (channel.frozen) {
-            widget.onChatExpired?.call();
-            return;
-          }
-          final uri = Uri.parse(recordedFilePath);
-          File file = File(uri.path);
-          file.length().then(
-            (fileSize) {
-              channel.sendMessage(
-                Message(
-                  attachments: [
-                    Attachment(
-                      type: 'voicenote',
-                      file: AttachmentFile(
-                        size: fileSize,
-                        path: uri.path,
-                      ),
-                      extraData: {
-                        'waveForm': fileWebFormData,
-                      },
-                    )
-                  ],
-                ),
-              );
-            },
-          );
+          if (widget.preMessageCallBack?.call() == true) {
+            final channel = StreamChannel.of(context).channel;
 
+            final uri = Uri.parse(recordedFilePath);
+            File file = File(uri.path);
+            file.length().then(
+              (fileSize) {
+                channel.sendMessage(
+                  Message(
+                    attachments: [
+                      Attachment(
+                        type: 'voicenote',
+                        file: AttachmentFile(
+                          size: fileSize,
+                          path: uri.path,
+                        ),
+                        extraData: {
+                          'waveForm': fileWebFormData,
+                        },
+                      )
+                    ],
+                  ),
+                );
+              },
+            );
+          }
           // Recording is not in progress anymore
           isRecordingInProgress.value = false;
         },
@@ -871,14 +869,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
     if (widget.sendButtonBuilder != null) {
       return widget.sendButtonBuilder!(context, _effectiveController);
     }
-    final channel = StreamChannel.of(context).channel;
     return StreamMessageSendButton(
-      onSendMessage: channel.frozen
-          ? () {
-              widget.onChatExpired?.call();
-              return;
-            }
-          : () {},
+      onSendMessage: () {},
       timeOut: _timeOut,
       isEditEnabled: _isEditing,
     );
@@ -888,14 +880,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
     if (widget.sendButtonBuilder != null) {
       return widget.sendButtonBuilder!(context, _effectiveController);
     }
-    final channel = StreamChannel.of(context).channel;
     return StreamMessageSendButton(
-      onSendMessage: channel.frozen
-          ? () {
-              widget.onChatExpired?.call();
-              return;
-            }
-          : sendMessage,
+      onSendMessage:
+          widget.preMessageCallBack?.call() == true ? sendMessage : () {},
       timeOut: _timeOut,
       isIdle: !widget.validator(_effectiveController.message),
       isEditEnabled: _isEditing,
@@ -1063,12 +1050,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               minLines: widget.minLines,
                               textInputAction: widget.textInputAction,
                               onSubmitted: (_) =>
-                                  StreamChannel.of(context).channel.frozen
-                                      ? () {
-                                          widget.onChatExpired?.call();
-                                          return;
-                                        }
-                                      : sendMessage(),
+                                  widget.preMessageCallBack?.call() == true
+                                      ? sendMessage()
+                                      : () {},
                               keyboardType: widget.keyboardType,
                               controller: _effectiveController,
                               focusNode: _effectiveFocusNode,
@@ -1091,19 +1075,18 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               onPressed: () {
                                 final channel =
                                     StreamChannel.of(context).channel;
-                                if (channel.frozen) {
-                                  widget.onChatExpired?.call();
-                                  return;
+                                if (widget.preMessageCallBack?.call() == true) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            GalleryPickerScreen(
+                                          effectiveController:
+                                              _effectiveController,
+                                          channel: channel,
+                                        ),
+                                      ));
                                 }
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => GalleryPickerScreen(
-                                        effectiveController:
-                                            _effectiveController,
-                                        channel: channel,
-                                      ),
-                                    ));
                               },
                               icon: const Icon(
                                 Icons.attachment,
@@ -1115,15 +1098,12 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               _effectiveController.text.isEmpty)
                             IconButton(
                               onPressed: () =>
-                                  (StreamChannel.of(context).channel.frozen)
-                                      ? () {
-                                          widget.onChatExpired?.call();
-                                          return;
-                                        }
-                                      : galleryAndCameraOptionChooser(
+                                  widget.preMessageCallBack?.call() == true
+                                      ? galleryAndCameraOptionChooser(
                                           mainContext: context,
                                           effectiveController:
-                                              _effectiveController),
+                                              _effectiveController)
+                                      : null,
                               icon: const Icon(
                                 Icons.camera_alt,
                                 color: UnikonColorTheme.darkGreyColor,
