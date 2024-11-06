@@ -1091,7 +1091,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               },
                               icon: const Icon(
                                 Icons.attachment,
-                                color: UnikonColorTheme.darkGreyColor,
+                                color: UnikonColorTheme.dividerColor,
                               ),
                             ),
                           if (_effectiveController.message.quotedMessage ==
@@ -1107,7 +1107,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               },
                               icon: const Icon(
                                 Icons.camera_alt,
-                                color: UnikonColorTheme.darkGreyColor,
+                                color: UnikonColorTheme.dividerColor,
                               ),
                             ),
                         ],
