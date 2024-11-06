@@ -104,17 +104,19 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 12),
-                                child: GalleryPickerWidget(
-                                  selectedMediaItems: selectedIds,
-                                  onMediaItemSelected:
-                                      (AssetEntity media) async {
-                                    if (selectedIds.contains(media.id)) {
-                                      return await attachmentController
-                                          .removeAssetAttachment(media);
-                                    }
-                                    await attachmentController
-                                        .addAssetAttachment(media);
-                                  },
+                                child: Center(
+                                  child: GalleryPickerWidget(
+                                    selectedMediaItems: selectedIds,
+                                    onMediaItemSelected:
+                                        (AssetEntity media) async {
+                                      if (selectedIds.contains(media.id)) {
+                                        return await attachmentController
+                                            .removeAssetAttachment(media);
+                                      }
+                                      await attachmentController
+                                          .addAssetAttachment(media);
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
