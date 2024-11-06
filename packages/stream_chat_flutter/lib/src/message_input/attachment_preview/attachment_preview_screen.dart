@@ -9,10 +9,12 @@ class AttachmentPreviewScreen extends StatefulWidget {
     required this.effectiveController,
     required this.attachmentController,
     required this.channel,
+    required this.preMessageCallBack,
   });
   final StreamMessageInputController effectiveController;
   final StreamAttachmentPickerController attachmentController;
   final Channel channel;
+  final bool Function()? preMessageCallBack;
 
   /// Callback called when the remove button is pressed.
 
@@ -91,6 +93,7 @@ class _AttachmentPreviewScreenState extends State<AttachmentPreviewScreen> {
                     focusNode: focusNode,
                     channel: widget.channel,
                     effectiveController: widget.effectiveController,
+                    preMessageCallBack: widget.preMessageCallBack,
                   ),
                 ),
               ],
@@ -172,12 +175,14 @@ class BuildTextInputWidget extends StatefulWidget {
     required this.focusNode,
     required this.channel,
     required this.effectiveController,
+    required this.preMessageCallBack,
   });
 
   final List<Attachment> nonOGAttachments;
   final FocusNode focusNode;
   final Channel channel;
   final StreamMessageInputController effectiveController;
+  final bool Function()? preMessageCallBack;
   @override
   State<BuildTextInputWidget> createState() => _BuildTextInputWidgetState();
 }
@@ -241,16 +246,18 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
   }
 
   Future<void> _sendMessage(List<Attachment> nonOGAttachments) async {
-    widget.channel.sendMessage(
-      Message(
-        text: widget.effectiveController.text.trim().isEmpty
-            ? null
-            : widget.effectiveController.text.trim(),
-        attachments: nonOGAttachments,
-      ),
-    );
-    widget.effectiveController.clear();
-    Navigator.of(context).pop();
+    if (widget.preMessageCallBack?.call() == true) {
+      widget.channel.sendMessage(
+        Message(
+          text: widget.effectiveController.text.trim().isEmpty
+              ? null
+              : widget.effectiveController.text.trim(),
+          attachments: nonOGAttachments,
+        ),
+      );
+      widget.effectiveController.clear();
+      Navigator.of(context).pop();
+    }
   }
 
   @override

@@ -13,9 +13,11 @@ class GalleryPickerScreen extends StatefulWidget {
     super.key,
     required this.effectiveController,
     required this.channel,
+    required this.preMessageCallBack,
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
+  final bool Function()? preMessageCallBack;
 
   @override
   State<GalleryPickerScreen> createState() => _GalleryPickerScreenState();
@@ -77,6 +79,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                               child: BuildMediaAttachment(
                                 effectiveController: widget.effectiveController,
                                 channel: widget.channel,
+                                preMessageCallBack: widget.preMessageCallBack,
                               ),
                             ),
                             Padding(
@@ -133,6 +136,8 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                                       effectiveController:
                                           widget.effectiveController,
                                       channel: widget.channel,
+                                      preMessageCallBack:
+                                          widget.preMessageCallBack,
                                     ),
                                   ),
                                 );
@@ -171,9 +176,11 @@ class BuildMediaAttachment extends StatelessWidget {
     super.key,
     required this.effectiveController,
     required this.channel,
+    required this.preMessageCallBack,
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
+  final bool Function()? preMessageCallBack;
 
   @override
   Widget build(BuildContext context) {
@@ -227,6 +234,7 @@ class BuildMediaAttachment extends StatelessWidget {
                 attachmentController: attachmentController,
                 effectiveController: effectiveController,
                 channel: channel,
+                preMessageCallBack: preMessageCallBack,
               ),
             ),
           );

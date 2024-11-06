@@ -1075,20 +1075,19 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               null)
                             IconButton(
                               onPressed: () {
-                                if (widget.preMessageCallBack?.call() == true) {
-                                  final channel =
-                                      StreamChannel.of(context).channel;
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            GalleryPickerScreen(
-                                          effectiveController:
-                                              _effectiveController,
-                                          channel: channel,
-                                        ),
-                                      ));
-                                }
+                                final channel =
+                                    StreamChannel.of(context).channel;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => GalleryPickerScreen(
+                                      effectiveController: _effectiveController,
+                                      channel: channel,
+                                      preMessageCallBack:
+                                          widget.preMessageCallBack,
+                                    ),
+                                  ),
+                                );
                               },
                               icon: const Icon(
                                 Icons.attachment,
@@ -1100,12 +1099,11 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               _effectiveController.text.isEmpty)
                             IconButton(
                               onPressed: () {
-                                if (widget.preMessageCallBack?.call() == true) {
-                                  galleryAndCameraOptionChooser(
-                                      mainContext: context,
-                                      effectiveController:
-                                          _effectiveController);
-                                }
+                                galleryAndCameraOptionChooser(
+                                  mainContext: context,
+                                  effectiveController: _effectiveController,
+                                  preMessageCallBack: widget.preMessageCallBack,
+                                );
                               },
                               icon: const Icon(
                                 Icons.camera_alt,
