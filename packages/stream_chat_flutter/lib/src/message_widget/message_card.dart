@@ -235,7 +235,7 @@ class _MessageCardState extends State<MessageCard> {
           ),
           if (widget.showSendingIndicator)
             Padding(
-              padding: const EdgeInsets.only(right: 6, bottom: 4),
+              padding: const EdgeInsets.only(right: 6, bottom: 0),
               child: SendingIndicatorBuilder(
                 messageTheme: widget.messageTheme,
                 message: widget.message,
