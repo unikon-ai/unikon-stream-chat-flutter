@@ -1046,7 +1046,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
                         children: [
                           Flexible(
                             child: StreamMessageTextField(
-                            
                               key: const Key('messageInputText'),
                               maxLines: widget.maxLines,
                               minLines: widget.minLines,
