@@ -222,7 +222,8 @@ class _MessageCardState extends State<MessageCard> {
               TextBubble(
                 messageTheme: widget.messageTheme,
                 message: widget.message,
-                textPadding: widget.textPadding,
+                textPadding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 textBuilder: widget.textBuilder,
                 isOnlyEmoji: widget.isOnlyEmoji,
                 hasQuotedMessage: widget.hasQuotedMessage,

@@ -42,10 +42,10 @@ class QuotedMessage extends StatelessWidget {
       reverse: !isMyQuotedMessage,
       textBuilder: textBuilder,
       padding: EdgeInsets.only(
-        right: 8,
-        left: 8,
-        top: 8,
-        bottom: hasNonUrlAttachments ? 8 : 0,
+        right: 4,
+        left: 4,
+        top: 4,
+        bottom: hasNonUrlAttachments ? 4 : 0,
       ),
     );
   }

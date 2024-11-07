@@ -87,7 +87,9 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
         widget.message.user?.id == StreamChat.of(context).currentUser!.id;
 
     final backgroundColor = this.widget.backgroundColor ??
-        (isMyMessage ? UnikonColorTheme.primaryColor : colorTheme.barsBg);
+        (isMyMessage
+            ? chatTheme.ownMessageTheme.messageBackgroundColor
+            : chatTheme.otherMessageTheme.messageBackgroundColor);
     final shape = this.widget.shape ??
         RoundedRectangleBorder(
           side: BorderSide(

@@ -136,18 +136,16 @@ class _QuotedMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOnlyEmoji = message.text!.isOnlyEmoji;
-    var msg = _hasAttachments && !_containsText
+    final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
+    final msg = _hasAttachments && !_containsText
         ? message.copyWith(text: message.attachments.last.title ?? '')
         : message;
-    if (msg.text!.length > textLimit) {
-      msg = msg.copyWith(text: '${msg.text!.substring(0, textLimit - 3)}...');
-    }
 
-    List<Widget> children;
+    List<Widget> children = [];
+
     if (_isDeleted) {
       // Show deleted message text
-      children = [
+      children.add(
         Text(
           context.translations.messageDeletedLabel,
           style: messageTheme.messageTextStyle?.copyWith(
@@ -155,33 +153,38 @@ class _QuotedMessage extends StatelessWidget {
             color: messageTheme.createdAtStyle?.color,
           ),
         ),
-      ];
+      );
     } else {
       // Show quoted message
-      children = [
-        if (msg.text!.isNotEmpty && !_isGiphy)
+      if (msg.text?.isNotEmpty == true && !_isGiphy) {
+        children.add(
           Flexible(
-            child: textBuilder?.call(context, msg) ??
-                StreamMessageText(
-                  maxLines: 2,
-                  message: msg,
-                  showReadMore: false,
-                  messageTheme: isOnlyEmoji && _containsText
-                      ? messageTheme.copyWith(
-                          messageTextStyle:
-                              messageTheme.messageTextStyle?.copyWith(
-                            fontSize: 32,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: textBuilder?.call(context, msg) ??
+                  StreamMessageText(
+                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    maxLines: 2,
+                    message: msg,
+                    showReadMore: false,
+                    messageTheme: isOnlyEmoji && _containsText
+                        ? messageTheme.copyWith(
+                            messageTextStyle:
+                                messageTheme.messageTextStyle?.copyWith(
+                              fontSize: 32,
+                            ),
+                          )
+                        : messageTheme.copyWith(
+                            messageTextStyle:
+                                messageTheme.messageTextStyle?.copyWith(
+                              fontSize: 12,
+                            ),
                           ),
-                        )
-                      : messageTheme.copyWith(
-                          messageTextStyle:
-                              messageTheme.messageTextStyle?.copyWith(
-                            fontSize: 12,
-                          ),
-                        ),
-                ),
+                  ),
+            ),
           ),
-      ];
+        );
+      }
     }
 
     // Add clear button if needed.
@@ -209,9 +212,11 @@ class _QuotedMessage extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -228,40 +233,43 @@ class _QuotedMessage extends StatelessWidget {
                         ),
                       ),
                     if (isReplying)
-                      Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(left: 4),
-                            child: SizedBox(
-                              height: 10,
-                              width: 10,
-                              child: VerticalDivider(
-                                color: UnikonColorTheme.dividerColor,
-                                thickness: 1,
-                                width: 1,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 4),
+                              child: SizedBox(
+                                height: 10,
+                                width: 10,
+                                child: VerticalDivider(
+                                  color: UnikonColorTheme.dividerColor,
+                                  thickness: 1,
+                                  width: 1,
+                                ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Image.asset(
-                              UnikonColorTheme.replyIcon,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: Image.asset(
+                                UnikonColorTheme.replyIcon,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Replying',
-                            style: messageTheme.messageTextStyle?.copyWith(
-                              color: UnikonColorTheme.dividerColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                            Text(
+                              'Replying',
+                              style: messageTheme.messageTextStyle?.copyWith(
+                                color: UnikonColorTheme.dividerColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: children,
                 ),
               ],

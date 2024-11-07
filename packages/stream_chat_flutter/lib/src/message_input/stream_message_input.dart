@@ -102,7 +102,7 @@ class StreamMessageInput extends StatefulWidget {
     super.key,
     this.onMessageSent,
     this.preMessageSending,
-    this.maxHeight = 150,
+    this.maxHeight = 120,
     this.maxLines,
     this.minLines,
     this.textInputAction,

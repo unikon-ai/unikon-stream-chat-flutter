@@ -277,7 +277,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: LimitedBox(
-          maxHeight: 150,
+          maxHeight: 120,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [

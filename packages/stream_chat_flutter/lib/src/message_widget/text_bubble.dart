@@ -56,7 +56,7 @@ class TextBubble extends StatelessWidget {
     return Padding(
       padding: isOnlyEmoji
           ? EdgeInsets.zero
-          : EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          : textPadding,
       child: textBuilder != null
           ? textBuilder!(context, message)
           : StreamMessageText(

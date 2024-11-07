@@ -18,6 +18,7 @@ class StreamMessageText extends StatefulWidget {
     this.maxLines = 5,
     this.showReadMore = true,
     this.isMyMessage,
+    this.maxWidth = 250,
   });
 
   /// Message whose text is to be displayed
@@ -37,6 +38,8 @@ class StreamMessageText extends StatefulWidget {
   final bool showReadMore;
 
   final bool? isMyMessage;
+
+  final double maxWidth;
   @override
   State<StreamMessageText> createState() => _StreamMessageTextState();
 }
@@ -46,7 +49,7 @@ class _StreamMessageTextState extends State<StreamMessageText> {
   String truncatedMessageText = '';
   bool showFullText = false;
 
-  String getTruncatedTextWithReadMore({
+  String getTruncatedText({
     required String text,
     required double maxWidth,
   }) {
@@ -80,7 +83,7 @@ class _StreamMessageTextState extends State<StreamMessageText> {
       )..layout(maxWidth: maxWidth);
 
       if (testPainter.didExceedMaxLines) {
-        trimmedText = trimmedText.substring(0, trimmedText.length - 1);
+        trimmedText = trimmedText.substring(0, trimmedText.length + 12);
       } else {
         break;
       }
@@ -97,15 +100,11 @@ class _StreamMessageTextState extends State<StreamMessageText> {
       stream: streamChat.currentUserStream.map((it) => it!.language ?? 'en'),
       initialData: streamChat.currentUser!.language ?? 'en',
       builder: (context, language) {
-        messageText = widget.message
-            .translate(language)
-            .replaceMentions()
-            .text
-            ?.replaceAll('\n', '\n\n')
-            .trim();
+        messageText =
+            widget.message.translate(language).replaceMentions().text?.trim();
         if (messageText != null) {
-          truncatedMessageText =
-              getTruncatedTextWithReadMore(text: messageText!, maxWidth: 250);
+          truncatedMessageText = getTruncatedText(
+              text: messageText!, maxWidth: widget.maxWidth);
         }
         final themeData = Theme.of(context);
         return Column(
@@ -116,8 +115,8 @@ class _StreamMessageTextState extends State<StreamMessageText> {
               data: messageText != null &&
                       (messageText!.length == truncatedMessageText.length ||
                           showFullText)
-                  ? messageText!
-                  : truncatedMessageText,
+                  ? messageText!.replaceAll('\n', '\n\n')
+                  : truncatedMessageText.replaceAll('\n', '\n\n'),
               selectable: isDesktopDeviceOrWeb,
               onTapText: () {},
               onSelectionChanged: (val, selection, cause) {},
@@ -174,7 +173,7 @@ class _StreamMessageTextState extends State<StreamMessageText> {
                     });
                   },
                   child: Text(
-                    'Read more...',
+                    'Read more',
                     style: TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 14,
