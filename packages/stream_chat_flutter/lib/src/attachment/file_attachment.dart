@@ -14,7 +14,7 @@ import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 ///
 /// Used in [MessageWidget].
 /// {@endtemplate}
-class StreamFileAttachment extends StatelessWidget {
+class StreamFileAttachment extends StatefulWidget {
   /// {@macro streamFileAttachment}
   const StreamFileAttachment({
     super.key,
@@ -25,6 +25,8 @@ class StreamFileAttachment extends StatelessWidget {
     this.shape,
     this.backgroundColor,
     this.constraints = const BoxConstraints(),
+    this.onDownloadTap,
+    this.doesFileExists,
   });
 
   /// The [Message] that the file is attached to.
@@ -54,17 +56,39 @@ class StreamFileAttachment extends StatelessWidget {
   /// (such as a download button)
   final Widget? trailing;
 
+  final Future<bool> Function()? doesFileExists;
+
+  final Future<void> Function()? onDownloadTap;
+
+  @override
+  State<StreamFileAttachment> createState() => _StreamFileAttachmentState();
+}
+
+class _StreamFileAttachmentState extends State<StreamFileAttachment> {
+  bool doesFileExists = false;
+  @override
+  void initState() {
+    setDoesFileExists();
+    super.initState();
+  }
+
+  setDoesFileExists() async {
+    print(await widget.doesFileExists!.call());
+    doesFileExists = await widget.doesFileExists!.call() == true;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatTheme = StreamChatTheme.of(context);
     final textTheme = chatTheme.textTheme;
     final colorTheme = chatTheme.colorTheme;
     final isMyMessage =
-        message.user?.id == StreamChat.of(context).currentUser!.id;
+        widget.message.user?.id == StreamChat.of(context).currentUser!.id;
 
-    final backgroundColor = this.backgroundColor ??
+    final backgroundColor = this.widget.backgroundColor ??
         (isMyMessage ? UnikonColorTheme.primaryColor : colorTheme.barsBg);
-    final shape = this.shape ??
+    final shape = this.widget.shape ??
         RoundedRectangleBorder(
           side: BorderSide(
             color: colorTheme.borders,
@@ -74,7 +98,7 @@ class StreamFileAttachment extends StatelessWidget {
         );
 
     return Container(
-      constraints: constraints,
+      constraints: widget.constraints,
       clipBehavior: Clip.hardEdge,
       decoration: ShapeDecoration(
         shape: shape,
@@ -86,7 +110,7 @@ class StreamFileAttachment extends StatelessWidget {
             width: 34,
             height: 40,
             margin: const EdgeInsets.all(8),
-            child: FileTypeImage(file: file),
+            child: FileTypeImage(file: widget.file),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -95,7 +119,7 @@ class StreamFileAttachment extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  file.title ?? context.translations.fileText,
+                  widget.file.title ?? context.translations.fileText,
                   maxLines: 1,
                   style: textTheme.bodyBold.copyWith(
                     color: isMyMessage
@@ -105,19 +129,21 @@ class StreamFileAttachment extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 3),
-                _FileAttachmentSubtitle(attachment: file),
+                _FileAttachmentSubtitle(attachment: widget.file),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          Material(
-            type: MaterialType.transparency,
-            child: trailing ??
-                _Trailing(
-                  attachment: file,
-                  message: message,
-                ),
-          ),
+          if (!doesFileExists)
+            Material(
+              type: MaterialType.transparency,
+              child: widget.trailing ??
+                  _Trailing(
+                    attachment: widget.file,
+                    message: widget.message,
+                    onDownloadTap: widget.onDownloadTap,
+                  ),
+            ),
         ],
       ),
     );
@@ -160,13 +186,15 @@ class FileTypeImage extends StatelessWidget {
 }
 
 class _Trailing extends StatelessWidget {
-  const _Trailing({
+  _Trailing({
     required this.attachment,
     required this.message,
+    required this.onDownloadTap,
   });
 
   final Attachment attachment;
   final Message message;
+  final Future<void> Function()? onDownloadTap;
 
   @override
   Widget build(BuildContext context) {
@@ -187,16 +215,7 @@ class _Trailing extends StatelessWidget {
         ),
         visualDensity: VisualDensity.compact,
         splashRadius: 16,
-        onPressed: () async {
-          final assetUrl = attachment.assetUrl;
-          if (assetUrl != null) {
-            if (isMobileDeviceOrWeb) {
-              launchURL(context, assetUrl);
-            } else {
-              StreamAttachmentHandler.instance.downloadAttachment(attachment);
-            }
-          }
-        },
+        onPressed: onDownloadTap,
       );
     }
 

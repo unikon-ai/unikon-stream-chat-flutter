@@ -14,7 +14,7 @@ class AttachmentPreviewScreen extends StatefulWidget {
   final StreamMessageInputController effectiveController;
   final StreamAttachmentPickerController attachmentController;
   final Channel channel;
-  final bool Function()? preMessageCallBack;
+  final Future<bool> Function()? preMessageCallBack;
 
   /// Callback called when the remove button is pressed.
 
@@ -182,7 +182,7 @@ class BuildTextInputWidget extends StatefulWidget {
   final FocusNode focusNode;
   final Channel channel;
   final StreamMessageInputController effectiveController;
-  final bool Function()? preMessageCallBack;
+  final Future<bool> Function()? preMessageCallBack;
   @override
   State<BuildTextInputWidget> createState() => _BuildTextInputWidgetState();
 }
@@ -246,7 +246,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
   }
 
   Future<void> _sendMessage(List<Attachment> nonOGAttachments) async {
-    if (widget.preMessageCallBack?.call() == true) {
+    if (await widget.preMessageCallBack?.call() == true) {
       widget.channel.sendMessage(
         Message(
           text: widget.effectiveController.text.trim().isEmpty

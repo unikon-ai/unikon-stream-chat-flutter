@@ -17,7 +17,7 @@ class GalleryPickerScreen extends StatefulWidget {
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
-  final bool Function()? preMessageCallBack;
+  final Future<bool> Function()? preMessageCallBack;
 
   @override
   State<GalleryPickerScreen> createState() => _GalleryPickerScreenState();
@@ -182,7 +182,7 @@ class BuildMediaAttachment extends StatelessWidget {
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
-  final bool Function()? preMessageCallBack;
+  final Future<bool> Function()? preMessageCallBack;
 
   @override
   Widget build(BuildContext context) {

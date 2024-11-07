@@ -11,7 +11,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 Future<void> galleryAndCameraOptionChooser({
   required BuildContext mainContext,
   required StreamMessageInputController effectiveController,
-  required bool Function()? preMessageCallBack,
+  required Future<bool> Function()? preMessageCallBack,
 }) async {
   String cameraPickOptionIcon =
       "https://application-assets-app-and-web.s3.ap-south-1.amazonaws.com/cameraPick.svg";
