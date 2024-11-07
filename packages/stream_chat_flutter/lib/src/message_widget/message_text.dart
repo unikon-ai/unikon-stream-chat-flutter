@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamMessageText}
@@ -16,6 +17,7 @@ class StreamMessageText extends StatefulWidget {
     this.onLinkTap,
     this.maxLines = 5,
     this.showReadMore = true,
+    this.isMyMessage,
   });
 
   /// Message whose text is to be displayed
@@ -33,6 +35,8 @@ class StreamMessageText extends StatefulWidget {
   final int maxLines;
 
   final bool showReadMore;
+
+  final bool? isMyMessage;
   @override
   State<StreamMessageText> createState() => _StreamMessageTextState();
 }
@@ -105,7 +109,7 @@ class _StreamMessageTextState extends State<StreamMessageText> {
         }
         final themeData = Theme.of(context);
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             MarkdownBody(
@@ -171,8 +175,13 @@ class _StreamMessageTextState extends State<StreamMessageText> {
                   },
                   child: Text(
                     'Read more...',
-                    style: widget.messageTheme.messageTextStyle?.copyWith(
-                      color: Colors.black,
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: widget.isMyMessage == true
+                          ? UnikonColorTheme.messageSentIndicatorColor
+                          : UnikonColorTheme.primaryColor,
                     ),
                   ),
                 ),

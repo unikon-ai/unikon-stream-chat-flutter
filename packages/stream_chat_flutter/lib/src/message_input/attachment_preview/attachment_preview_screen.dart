@@ -276,33 +276,37 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
           color: UnikonColorTheme.transparent,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        child: Row(
-          children: [
-            Flexible(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: UnikonColorTheme.messageSentIndicatorColor,
-                  borderRadius: BorderRadius.circular(borderRadius),
-                ),
-                child: StreamMessageTextField(
-                  key: const Key('messageInputText'),
-                  onSubmitted: (_) => _sendMessage(widget.nonOGAttachments),
-                  controller: widget.effectiveController,
-                  focusNode: widget.focusNode,
-                  style: _messageInputTheme.inputTextStyle?.copyWith(
-                    color: UnikonColorTheme.messageInputHintColor,
+        child: LimitedBox(
+          maxHeight: 150,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Flexible(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: UnikonColorTheme.messageSentIndicatorColor,
+                    borderRadius: BorderRadius.circular(borderRadius),
                   ),
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: _getInputDecoration(context),
-                  textCapitalization: TextCapitalization.sentences,
+                  child: StreamMessageTextField(
+                    key: const Key('messageInputText'),
+                    onSubmitted: (_) => _sendMessage(widget.nonOGAttachments),
+                    controller: widget.effectiveController,
+                    focusNode: widget.focusNode,
+                    style: _messageInputTheme.inputTextStyle?.copyWith(
+                      color: UnikonColorTheme.messageInputHintColor,
+                    ),
+                    textAlignVertical: TextAlignVertical.center,
+                    decoration: _getInputDecoration(context),
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
                 ),
               ),
-            ),
-            StreamMessageSendButton(
-              onSendMessage: () => _sendMessage(widget.nonOGAttachments),
-              isIdle: false,
-            )
-          ],
+              StreamMessageSendButton(
+                onSendMessage: () => _sendMessage(widget.nonOGAttachments),
+                isIdle: false,
+              )
+            ],
+          ),
         ),
       ),
     );
