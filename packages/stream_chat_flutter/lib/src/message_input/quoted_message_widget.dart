@@ -219,55 +219,58 @@ class _QuotedMessage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    if (message.user != null)
-                      Text(
-                        isMyMessage ? 'You' : message.user!.name,
-                        style: messageTheme.messageTextStyle?.copyWith(
-                          color: isMyMessage
-                              ? UnikonColorTheme.primaryColor
-                              : UnikonColorTheme.messageSentIndicatorColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      if (message.user != null)
+                        Text(
+                          isMyMessage ? 'You' : message.user!.name,
+                          style: messageTheme.messageTextStyle?.copyWith(
+                            color: isMyMessage
+                                ? UnikonColorTheme.primaryColor
+                                : UnikonColorTheme.messageSentIndicatorColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    if (isReplying)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 4),
-                              child: SizedBox(
-                                height: 10,
-                                width: 10,
-                                child: VerticalDivider(
-                                  color: UnikonColorTheme.dividerColor,
-                                  thickness: 1,
-                                  width: 1,
+                      if (isReplying)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(left: 4),
+                                child: SizedBox(
+                                  height: 10,
+                                  width: 10,
+                                  child: VerticalDivider(
+                                    color: UnikonColorTheme.dividerColor,
+                                    thickness: 1,
+                                    width: 1,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              child: Image.asset(
-                                UnikonColorTheme.replyIcon,
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: Image.asset(
+                                  UnikonColorTheme.replyIcon,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Replying',
-                              style: messageTheme.messageTextStyle?.copyWith(
-                                color: UnikonColorTheme.dividerColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                              Text(
+                                'Replying',
+                                style: messageTheme.messageTextStyle?.copyWith(
+                                  color: UnikonColorTheme.dividerColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
                 Row(
                   children: children,

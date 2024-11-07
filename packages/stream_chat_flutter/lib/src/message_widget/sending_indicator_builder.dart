@@ -38,7 +38,7 @@ class SendingIndicatorBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = messageTheme.createdAtStyle;
+    final style = messageTheme.messageTextStyle;
     final channel = this.channel ?? StreamChannel.of(context).channel;
     final memberCount = channel.memberCount ?? 0;
 
