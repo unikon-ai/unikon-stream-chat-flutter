@@ -997,7 +997,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             ? const EdgeInsets.only(left: 8)
             : EdgeInsets.zero);
 
-    final double borderRadius = _effectiveController.text.trim().isNotEmpty
+    final double borderRadius = _effectiveController.text.isNotEmpty
         ? UnikonColorTheme.focusTextfieldBorderRadius
         : UnikonColorTheme.unfocusTextfieldBorderRadius;
 
