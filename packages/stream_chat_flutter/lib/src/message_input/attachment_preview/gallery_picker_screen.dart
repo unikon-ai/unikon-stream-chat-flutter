@@ -13,9 +13,11 @@ class GalleryPickerScreen extends StatefulWidget {
     super.key,
     required this.effectiveController,
     required this.channel,
+    required this.preMessageCallBack,
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
+  final Future<bool> Function()? preMessageCallBack;
 
   @override
   State<GalleryPickerScreen> createState() => _GalleryPickerScreenState();
@@ -77,6 +79,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                               child: BuildMediaAttachment(
                                 effectiveController: widget.effectiveController,
                                 channel: widget.channel,
+                                preMessageCallBack: widget.preMessageCallBack,
                               ),
                             ),
                             Padding(
@@ -101,17 +104,19 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 12),
-                                child: GalleryPickerWidget(
-                                  selectedMediaItems: selectedIds,
-                                  onMediaItemSelected:
-                                      (AssetEntity media) async {
-                                    if (selectedIds.contains(media.id)) {
-                                      return await attachmentController
-                                          .removeAssetAttachment(media);
-                                    }
-                                    await attachmentController
-                                        .addAssetAttachment(media);
-                                  },
+                                child: Center(
+                                  child: GalleryPickerWidget(
+                                    selectedMediaItems: selectedIds,
+                                    onMediaItemSelected:
+                                        (AssetEntity media) async {
+                                      if (selectedIds.contains(media.id)) {
+                                        return await attachmentController
+                                            .removeAssetAttachment(media);
+                                      }
+                                      await attachmentController
+                                          .addAssetAttachment(media);
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
@@ -133,6 +138,8 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                                       effectiveController:
                                           widget.effectiveController,
                                       channel: widget.channel,
+                                      preMessageCallBack:
+                                          widget.preMessageCallBack,
                                     ),
                                   ),
                                 );
@@ -171,9 +178,11 @@ class BuildMediaAttachment extends StatelessWidget {
     super.key,
     required this.effectiveController,
     required this.channel,
+    required this.preMessageCallBack,
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
+  final Future<bool> Function()? preMessageCallBack;
 
   @override
   Widget build(BuildContext context) {
@@ -227,6 +236,7 @@ class BuildMediaAttachment extends StatelessWidget {
                 attachmentController: attachmentController,
                 effectiveController: effectiveController,
                 channel: channel,
+                preMessageCallBack: preMessageCallBack,
               ),
             ),
           );

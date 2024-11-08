@@ -8,9 +8,11 @@ import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-Future<void> galleryAndCameraOptionChooser(
-    {required BuildContext mainContext,
-    required StreamMessageInputController effectiveController}) async {
+Future<void> galleryAndCameraOptionChooser({
+  required BuildContext mainContext,
+  required StreamMessageInputController effectiveController,
+  required Future<bool> Function()? preMessageCallBack,
+}) async {
   String cameraPickOptionIcon =
       "https://application-assets-app-and-web.s3.ap-south-1.amazonaws.com/cameraPick.svg";
   String videoPost =
@@ -70,6 +72,7 @@ Future<void> galleryAndCameraOptionChooser(
                           attachmentController: attachmentController,
                           effectiveController: effectiveController,
                           channel: channel,
+                          preMessageCallBack: preMessageCallBack,
                         ),
                       ),
                     );
@@ -103,6 +106,7 @@ Future<void> galleryAndCameraOptionChooser(
                           attachmentController: attachmentController,
                           effectiveController: effectiveController,
                           channel: channel,
+                          preMessageCallBack: preMessageCallBack,
                         ),
                       ),
                     );

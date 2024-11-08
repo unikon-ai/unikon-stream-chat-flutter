@@ -116,16 +116,16 @@ class AttachmentActionsModal extends StatelessWidget {
                       ),
                       onReply,
                     ),
-                  if (showShowInChat)
-                    _buildButton(
-                      context,
-                      context.translations.showInChatLabel,
-                      StreamSvgIcon.eye(
-                        size: 24,
-                        color: theme.colorTheme.textHighEmphasis,
-                      ),
-                      onShowMessage,
-                    ),
+                  // if (showShowInChat)
+                  //   _buildButton(
+                  //     context,
+                  //     context.translations.showInChatLabel,
+                  //     StreamSvgIcon.eye(
+                  //       size: 24,
+                  //       color: theme.colorTheme.textHighEmphasis,
+                  //     ),
+                  //     onShowMessage,
+                  //   ),
                   if (showSave)
                     _buildButton(
                       context,

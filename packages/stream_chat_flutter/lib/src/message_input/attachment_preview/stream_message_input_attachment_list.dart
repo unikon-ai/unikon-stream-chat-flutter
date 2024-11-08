@@ -255,48 +255,49 @@ class _MessageInputMediaAttachmentsState
         const SizedBox(
           height: 20,
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height *
-              0.1, // Adjust height to make the thumbnails larger
-          child: ListView.separated(
-            shrinkWrap: true,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              final Attachment attachment = widget.attachments[index];
-              return GestureDetector(
-                onTap: () {
-                  pageViewController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: StreamMediaAttachmentThumbnail(
-                        media: attachment,
-                        width: 60, // Adjusted width to be larger
-                        height: 80, // Adjusted height to be larger
-                        fit: BoxFit
-                            .cover, // Fit type can be adjusted as per need
+        if (widget.attachments.length > 1)
+          SizedBox(
+            height: MediaQuery.of(context).size.height *
+                0.1, // Adjust height to make the thumbnails larger
+            child: ListView.separated(
+              itemCount: widget.attachments.length,
+              shrinkWrap: true,
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final Attachment attachment = widget.attachments[index];
+                return GestureDetector(
+                  onTap: () {
+                    pageViewController.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: StreamMediaAttachmentThumbnail(
+                          media: attachment,
+                          width: 60, // Adjusted width to be larger
+                          height: 80, // Adjusted height to be larger
+                          fit: BoxFit
+                              .cover, // Fit type can be adjusted as per need
+                        ),
                       ),
-                    ),
-                    if (attachment.type == AttachmentType.video)
-                      const Icon(
-                        Icons.play_circle,
-                        size: 24,
-                      )
-                  ],
-                ),
-              );
-            },
-            itemCount: widget.attachments.length,
+                      if (attachment.type == AttachmentType.video)
+                        const Icon(
+                          Icons.play_circle,
+                          size: 24,
+                        )
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }

@@ -81,6 +81,10 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
     super.dispose();
   }
 
+  String getInitials(String name) {
+    return name.split(' ').map((word) => word[0]).join();
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> audioWidget = <Widget>[
@@ -115,7 +119,7 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
                     ),
                     child: Center(
                       child: Text(
-                        widget.message.user!.name[0].toUpperCase(),
+                        getInitials(widget.message.user!.name).toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

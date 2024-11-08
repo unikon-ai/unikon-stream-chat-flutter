@@ -923,12 +923,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     // Scroll to the end of the list.
     if (_scrollController?.isAttached == true) {
       _scrollController!.scrollTo(
-        index: max(
-            messages.toList().indexWhere((element) =>
-                element.id ==
-                streamChannel!
-                    .channel.state?.currentUserRead?.lastReadMessageId),
-            0),
+        index: 0,
         duration: const Duration(seconds: 1),
         curve: Curves.easeInOut,
       );

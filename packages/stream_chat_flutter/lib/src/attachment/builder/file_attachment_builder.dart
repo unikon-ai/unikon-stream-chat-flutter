@@ -37,6 +37,51 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
     return files != null && files.isNotEmpty;
   }
 
+  Future<bool> doesFileExists(Attachment attachment) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = '${directory.path}/${attachment.id}_${attachment.title}';
+
+    final fileExists = await File(filePath).exists();
+    return fileExists;
+  }
+
+  Future<void> downloadAndOpenAttachment(
+      BuildContext context, Attachment attachment) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = '${directory.path}/${attachment.id}_${attachment.title}';
+
+    if (await doesFileExists(attachment)) {
+      // If the file exists, open it directly
+      await OpenFile.open(filePath);
+    } else {
+      // If the file does not exist, download it
+      final url =
+          attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl;
+      if (url == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Attachment URL is not available')),
+        );
+        return;
+      }
+
+      try {
+        final response = await Dio().download(url, filePath);
+        if (response.statusCode == 200) {
+          // Open the downloaded file
+          await OpenFile.open(filePath);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to download attachment')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error downloading attachment: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(
     BuildContext context,
@@ -54,8 +99,12 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
       }
 
       return InkWell(
-        onTap: onTap,
+        onTap: () => message.attachments.first.assetUrl != null
+            ? downloadAndOpenAttachment(context, file)
+            : onTap,
         child: StreamFileAttachment(
+          doesFileExists: () => doesFileExists(file),
+          onDownloadTap: () => downloadAndOpenAttachment(context, file),
           file: file,
           message: message,
           shape: shape,

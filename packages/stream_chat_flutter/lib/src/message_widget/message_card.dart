@@ -222,7 +222,8 @@ class _MessageCardState extends State<MessageCard> {
               TextBubble(
                 messageTheme: widget.messageTheme,
                 message: widget.message,
-                textPadding: widget.textPadding,
+                textPadding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                 textBuilder: widget.textBuilder,
                 isOnlyEmoji: widget.isOnlyEmoji,
                 hasQuotedMessage: widget.hasQuotedMessage,
@@ -234,7 +235,7 @@ class _MessageCardState extends State<MessageCard> {
           ),
           if (widget.showSendingIndicator)
             Padding(
-              padding: const EdgeInsets.only(right: 6, bottom: 4),
+              padding: const EdgeInsets.only(right: 6, bottom: 0),
               child: SendingIndicatorBuilder(
                 messageTheme: widget.messageTheme,
                 message: widget.message,

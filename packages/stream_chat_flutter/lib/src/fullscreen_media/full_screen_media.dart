@@ -282,9 +282,7 @@ class _FullScreenMediaState extends State<StreamFullScreenMedia> {
                   builder: (context, isDisplayingDetail, child) {
                     return AnimatedContainer(
                       duration: kThemeChangeDuration,
-                      color: isDisplayingDetail
-                          ? StreamChannelHeaderTheme.of(context).color
-                          : Colors.black,
+                      color: Colors.black,
                       child: Builder(
                         builder: (context) {
                           if (attachment.type == AttachmentType.image ||

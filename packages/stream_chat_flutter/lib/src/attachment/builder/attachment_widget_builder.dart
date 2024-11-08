@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_attachment_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -73,8 +77,7 @@ abstract class StreamAttachmentWidgetBuilder {
     return [
       ...?customAttachmentBuilders,
 
-      AudioAttachmentBuilder(
-      ),
+      AudioAttachmentBuilder(),
       // Handles a mix of image, gif, video, url and file attachments.
       MixedAttachmentBuilder(
         padding: padding,

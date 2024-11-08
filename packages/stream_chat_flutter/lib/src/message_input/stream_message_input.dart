@@ -102,7 +102,7 @@ class StreamMessageInput extends StatefulWidget {
     super.key,
     this.onMessageSent,
     this.preMessageSending,
-    this.maxHeight = 150,
+    this.maxHeight = 120,
     this.maxLines,
     this.minLines,
     this.textInputAction,
@@ -356,7 +356,7 @@ class StreamMessageInput extends StatefulWidget {
   /// Stream attachment picker.
   final bool useNativeAttachmentPickerOnMobile;
 
-  final bool Function()? preMessageCallBack;
+  final Future<bool> Function()? preMessageCallBack;
 
   final Function(bool value)? onFocusChanged;
 
@@ -758,8 +758,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
       margin: margin,
       width: MediaQuery.of(context).size.width,
       child: VoiceRecordingWidget(
-        onRecordingSend: (recordedFilePath, fileWebFormData) {
-          if (widget.preMessageCallBack?.call() == true) {
+        onRecordingSend: (recordedFilePath, fileWebFormData) async {
+          if (await widget.preMessageCallBack?.call() == true) {
             final channel = StreamChannel.of(context).channel;
 
             final uri = Uri.parse(recordedFilePath);
@@ -837,8 +837,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
       return widget.sendButtonBuilder!(context, _effectiveController);
     }
     return StreamMessageSendButton(
-      onSendMessage: () {
-        if (widget.preMessageCallBack?.call() == true) sendMessage();
+      onSendMessage: () async {
+        if (await widget.preMessageCallBack?.call() == true) sendMessage();
       },
       timeOut: _timeOut,
       isIdle: !widget.validator(_effectiveController.message),
@@ -1006,8 +1006,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               maxLines: widget.maxLines,
                               minLines: widget.minLines,
                               textInputAction: widget.textInputAction,
-                              onSubmitted: (_) {
-                                if (widget.preMessageCallBack?.call() == true) {
+                              onSubmitted: (_) async {
+                                if (await widget.preMessageCallBack?.call() ==
+                                    true) {
                                   sendMessage();
                                 }
                               },
@@ -1031,24 +1032,23 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               null)
                             IconButton(
                               onPressed: () {
-                                if (widget.preMessageCallBack?.call() == true) {
-                                  final channel =
-                                      StreamChannel.of(context).channel;
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            GalleryPickerScreen(
-                                          effectiveController:
-                                              _effectiveController,
-                                          channel: channel,
-                                        ),
-                                      ));
-                                }
+                                final channel =
+                                    StreamChannel.of(context).channel;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => GalleryPickerScreen(
+                                      effectiveController: _effectiveController,
+                                      channel: channel,
+                                      preMessageCallBack:
+                                          widget.preMessageCallBack,
+                                    ),
+                                  ),
+                                );
                               },
                               icon: const Icon(
                                 Icons.attachment,
-                                color: UnikonColorTheme.darkGreyColor,
+                                color: UnikonColorTheme.dividerColor,
                               ),
                             ),
                           if (_effectiveController.message.quotedMessage ==
@@ -1056,16 +1056,15 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               _effectiveController.text.isEmpty)
                             IconButton(
                               onPressed: () {
-                                if (widget.preMessageCallBack?.call() == true) {
-                                  galleryAndCameraOptionChooser(
-                                      mainContext: context,
-                                      effectiveController:
-                                          _effectiveController);
-                                }
+                                galleryAndCameraOptionChooser(
+                                  mainContext: context,
+                                  effectiveController: _effectiveController,
+                                  preMessageCallBack: widget.preMessageCallBack,
+                                );
                               },
                               icon: const Icon(
                                 Icons.camera_alt,
-                                color: UnikonColorTheme.darkGreyColor,
+                                color: UnikonColorTheme.dividerColor,
                               ),
                             ),
                         ],
