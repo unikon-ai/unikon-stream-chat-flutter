@@ -49,12 +49,17 @@ class SendingIndicatorBuilder extends StatelessWidget {
       });
 
       if (attachmentsToUpload.isNotEmpty) {
-        return Text(
-          context.translations.attachmentsUploadProgressText(
-            remaining: attachmentsToUpload.length,
-            total: totalAttachments,
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            totalAttachments > 1
+                ? context.translations.attachmentsUploadProgressText(
+                    remaining: attachmentsToUpload.length,
+                    total: totalAttachments,
+                  )
+                : 'Uploading...',
+            style: style,
           ),
-          style: style,
         );
       }
     }

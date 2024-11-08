@@ -653,9 +653,6 @@ class _StreamMessageTextFieldState extends State<StreamMessageTextField>
 
   @override
   Widget build(BuildContext context) => TextField(
-        onTapOutside: (event) {
-          widget.focusNode?.unfocus();
-        },
         controller: _effectiveController.textFieldController,
         focusNode: widget.focusNode,
         decoration: widget.decoration?.copyWith(counterText: ''),

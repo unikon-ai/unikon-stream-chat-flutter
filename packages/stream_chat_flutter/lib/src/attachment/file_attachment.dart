@@ -310,9 +310,8 @@ class _FileAttachmentSubtitle extends StatelessWidget {
       inProgress: (sent, total) => StreamUploadProgressIndicator(
         uploaded: sent,
         total: total,
-        showBackground: false,
         textStyle: textStyle,
-        progressIndicatorColor: theme.colorTheme.accentPrimary,
+        progressIndicatorColor: theme.colorTheme.textHighEmphasis,
       ),
       success: () => Text(fileSize(size), style: textStyle),
       failed: (_) => Text(

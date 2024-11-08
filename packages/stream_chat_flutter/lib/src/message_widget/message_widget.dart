@@ -641,20 +641,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
     _streamChat = StreamChat.of(context);
   }
 
-  bool isMessageEmpty(Message message) {
-    // Check if the message text is null or empty
-    if (message.text == null || message.text!.trim().isEmpty) {
-      // Check if there are no attachments
-      if (message.attachments.isEmpty) {
-        // Check if there are no quoted messages
-        if (message.quotedMessage == null) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -664,10 +650,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
         widget.showUserAvatar != DisplayWidget.gone ? avatarWidth + 8.5 : 0.5;
 
     final showReactions = shouldShowReactions;
-
-    if (isMessageEmpty(widget.message)) {
-      return const SizedBox.shrink();
-    }
 
     return ConditionalParentBuilder(
       builder: (context, child) {
