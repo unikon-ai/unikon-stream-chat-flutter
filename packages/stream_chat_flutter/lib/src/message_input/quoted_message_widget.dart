@@ -239,7 +239,7 @@ class _QuotedMessage extends StatelessWidget {
               ..add(
                 textBuilder?.call(context, msg) ??
                     StreamMessageText(
-                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                      maxWidth: MediaQuery.of(context).size.width * 0.6,
                       maxLines: 2,
                       message: msg,
                       showReadMore: false,
@@ -261,10 +261,10 @@ class _QuotedMessage extends StatelessWidget {
           }
         } else {
           children.add(
-            Center(
+            Flexible(
               child: textBuilder?.call(context, msg) ??
                   StreamMessageText(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    maxWidth: MediaQuery.of(context).size.width * 0.6,
                     maxLines: 2,
                     message: msg,
                     showReadMore: false,
@@ -375,9 +375,11 @@ class _QuotedMessage extends StatelessWidget {
                 ),
                 if (_hasAttachments)
                   SizedBox(
-                    height: 40,
-                    child: Row(
-                      children: children,
+                    height: 36,
+                    child: Center(
+                      child: Row(
+                        children: children,
+                      ),
                     ),
                   )
                 else

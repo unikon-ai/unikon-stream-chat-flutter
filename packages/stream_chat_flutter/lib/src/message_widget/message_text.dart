@@ -103,8 +103,8 @@ class _StreamMessageTextState extends State<StreamMessageText> {
         messageText =
             widget.message.translate(language).replaceMentions().text?.trim();
         if (messageText != null) {
-          truncatedMessageText = getTruncatedText(
-              text: messageText!, maxWidth: widget.maxWidth);
+          truncatedMessageText =
+              getTruncatedText(text: messageText!, maxWidth: widget.maxWidth);
         }
         final themeData = Theme.of(context);
         return Column(

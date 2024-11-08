@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
@@ -27,6 +28,7 @@ class StreamFileAttachment extends StatefulWidget {
     this.constraints = const BoxConstraints(),
     this.onDownloadTap,
     this.doesFileExists,
+    this.internalPadding = const EdgeInsets.all(8),
   });
 
   /// The [Message] that the file is attached to.
@@ -60,6 +62,7 @@ class StreamFileAttachment extends StatefulWidget {
 
   final Future<void> Function()? onDownloadTap;
 
+  final EdgeInsetsGeometry internalPadding;
   @override
   State<StreamFileAttachment> createState() => _StreamFileAttachmentState();
 }
@@ -87,9 +90,13 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
         widget.message.user?.id == StreamChat.of(context).currentUser!.id;
 
     final backgroundColor = this.widget.backgroundColor ??
-        (isMyMessage
-            ? chatTheme.ownMessageTheme.messageBackgroundColor
-            : chatTheme.otherMessageTheme.messageBackgroundColor);
+        ((widget.message.text?.isNotEmpty == true)
+            ? (isMyMessage
+                ? const Color.fromRGBO(20, 127, 114, 1)
+                : const Color.fromRGBO(49, 49, 49, 1))
+            : (isMyMessage
+                ? chatTheme.ownMessageTheme.messageBackgroundColor
+                : chatTheme.otherMessageTheme.messageBackgroundColor));
     final shape = this.widget.shape ??
         RoundedRectangleBorder(
           side: BorderSide(
@@ -100,6 +107,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
         );
 
     return Container(
+      padding: widget.internalPadding,
       constraints: widget.constraints,
       clipBehavior: Clip.hardEdge,
       decoration: ShapeDecoration(
@@ -108,10 +116,9 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
       ),
       child: Row(
         children: [
-          Container(
+          SizedBox(
             width: 34,
             height: 40,
-            margin: const EdgeInsets.all(8),
             child: FileTypeImage(file: widget.file),
           ),
           const SizedBox(width: 8),
