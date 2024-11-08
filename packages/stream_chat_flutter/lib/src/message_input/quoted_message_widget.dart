@@ -261,30 +261,27 @@ class _QuotedMessage extends StatelessWidget {
           }
         } else {
           children.add(
-            SizedBox(
-              height: 36,
-              child: Center(
-                child: textBuilder?.call(context, msg) ??
-                    StreamMessageText(
-                      maxWidth: MediaQuery.of(context).size.width * 0.7,
-                      maxLines: 2,
-                      message: msg,
-                      showReadMore: false,
-                      messageTheme: isOnlyEmoji && _containsText
-                          ? messageTheme.copyWith(
-                              messageTextStyle:
-                                  messageTheme.messageTextStyle?.copyWith(
-                                fontSize: 32,
-                              ),
-                            )
-                          : messageTheme.copyWith(
-                              messageTextStyle:
-                                  messageTheme.messageTextStyle?.copyWith(
-                                fontSize: 12,
-                              ),
+            Center(
+              child: textBuilder?.call(context, msg) ??
+                  StreamMessageText(
+                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    maxLines: 2,
+                    message: msg,
+                    showReadMore: false,
+                    messageTheme: isOnlyEmoji && _containsText
+                        ? messageTheme.copyWith(
+                            messageTextStyle:
+                                messageTheme.messageTextStyle?.copyWith(
+                              fontSize: 32,
                             ),
-                    ),
-              ),
+                          )
+                        : messageTheme.copyWith(
+                            messageTextStyle:
+                                messageTheme.messageTextStyle?.copyWith(
+                              fontSize: 12,
+                            ),
+                          ),
+                  ),
             ),
           );
         }
@@ -376,12 +373,17 @@ class _QuotedMessage extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 40,
-                  child: Row(
+                if (_hasAttachments)
+                  SizedBox(
+                    height: 40,
+                    child: Row(
+                      children: children,
+                    ),
+                  )
+                else
+                  Row(
                     children: children,
                   ),
-                ),
               ],
             ),
           ),

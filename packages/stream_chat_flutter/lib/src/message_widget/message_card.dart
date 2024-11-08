@@ -183,8 +183,8 @@ class _MessageCardState extends State<MessageCard> {
               borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
             ),
       ),
-      child: Stack(
-        alignment: Alignment.bottomRight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -222,8 +222,12 @@ class _MessageCardState extends State<MessageCard> {
               TextBubble(
                 messageTheme: widget.messageTheme,
                 message: widget.message,
-                textPadding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                textPadding: EdgeInsets.only(
+                  top: 8,
+                  right: 12,
+                  left: 12,
+                  bottom: widget.showSendingIndicator ? 0 : 8,
+                ),
                 textBuilder: widget.textBuilder,
                 isOnlyEmoji: widget.isOnlyEmoji,
                 hasQuotedMessage: widget.hasQuotedMessage,
@@ -235,7 +239,7 @@ class _MessageCardState extends State<MessageCard> {
           ),
           if (widget.showSendingIndicator)
             Padding(
-              padding: const EdgeInsets.only(right: 6, bottom: 0),
+              padding: const EdgeInsets.only(right: 6, bottom: 4),
               child: SendingIndicatorBuilder(
                 messageTheme: widget.messageTheme,
                 message: widget.message,
