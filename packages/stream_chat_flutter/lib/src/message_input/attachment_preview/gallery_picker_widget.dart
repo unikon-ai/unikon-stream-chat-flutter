@@ -112,31 +112,33 @@ class _GalleryPickerWidgetState extends State<GalleryPickerWidget> {
         return Builder(
           builder: (context) {
             if (!isPermissionGranted) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  StreamSvgIcon.pictures(
-                    size: 240,
-                    color: colorTheme.disabled,
-                  ),
-                  Text(
-                    context.translations.enablePhotoAndVideoAccessMessage,
-                    style: textTheme.body.copyWith(
-                      color: colorTheme.textLowEmphasis,
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    StreamSvgIcon.pictures(
+                      size: 240,
+                      color: colorTheme.disabled,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: PhotoManager.openSetting,
-                    child: Text(
-                      context.translations.allowGalleryAccessMessage,
-                      style: textTheme.bodyBold.copyWith(
-                        color: colorTheme.accentPrimary,
+                    Text(
+                      context.translations.enablePhotoAndVideoAccessMessage,
+                      style: textTheme.body.copyWith(
+                        color: colorTheme.textLowEmphasis,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: PhotoManager.openSetting,
+                      child: Text(
+                        context.translations.allowGalleryAccessMessage,
+                        style: textTheme.bodyBold.copyWith(
+                          color: colorTheme.accentPrimary,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
 

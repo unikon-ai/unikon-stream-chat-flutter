@@ -658,7 +658,7 @@ class _StreamMessageTextFieldState extends State<StreamMessageTextField>
         },
         controller: _effectiveController.textFieldController,
         focusNode: widget.focusNode,
-        decoration: widget.decoration,
+        decoration: widget.decoration?.copyWith(counterText: ''),
         keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction ??
             (widget.keyboardType == TextInputType.multiline
@@ -682,12 +682,15 @@ class _StreamMessageTextFieldState extends State<StreamMessageTextField>
         maxLines: widget.maxLines,
         minLines: widget.minLines,
         expands: widget.expands,
-        maxLength: widget.maxLength,
+        maxLength: 2000,
         maxLengthEnforcement: widget.maxLengthEnforcement,
         onEditingComplete: widget.onEditingComplete,
         onSubmitted: widget.onSubmitted,
         onAppPrivateCommand: widget.onAppPrivateCommand,
-        inputFormatters: widget.inputFormatters,
+        inputFormatters: widget.inputFormatters
+          ?..add(
+            LengthLimitingTextInputFormatter(2000),
+          ),
         enabled: widget.enabled,
         cursorWidth: widget.cursorWidth,
         cursorHeight: widget.cursorHeight,

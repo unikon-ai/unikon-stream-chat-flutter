@@ -65,4 +65,12 @@ class UnikonColorTheme {
   static const placeholder = "assets/images/placeholder.png";
 
   static const downloadIcon = "assets/images/download.png";
+
+  static const micIcon = "assets/images/mic.png";
+
+  static const imageIcon = "assets/images/image.png";
+
+  static const videoIcon = "assets/images/video.png";
+
+  static const documentIcon = "assets/images/document.png";
 }

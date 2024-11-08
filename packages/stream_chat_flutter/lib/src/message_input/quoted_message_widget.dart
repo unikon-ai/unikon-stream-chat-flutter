@@ -134,12 +134,78 @@ class _QuotedMessage extends StatelessWidget {
 
   bool get _isDeleted => message.isDeleted || message.deletedAt != null;
 
+  Map<String, String> getAttachmentType(String? title) {
+    if (title == null) return {'title': ''};
+
+    final lowerTitle = title.toLowerCase();
+
+    final imageExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.gif',
+      '.bmp',
+      '.webp',
+      '.tiff',
+      '.svg',
+      '.heic'
+    ];
+    final videoExtensions = [
+      '.mp4',
+      '.mov',
+      '.avi',
+      '.mkv',
+      '.flv',
+      '.wmv',
+      '.webm',
+      '.3gp',
+      '.m4v'
+    ];
+    final audioExtensions = [
+      '.mp3',
+      '.wav',
+      '.aac',
+      '.flac',
+      '.ogg',
+      '.wma',
+      '.m4a',
+      '.alac'
+    ];
+    final documentExtensions = [
+      '.pdf',
+      '.doc',
+      '.docx',
+      '.xls',
+      '.xlsx',
+      '.ppt',
+      '.pptx',
+      '.txt',
+      '.odt',
+      '.ods',
+      '.odp',
+      '.rtf'
+    ];
+
+    if (imageExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Image', 'icon': UnikonColorTheme.imageIcon};
+    }
+    if (videoExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Video', 'icon': UnikonColorTheme.videoIcon};
+    }
+    if (audioExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Voice Message', 'icon': UnikonColorTheme.micIcon};
+    }
+    if (documentExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Document', 'icon': UnikonColorTheme.documentIcon};
+    }
+
+    return {'title': ''};
+  }
+
   @override
   Widget build(BuildContext context) {
     final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
-    final msg = _hasAttachments && !_containsText
-        ? message.copyWith(text: message.attachments.last.title ?? '')
-        : message;
+    Message msg = message;
 
     List<Widget> children = [];
 
@@ -156,34 +222,72 @@ class _QuotedMessage extends StatelessWidget {
       );
     } else {
       // Show quoted message
-      if (msg.text?.isNotEmpty == true && !_isGiphy) {
-        children.add(
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: textBuilder?.call(context, msg) ??
-                  StreamMessageText(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7,
-                    maxLines: 2,
-                    message: msg,
-                    showReadMore: false,
-                    messageTheme: isOnlyEmoji && _containsText
-                        ? messageTheme.copyWith(
-                            messageTextStyle:
-                                messageTheme.messageTextStyle?.copyWith(
-                              fontSize: 32,
+      if (!_isGiphy) {
+        if (_hasAttachments && !_containsText) {
+          final Map<String, String> attachmentMessage =
+              getAttachmentType(message.attachments.last.title);
+          msg = message.copyWith(text: attachmentMessage['title']);
+          if (attachmentMessage['icon'] != null) {
+            children
+              ..add(
+                Image.asset(
+                  attachmentMessage['icon']!,
+                  width: 16,
+                  height: 16,
+                ),
+              )
+              ..add(
+                textBuilder?.call(context, msg) ??
+                    StreamMessageText(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                      maxLines: 2,
+                      message: msg,
+                      showReadMore: false,
+                      messageTheme: isOnlyEmoji && _containsText
+                          ? messageTheme.copyWith(
+                              messageTextStyle:
+                                  messageTheme.messageTextStyle?.copyWith(
+                                fontSize: 32,
+                              ),
+                            )
+                          : messageTheme.copyWith(
+                              messageTextStyle:
+                                  messageTheme.messageTextStyle?.copyWith(
+                                fontSize: 12,
+                              ),
                             ),
-                          )
-                        : messageTheme.copyWith(
-                            messageTextStyle:
-                                messageTheme.messageTextStyle?.copyWith(
-                              fontSize: 12,
+                    ),
+              );
+          }
+        } else {
+          children.add(
+            SizedBox(
+              height: 36,
+              child: Center(
+                child: textBuilder?.call(context, msg) ??
+                    StreamMessageText(
+                      maxWidth: MediaQuery.of(context).size.width * 0.7,
+                      maxLines: 2,
+                      message: msg,
+                      showReadMore: false,
+                      messageTheme: isOnlyEmoji && _containsText
+                          ? messageTheme.copyWith(
+                              messageTextStyle:
+                                  messageTheme.messageTextStyle?.copyWith(
+                                fontSize: 32,
+                              ),
+                            )
+                          : messageTheme.copyWith(
+                              messageTextStyle:
+                                  messageTheme.messageTextStyle?.copyWith(
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                  ),
+                    ),
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
 
@@ -220,7 +324,7 @@ class _QuotedMessage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.only(bottom: 4),
                   child: Row(
                     children: [
                       if (message.user != null)
@@ -272,8 +376,11 @@ class _QuotedMessage extends StatelessWidget {
                     ],
                   ),
                 ),
-                Row(
-                  children: children,
+                SizedBox(
+                  height: 40,
+                  child: Row(
+                    children: children,
+                  ),
                 ),
               ],
             ),
