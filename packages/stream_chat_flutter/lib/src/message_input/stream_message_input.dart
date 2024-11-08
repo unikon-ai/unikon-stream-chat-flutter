@@ -777,8 +777,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 ? <Widget>[_buildAudioRecordingWidget(context)]
                 : <Widget>[
                     _buildTextInput(context),
-                    if (_hasQuotedMessage &&
-                        _effectiveController.text.trim().isEmpty)
+                    if ((_hasQuotedMessage &&
+                            _effectiveController.text.trim().isEmpty) ||
+                        (_effectiveController.text.isNotEmpty &&
+                            _effectiveController.text.trim().isEmpty))
                       _buildIdleSendButton(
                         context,
                       )

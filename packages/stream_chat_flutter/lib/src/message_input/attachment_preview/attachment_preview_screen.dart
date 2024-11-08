@@ -262,10 +262,9 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final double borderRadius =
-        widget.effectiveController.text.trim().isNotEmpty
-            ? UnikonColorTheme.focusTextfieldBorderRadius
-            : UnikonColorTheme.unfocusTextfieldBorderRadius;
+    final double borderRadius = widget.effectiveController.text.isNotEmpty
+        ? UnikonColorTheme.focusTextfieldBorderRadius
+        : UnikonColorTheme.unfocusTextfieldBorderRadius;
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
