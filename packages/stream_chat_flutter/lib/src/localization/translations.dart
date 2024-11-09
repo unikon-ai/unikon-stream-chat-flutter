@@ -444,7 +444,7 @@ class DefaultTranslations implements Translations {
   String get genericErrorText => 'Something went wrong';
 
   @override
-  String get loadingMessagesError => 'Error loading messages';
+  String get loadingMessagesError => 'Low internet? Try reloading.';
 
   @override
   String resultCountText(int count) => '$count results';

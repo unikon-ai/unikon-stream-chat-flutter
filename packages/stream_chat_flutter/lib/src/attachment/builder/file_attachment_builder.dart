@@ -97,6 +97,8 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
       if (onAttachmentTap != null) {
         onTap = () => onAttachmentTap!(message, file);
       }
+      final isMyMessage =
+          message.user?.id == StreamChat.of(context).currentUser!.id;
 
       return InkWell(
         onTap: () => message.attachments.first.assetUrl != null
@@ -110,6 +112,12 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
           shape: shape,
           constraints: constraints,
           backgroundColor: backgroundColor,
+          internalPadding: EdgeInsets.only(
+            left: 8,
+            top: 8,
+            right: 8,
+            bottom: !isMyMessage || message.text?.isNotEmpty == true ? 10 : 0,
+          ),
         ),
       );
     }
@@ -128,9 +136,6 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
       );
     }
 
-    return Padding(
-      padding: padding,
-      child: child,
-    );
+    return child;
   }
 }

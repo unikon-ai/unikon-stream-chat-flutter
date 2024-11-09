@@ -733,8 +733,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 ? <Widget>[_buildAudioRecordingWidget(context)]
                 : <Widget>[
                     _buildTextInput(context),
-                    if (_hasQuotedMessage &&
-                        _effectiveController.text.trim().isEmpty)
+                    if ((_hasQuotedMessage &&
+                            _effectiveController.text.trim().isEmpty) ||
+                        (_effectiveController.text.isNotEmpty &&
+                            _effectiveController.text.trim().isEmpty))
                       _buildIdleSendButton(
                         context,
                       )
@@ -953,7 +955,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             ? const EdgeInsets.only(left: 8)
             : EdgeInsets.zero);
 
-    final double borderRadius = _effectiveController.text.trim().isNotEmpty
+    final double borderRadius = _effectiveController.text.isNotEmpty
         ? UnikonColorTheme.focusTextfieldBorderRadius
         : UnikonColorTheme.unfocusTextfieldBorderRadius;
 

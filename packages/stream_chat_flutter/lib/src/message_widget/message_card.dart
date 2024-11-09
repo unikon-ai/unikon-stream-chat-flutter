@@ -183,8 +183,8 @@ class _MessageCardState extends State<MessageCard> {
               borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
             ),
       ),
-      child: Stack(
-        alignment: Alignment.bottomRight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -211,7 +211,12 @@ class _MessageCardState extends State<MessageCard> {
                   key: attachmentsKey,
                   message: widget.message,
                   attachmentBuilders: widget.attachmentBuilders,
-                  attachmentPadding: widget.attachmentPadding,
+                  attachmentPadding: EdgeInsets.only(
+                    top: 4,
+                    right: 4,
+                    left: 4,
+                    bottom: widget.showSendingIndicator ? 0 : 4,
+                  ),
                   attachmentShape: widget.attachmentShape,
                   onAttachmentTap: widget.onAttachmentTap,
                   onShowMessage: widget.onShowMessage,
@@ -221,9 +226,17 @@ class _MessageCardState extends State<MessageCard> {
                 ),
               TextBubble(
                 messageTheme: widget.messageTheme,
-                message: widget.message,
-                textPadding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                message: (isMessageEmpty(widget.message))
+                    ? widget.message.copyWith(
+                        text: 'Cancelled Media Message',
+                      )
+                    : widget.message,
+                textPadding: EdgeInsets.only(
+                  top: 8,
+                  right: 12,
+                  left: 12,
+                  bottom: widget.showSendingIndicator ? 0 : 8,
+                ),
                 textBuilder: widget.textBuilder,
                 isOnlyEmoji: widget.isOnlyEmoji,
                 hasQuotedMessage: widget.hasQuotedMessage,
@@ -235,7 +248,7 @@ class _MessageCardState extends State<MessageCard> {
           ),
           if (widget.showSendingIndicator)
             Padding(
-              padding: const EdgeInsets.only(right: 6, bottom: 0),
+              padding: const EdgeInsets.only(right: 6, bottom: 2),
               child: SendingIndicatorBuilder(
                 messageTheme: widget.messageTheme,
                 message: widget.message,
@@ -247,6 +260,20 @@ class _MessageCardState extends State<MessageCard> {
         ],
       ),
     );
+  }
+
+  bool isMessageEmpty(Message message) {
+    // Check if the message text is null or empty
+    if (message.text == null || message.text!.trim().isEmpty) {
+      // Check if there are no attachments
+      if (message.attachments.isEmpty) {
+        // Check if there are no quoted messages
+        if (message.quotedMessage == null) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   Color? _getBackgroundColor() {
@@ -263,6 +290,10 @@ class _MessageCardState extends State<MessageCard> {
 
     if (widget.isOnlyEmoji) {
       return Colors.transparent;
+    }
+
+    if (isMessageEmpty(widget.message)) {
+      return Colors.red;
     }
 
     return widget.messageTheme.messageBackgroundColor;

@@ -61,7 +61,7 @@ class StreamUploadProgressIndicator extends StatelessWidget {
             '${_percentage.toInt()}%',
             style: textStyle ??
                 theme.textTheme.footnote.copyWith(
-                  color: theme.colorTheme.barsBg,
+                  color: theme.colorTheme.textHighEmphasis,
                 ),
           ),
         ],
@@ -71,7 +71,7 @@ class StreamUploadProgressIndicator extends StatelessWidget {
       child = DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: theme.colorTheme.overlayDark.withOpacity(0.6),
+          color: const Color.fromRGBO(51, 51, 51, 1),
         ),
         child: child,
       );
