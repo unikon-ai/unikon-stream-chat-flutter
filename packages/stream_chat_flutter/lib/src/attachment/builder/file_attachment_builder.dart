@@ -11,6 +11,7 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
     this.constraints = const BoxConstraints(),
     this.padding = const EdgeInsets.all(4),
     this.onAttachmentTap,
+    this.showSendingIndicator = true,
   });
 
   /// The shape of the file attachment.
@@ -27,6 +28,8 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
 
   /// The callback to call when the attachment is tapped.
   final StreamAttachmentWidgetTapCallback? onAttachmentTap;
+
+  final bool showSendingIndicator;
 
   @override
   bool canHandle(
@@ -112,7 +115,11 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
             left: 8,
             top: 8,
             right: 8,
-            bottom: !isMyMessage || message.text?.isNotEmpty == true ? 10 : 0,
+            bottom: !showSendingIndicator ||
+                    !isMyMessage ||
+                    message.text?.isNotEmpty == true
+                ? 10
+                : 0,
           ),
         ),
       );

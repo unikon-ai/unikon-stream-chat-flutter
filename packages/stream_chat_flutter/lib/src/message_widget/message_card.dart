@@ -223,6 +223,7 @@ class _MessageCardState extends State<MessageCard> {
                   onReplyTap: widget.onReplyTap,
                   attachmentActionsModalBuilder:
                       widget.attachmentActionsModalBuilder,
+                  showSendingIndicator: widget.showSendingIndicator,
                 ),
               TextBubble(
                 messageTheme: widget.messageTheme,

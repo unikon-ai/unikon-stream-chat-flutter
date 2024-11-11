@@ -173,10 +173,6 @@ class FileTypeImage extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
     );
-
-    
-
-
   }
 }
 
