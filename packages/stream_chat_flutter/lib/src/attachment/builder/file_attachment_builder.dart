@@ -51,33 +51,28 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
     final filePath = '${directory.path}/${attachment.id}_${attachment.title}';
 
     if (await doesFileExists(attachment)) {
-      // If the file exists, open it directly
-      await OpenFile.open(filePath);
+      final result = await OpenFile.open(filePath);
+      Fluttertoast.showToast(msg: result.message);
+      return;
     } else {
       // If the file does not exist, download it
       final url =
           attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl;
       if (url == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Attachment URL is not available')),
-        );
+        Fluttertoast.showToast(msg: 'Attachment URL is not available');
         return;
       }
 
       try {
         final response = await Dio().download(url, filePath);
         if (response.statusCode == 200) {
-          // Open the downloaded file
-          await OpenFile.open(filePath);
+          final result = await OpenFile.open(filePath);
+          Fluttertoast.showToast(msg: result.message);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to download attachment')),
-          );
+          Fluttertoast.showToast(msg: 'Failed to download attachment');
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error downloading attachment: $e')),
-        );
+        Fluttertoast.showToast(msg: 'Error downloading attachment');
       }
     }
   }

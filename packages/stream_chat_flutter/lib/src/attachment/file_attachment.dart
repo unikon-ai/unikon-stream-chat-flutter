@@ -178,7 +178,6 @@ class FileTypeImage extends StatelessWidget {
     final isImage = mediaType?.type == AttachmentType.image;
     final isVideo = mediaType?.type == AttachmentType.video;
     if (isImage || isVideo) {
-      final colorTheme = StreamChatTheme.of(context).colorTheme;
       child = Container(
         clipBehavior: Clip.hardEdge,
         decoration: ShapeDecoration(
