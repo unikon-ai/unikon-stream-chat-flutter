@@ -53,31 +53,9 @@ class StreamFileAttachmentThumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaTitle = file.title ?? '';
 
-    // final isImage = mediaType?.type == AttachmentType.image;
-    // if (isImage) {
-    //   return StreamImageAttachmentThumbnail(
-    //     image: file,
-    //     width: width,
-    //     height: height,
-    //     fit: fit,
-    //   );
-    // }
-
-    // final isVideo = mediaType?.type == AttachmentType.video;
-    // if (isVideo) {
-    //   return StreamVideoAttachmentThumbnail(
-    //     video: file,
-    //     width: width,
-    //     height: height,
-    //     fit: fit,
-    //   );
-    // }
-
     // Return a generic file type icon.
     return Image.asset(
       getIconForFile(mediaTitle),
-      height: 28,
-      width: 28,
     );
   }
 }

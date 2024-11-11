@@ -117,14 +117,9 @@ class _PreparingState extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Align(
+        const Align(
           alignment: Alignment.topRight,
-          child: _IconButton(
-            icon: StreamSvgIcon.close(
-              color: StreamChatTheme.of(context).colorTheme.barsBg,
-            ),
-            onPressed: () => channel.cancelAttachmentUpload(attachmentId),
-          ),
+          child: SizedBox.shrink(),
         ),
         Align(
           alignment: Alignment.topRight,
@@ -151,19 +146,13 @@ class _InProgressState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final channel = StreamChannel.of(context).channel;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Align(
+        const Align(
           alignment: Alignment.topRight,
-          child: _IconButton(
-            icon: StreamSvgIcon.close(
-              color: StreamChatTheme.of(context).colorTheme.barsBg,
-            ),
-            onPressed: () => channel.cancelAttachmentUpload(attachmentId),
-          ),
+          child: SizedBox.shrink(),
         ),
         Align(
           alignment: Alignment.topRight,

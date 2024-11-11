@@ -92,6 +92,7 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
       if (onAttachmentTap != null) {
         onTap = () => onAttachmentTap!(message, file);
       }
+
       final isMyMessage =
           message.user?.id == StreamChat.of(context).currentUser!.id;
 

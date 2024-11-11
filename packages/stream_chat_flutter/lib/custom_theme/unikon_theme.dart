@@ -5,6 +5,8 @@ class UnikonColorTheme {
   static const Color messageSentIndicatorColor =
       Color.fromRGBO(255, 255, 255, 1);
 
+  static const Color secondaryTextColor = Color.fromRGBO(183, 183, 183, 1);
+
   static const Color replyQuotedMessageBGColor = Color.fromRGBO(49, 49, 49, 1);
 
   static const Color replyQuotedMessageBGColor2 = Color.fromRGBO(47, 72, 69, 1);
@@ -27,8 +29,7 @@ class UnikonColorTheme {
 
   static const Color dividerColor = const Color.fromRGBO(128, 128, 128, 1);
 
-  static const Color attachmentBGColor =
-      const Color.fromRGBO(217, 217, 217, 1);
+  static const Color attachmentBGColor = const Color.fromRGBO(217, 217, 217, 1);
 
   static const Color sendMessageInactiveStateColor =
       const Color.fromRGBO(80, 80, 80, 1);
