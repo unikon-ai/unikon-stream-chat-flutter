@@ -12,6 +12,9 @@ Future<void> galleryAndCameraOptionChooser({
   required BuildContext mainContext,
   required StreamMessageInputController effectiveController,
   required Future<bool> Function()? preMessageCallBack,
+  required Future<void> Function({
+    required Message message,
+  }) sendOrUpdateMessage,
 }) async {
   String cameraPickOptionIcon =
       "https://application-assets-app-and-web.s3.ap-south-1.amazonaws.com/cameraPick.svg";
@@ -73,6 +76,7 @@ Future<void> galleryAndCameraOptionChooser({
                           effectiveController: effectiveController,
                           channel: channel,
                           preMessageCallBack: preMessageCallBack,
+                          sendOrUpdateMessage: sendOrUpdateMessage,
                         ),
                       ),
                     );
@@ -107,6 +111,7 @@ Future<void> galleryAndCameraOptionChooser({
                           effectiveController: effectiveController,
                           channel: channel,
                           preMessageCallBack: preMessageCallBack,
+                          sendOrUpdateMessage: sendOrUpdateMessage,
                         ),
                       ),
                     );

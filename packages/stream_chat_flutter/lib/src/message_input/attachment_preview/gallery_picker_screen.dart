@@ -14,10 +14,14 @@ class GalleryPickerScreen extends StatefulWidget {
     required this.effectiveController,
     required this.channel,
     required this.preMessageCallBack,
+    required this.sendOrUpdateMessage,
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
   final Future<bool> Function()? preMessageCallBack;
+  final Future<void> Function({
+    required Message message,
+  }) sendOrUpdateMessage;
 
   @override
   State<GalleryPickerScreen> createState() => _GalleryPickerScreenState();
@@ -80,6 +84,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                                 effectiveController: widget.effectiveController,
                                 channel: widget.channel,
                                 preMessageCallBack: widget.preMessageCallBack,
+                                sendOrUpdateMessage: widget.sendOrUpdateMessage,
                               ),
                             ),
                             Padding(
@@ -138,6 +143,8 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                                       channel: widget.channel,
                                       preMessageCallBack:
                                           widget.preMessageCallBack,
+                                      sendOrUpdateMessage:
+                                          widget.sendOrUpdateMessage,
                                     ),
                                   ),
                                 );
@@ -177,10 +184,14 @@ class BuildMediaAttachment extends StatelessWidget {
     required this.effectiveController,
     required this.channel,
     required this.preMessageCallBack,
+    required this.sendOrUpdateMessage,
   });
   final StreamMessageInputController effectiveController;
   final Channel channel;
   final Future<bool> Function()? preMessageCallBack;
+  final Future<void> Function({
+    required Message message,
+  }) sendOrUpdateMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -235,6 +246,7 @@ class BuildMediaAttachment extends StatelessWidget {
                 effectiveController: effectiveController,
                 channel: channel,
                 preMessageCallBack: preMessageCallBack,
+                sendOrUpdateMessage: sendOrUpdateMessage,
               ),
             ),
           );
