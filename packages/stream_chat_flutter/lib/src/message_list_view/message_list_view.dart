@@ -415,7 +415,12 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       _userReadListener?.cancel();
 
       unreadCount = streamChannel?.channel.state?.unreadCount ?? 0;
-      initialIndex = 0;
+      initialIndex = getInitialIndex(
+        widget.initialScrollIndex,
+        streamChannel!,
+        widget.messageFilter,
+        _userRead,
+      );
 
       initialAlignment = _initialAlignment;
 
