@@ -342,7 +342,7 @@ String getIconForFile(String? fileName) {
   } else if (['pdf'].contains(extension)) {
     return UnikonColorTheme.pdfIcon;
   } else if (['doc', 'docx', 'odt', 'rtf'].contains(extension)) {
-    return UnikonColorTheme.documentIcon;
+    return UnikonColorTheme.documentsIcon;
   } else if (['ppt', 'pptx', 'odp'].contains(extension)) {
     return UnikonColorTheme.presentationIcon;
   } else if (['xls', 'xlsx', 'ods'].contains(extension)) {
