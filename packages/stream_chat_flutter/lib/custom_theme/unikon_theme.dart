@@ -13,6 +13,8 @@ class UnikonColorTheme {
 
   static const Color darkGreyColor = Color.fromRGBO(34, 34, 34, 1);
 
+  static const Color replyAttachmentBGColor = Color.fromRGBO(38, 38, 38, 1);
+
   static const Color primaryColor = Color.fromRGBO(20, 143, 128, 1);
 
   static const Color whiteHintTextColor = Color.fromRGBO(204, 204, 204, 0.8);

@@ -42,10 +42,23 @@ class QuotedMessage extends StatelessWidget {
       reverse: !isMyQuotedMessage,
       textBuilder: textBuilder,
       padding: EdgeInsets.only(
-        right: 4,
         left: 4,
-        top: 4,
-        bottom: hasNonUrlAttachments ? 4 : 0,
+        top: (message.text?.isNotEmpty == true &&
+                    (message.quotedMessage?.attachments.isNotEmpty == true &&
+                        message.quotedMessage?.attachments.first.type ==
+                            'voicenote') ||
+                (message.text?.isNotEmpty == true &&
+                    message.quotedMessage?.text?.isNotEmpty == true))
+            ? 8
+            : 0,
+        bottom: (message.text?.isNotEmpty == true &&
+                    (message.quotedMessage?.attachments.isNotEmpty == true &&
+                        message.quotedMessage?.attachments.first.type ==
+                            'voicenote') ||
+                (message.text?.isNotEmpty == true &&
+                    message.quotedMessage?.text?.isNotEmpty == true))
+            ? 4
+            : 0,
       ),
     );
   }
