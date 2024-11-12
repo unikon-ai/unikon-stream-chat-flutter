@@ -74,6 +74,7 @@ abstract class StreamAttachmentWidgetBuilder {
     EdgeInsetsGeometry padding = const EdgeInsets.all(4),
     StreamAttachmentWidgetTapCallback? onAttachmentTap,
     List<StreamAttachmentWidgetBuilder>? customAttachmentBuilders,
+    bool showSendingIndicator = true,
   }) {
     return [
       ...?customAttachmentBuilders,
@@ -99,6 +100,7 @@ abstract class StreamAttachmentWidgetBuilder {
         shape: shape,
         padding: padding,
         onAttachmentTap: onAttachmentTap,
+        showSendingIndicator: showSendingIndicator,
       ),
 
       // Handles giphy attachments.

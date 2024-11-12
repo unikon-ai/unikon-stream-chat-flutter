@@ -112,6 +112,7 @@ class ParseAttachments extends StatelessWidget {
       padding: attachmentPadding,
       onAttachmentTap: onAttachmentTap,
       customAttachmentBuilders: attachmentBuilders,
+      showSendingIndicator: showSendingIndicator,
     );
 
     final catalog = AttachmentWidgetCatalog(builders: builders);
