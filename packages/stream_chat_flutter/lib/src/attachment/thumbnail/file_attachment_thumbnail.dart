@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/image_attachment_thumbnail.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/thumbnail_error.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/video_attachment_thumbnail.dart';
@@ -50,29 +51,11 @@ class StreamFileAttachmentThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaType = file.title?.mediaType;
-
-    final isImage = mediaType?.type == AttachmentType.image;
-    if (isImage) {
-      return StreamImageAttachmentThumbnail(
-        image: file,
-        width: width,
-        height: height,
-        fit: fit,
-      );
-    }
-
-    final isVideo = mediaType?.type == AttachmentType.video;
-    if (isVideo) {
-      return StreamVideoAttachmentThumbnail(
-        video: file,
-        width: width,
-        height: height,
-        fit: fit,
-      );
-    }
+    final mediaTitle = file.title ?? '';
 
     // Return a generic file type icon.
-    return getFileTypeImage(mediaType?.mimeType);
+    return Image.asset(
+      getIconForFile(mediaTitle),
+    );
   }
 }

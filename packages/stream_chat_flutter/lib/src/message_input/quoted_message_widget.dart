@@ -62,32 +62,34 @@ class StreamQuotedMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.topRight,
       children: [
-        Padding(
+        _QuotedMessage(
+          message: message,
+          textLimit: textLimit,
+          messageTheme: messageTheme,
+          showBorder: showBorder,
+          reverse: reverse,
+          textBuilder: textBuilder,
+          onQuotedMessageClear: onQuotedMessageClear,
+          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+          isMyMessage: isMyMessage,
+          isReplying: isReplying,
           padding: padding,
-          child: _QuotedMessage(
-            message: message,
-            textLimit: textLimit,
-            messageTheme: messageTheme,
-            showBorder: showBorder,
-            reverse: reverse,
-            textBuilder: textBuilder,
-            onQuotedMessageClear: onQuotedMessageClear,
-            attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-            isMyMessage: isMyMessage,
-            isReplying: isReplying,
-          ),
         ),
         if (onQuotedMessageCleared != null)
           Positioned(
             right: 0,
             top: 0,
-            child: IconButton(
-              onPressed: onQuotedMessageCleared,
-              icon: const Icon(
-                Icons.close,
-                color: UnikonColorTheme.whiteHintTextColor,
-                size: 16,
+            child: InkWell(
+              onTap: onQuotedMessageCleared,
+              child: const Padding(
+                padding: EdgeInsets.all(4),
+                child: Icon(
+                  Icons.close,
+                  color: UnikonColorTheme.whiteHintTextColor,
+                  size: 16,
+                ),
               ),
             ),
           ),
@@ -108,6 +110,7 @@ class _QuotedMessage extends StatelessWidget {
     this.attachmentThumbnailBuilders,
     required this.isMyMessage,
     this.isReplying = false,
+    this.padding = const EdgeInsets.all(8),
   });
 
   final Message message;
@@ -119,6 +122,7 @@ class _QuotedMessage extends StatelessWidget {
   final Widget Function(BuildContext, Message)? textBuilder;
   final bool isMyMessage;
   final bool isReplying;
+  final EdgeInsetsGeometry padding;
 
   final _Builders? attachmentThumbnailBuilders;
 
@@ -311,69 +315,70 @@ class _QuotedMessage extends StatelessWidget {
         )),
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.only(left: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Row(
-                    children: [
-                      if (message.user != null)
-                        Text(
-                          isMyMessage ? 'You' : message.user!.name,
-                          style: messageTheme.messageTextStyle?.copyWith(
-                            color: isMyMessage
-                                ? UnikonColorTheme.primaryColor
-                                : UnikonColorTheme.messageSentIndicatorColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+            child: Padding(
+              padding: padding,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
+                        if (message.user != null)
+                          Text(
+                            isMyMessage ? 'You' : message.user!.name,
+                            style: messageTheme.messageTextStyle?.copyWith(
+                              color: isMyMessage
+                                  ? UnikonColorTheme.primaryColor
+                                  : UnikonColorTheme.messageSentIndicatorColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           ),
-                        ),
-                      if (isReplying)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: Row(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 4),
-                                child: SizedBox(
-                                  height: 10,
-                                  width: 10,
-                                  child: VerticalDivider(
-                                    color: UnikonColorTheme.dividerColor,
-                                    thickness: 1,
-                                    width: 1,
+                        if (isReplying)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 4),
+                                  child: SizedBox(
+                                    height: 10,
+                                    width: 10,
+                                    child: VerticalDivider(
+                                      color: UnikonColorTheme.dividerColor,
+                                      thickness: 1,
+                                      width: 1,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: Image.asset(
-                                  UnikonColorTheme.replyIcon,
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: Image.asset(
+                                    UnikonColorTheme.replyIcon,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Replying',
-                                style: messageTheme.messageTextStyle?.copyWith(
-                                  color: UnikonColorTheme.dividerColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                Text(
+                                  'Replying',
+                                  style:
+                                      messageTheme.messageTextStyle?.copyWith(
+                                    color: UnikonColorTheme.dividerColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                if (_hasAttachments)
                   SizedBox(
                     height: 36,
                     child: Center(
@@ -382,20 +387,21 @@ class _QuotedMessage extends StatelessWidget {
                       ),
                     ),
                   )
-                else
-                  Row(
-                    children: children,
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
-          if (_hasAttachments)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+          if (_hasAttachments && message.attachments.first.type != 'voicenote')
+            Container(
+              height: 80,
+              width: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: UnikonColorTheme.replyAttachmentBGColor,
+              ),
               child: _ParseAttachments(
                 message: message,
                 messageTheme: messageTheme,
-                attachmentThumbnailBuilders: attachmentThumbnailBuilders,
               ),
             ),
         ],
@@ -431,29 +437,9 @@ class _ParseAttachments extends StatelessWidget {
     // Return empty container if no attachment widget is returned.
     if (attachmentWidget == null) return const SizedBox.shrink();
 
-    final colorTheme = StreamChatTheme.of(context).colorTheme;
-
-    var clipBehavior = Clip.none;
-    ShapeDecoration? decoration;
-    if (attachment.type != AttachmentType.file) {
-      clipBehavior = Clip.hardEdge;
-      decoration = ShapeDecoration(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: colorTheme.borders,
-            strokeAlign: BorderSide.strokeAlignOutside,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-      );
-    }
-
-    return Container(
-      key: Key(attachment.id),
-      clipBehavior: clipBehavior,
-      decoration: decoration,
-      constraints: const BoxConstraints.tightFor(width: 45, height: 60),
-      child: AbsorbPointer(child: attachmentWidget),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: attachmentWidget,
     );
   }
 
@@ -463,7 +449,7 @@ class _ParseAttachments extends StatelessWidget {
         image: media,
         width: double.infinity,
         height: double.infinity,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
       );
     }
 
@@ -472,39 +458,20 @@ class _ParseAttachments extends StatelessWidget {
         image: media,
         width: double.infinity,
         height: double.infinity,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
       );
     }
 
     Widget _createFileThumbnail(BuildContext context, Attachment file) {
-      Widget thumbnail = StreamFileAttachmentThumbnail(
-        file: file,
-        width: double.infinity,
-        height: double.infinity,
-        fit: BoxFit.cover,
+      return Padding(
+        padding: const EdgeInsets.all(8),
+        child: StreamFileAttachmentThumbnail(
+          file: file,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.contain,
+        ),
       );
-
-      final mediaType = file.title?.mediaType;
-      final isImage = mediaType?.type == AttachmentType.image;
-      final isVideo = mediaType?.type == AttachmentType.video;
-      if (isImage || isVideo) {
-        final colorTheme = StreamChatTheme.of(context).colorTheme;
-        thumbnail = Container(
-          clipBehavior: Clip.hardEdge,
-          decoration: ShapeDecoration(
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: colorTheme.borders,
-                strokeAlign: BorderSide.strokeAlignOutside,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: thumbnail,
-        );
-      }
-
-      return thumbnail;
     }
 
     return {

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -324,6 +325,32 @@ String fileSize(dynamic size, [int round = 2]) {
   } else {
     final num r = _size / divider / divider / divider / divider / divider;
     return '${r.toStringAsFixed(round)} PB';
+  }
+}
+
+String getIconForFile(String? fileName) {
+  final String? extension = fileName?.split('.').last.toLowerCase();
+
+  if (['mp4', 'mov', 'wmv', 'avi', 'flv', 'mkv', 'mpeg', 'webm', '3gp', 'ogg']
+      .contains(extension)) {
+    return UnikonColorTheme.videosIcon;
+  } else if (['jpeg', 'jpg', 'png', 'gif', 'bmp', 'tiff', 'svg']
+      .contains(extension)) {
+    return UnikonColorTheme.imagesIcon;
+  } else if (['mp3', 'wav', 'flac', 'aac'].contains(extension)) {
+    return UnikonColorTheme.audioIcon;
+  } else if (['pdf'].contains(extension)) {
+    return UnikonColorTheme.pdfIcon;
+  } else if (['doc', 'docx', 'odt', 'rtf'].contains(extension)) {
+    return UnikonColorTheme.documentIcon;
+  } else if (['ppt', 'pptx', 'odp'].contains(extension)) {
+    return UnikonColorTheme.presentationIcon;
+  } else if (['xls', 'xlsx', 'ods'].contains(extension)) {
+    return UnikonColorTheme.spreadsheetIcon;
+  } else if (['txt', 'epub'].contains(extension)) {
+    return UnikonColorTheme.textIcon;
+  } else {
+    return UnikonColorTheme.folderIcon;
   }
 }
 

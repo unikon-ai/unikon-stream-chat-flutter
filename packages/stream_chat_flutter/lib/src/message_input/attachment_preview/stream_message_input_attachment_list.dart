@@ -165,7 +165,7 @@ class MessageInputFileAttachments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.of(context).size.height * 0.7,
       child: PageView(
         reverse: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -337,67 +337,66 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = StreamChatTheme.of(context).colorTheme;
-    final shape = RoundedRectangleBorder(
-      side: BorderSide(
-        color: colorTheme.borders,
-        strokeAlign: BorderSide.strokeAlignOutside,
-      ),
-      borderRadius: BorderRadius.circular(14),
-    );
-
     return Container(
       key: Key(attachment.id),
+      margin: const EdgeInsets.all(8),
       clipBehavior: Clip.hardEdge,
-      decoration: ShapeDecoration(shape: shape),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: FileTypeImage(
-                    file: attachment,
-                  ),
+      height: MediaQuery.of(context).size.height * 0.7,
+      width: MediaQuery.of(context).size.width * 0.6,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: UnikonColorTheme.darkGreyColor,
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: FileTypeImage(
+                  file: attachment,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                if (attachment.title != null)
-                  Text(
-                    attachment.title!,
-                    style: const TextStyle(
-                      color: UnikonColorTheme.messageSentIndicatorColor,
-                    ),
-                  ),
-                const SizedBox(
-                  height: 4,
-                ),
-                if (attachment.fileSize != null)
-                  Text(
-                    formatFileSize(attachment.fileSize!),
-                    style: const TextStyle(
-                      color: UnikonColorTheme.messageSentIndicatorColor,
-                    ),
-                  )
-              ],
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: RemoveAttachmentButton(
-                onPressed: onRemovePressed != null
-                    ? () => onRemovePressed!(attachment)
-                    : null,
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              if (attachment.title != null)
+                Text(
+                  attachment.title!,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: UnikonColorTheme.messageSentIndicatorColor,
+                  ),
+                ),
+              const SizedBox(
+                height: 4,
+              ),
+              if (attachment.fileSize != null)
+                Text(
+                  formatFileSize(attachment.fileSize!),
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 8,
+                    fontWeight: FontWeight.w300,
+                    color: UnikonColorTheme.secondaryTextColor,
+                  ),
+                )
+            ],
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: RemoveAttachmentButton(
+              onPressed: onRemovePressed != null
+                  ? () => onRemovePressed!(attachment)
+                  : null,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

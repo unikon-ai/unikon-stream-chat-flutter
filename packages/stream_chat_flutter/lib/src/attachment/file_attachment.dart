@@ -168,29 +168,11 @@ class FileTypeImage extends StatelessWidget {
   // This is using the full image instead of a smaller version (thumbnail)
   @override
   Widget build(BuildContext context) {
-    Widget child = StreamFileAttachmentThumbnail(
+    return StreamFileAttachmentThumbnail(
       file: file,
       width: double.infinity,
       height: double.infinity,
     );
-
-    final mediaType = file.title?.mediaType;
-    final isImage = mediaType?.type == AttachmentType.image;
-    final isVideo = mediaType?.type == AttachmentType.video;
-    if (isImage || isVideo) {
-      final colorTheme = StreamChatTheme.of(context).colorTheme;
-      child = Container(
-        clipBehavior: Clip.hardEdge,
-        decoration: ShapeDecoration(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: child,
-      );
-    }
-
-    return child;
   }
 }
 
@@ -229,22 +211,8 @@ class _Trailing extends StatelessWidget {
     }
 
     return attachment.uploadState.when(
-      preparing: () => Padding(
-        padding: const EdgeInsets.all(8),
-        child: _TrailingButton(
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg),
-          fillColor: theme.colorTheme.overlayDark,
-          onPressed: () => channel.cancelAttachmentUpload(attachmentId),
-        ),
-      ),
-      inProgress: (_, __) => Padding(
-        padding: const EdgeInsets.all(8),
-        child: _TrailingButton(
-          icon: StreamSvgIcon.close(color: theme.colorTheme.barsBg),
-          fillColor: theme.colorTheme.overlayDark,
-          onPressed: () => channel.cancelAttachmentUpload(attachmentId),
-        ),
-      ),
+      preparing: () => const SizedBox.shrink(),
+      inProgress: (_, __) => const SizedBox.shrink(),
       success: () => Padding(
         padding: const EdgeInsets.all(8),
         child: CircleAvatar(

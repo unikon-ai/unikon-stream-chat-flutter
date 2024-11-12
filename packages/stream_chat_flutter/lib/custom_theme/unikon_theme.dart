@@ -5,11 +5,15 @@ class UnikonColorTheme {
   static const Color messageSentIndicatorColor =
       Color.fromRGBO(255, 255, 255, 1);
 
+  static const Color secondaryTextColor = Color.fromRGBO(183, 183, 183, 1);
+
   static const Color replyQuotedMessageBGColor = Color.fromRGBO(49, 49, 49, 1);
 
   static const Color replyQuotedMessageBGColor2 = Color.fromRGBO(47, 72, 69, 1);
 
   static const Color darkGreyColor = Color.fromRGBO(34, 34, 34, 1);
+
+  static const Color replyAttachmentBGColor = Color.fromRGBO(38, 38, 38, 1);
 
   static const Color primaryColor = Color.fromRGBO(20, 143, 128, 1);
 
@@ -26,6 +30,8 @@ class UnikonColorTheme {
   static const double focusTextfieldBorderRadius = 20;
 
   static const Color dividerColor = const Color.fromRGBO(128, 128, 128, 1);
+
+  static const Color attachmentBGColor = const Color.fromRGBO(217, 217, 217, 1);
 
   static const Color sendMessageInactiveStateColor =
       const Color.fromRGBO(80, 80, 80, 1);
@@ -73,4 +79,20 @@ class UnikonColorTheme {
   static const videoIcon = "assets/images/video.png";
 
   static const documentIcon = "assets/images/document.png";
+
+  static const documentsIcon = "assets/images/doc.png";
+
+  static const imagesIcon = "assets/images/images.png";
+
+  static const audioIcon = "assets/images/mp3.png";
+
+  static const pdfIcon = "assets/images/pdf.png";
+
+  static const presentationIcon = "assets/images/ppt.png";
+
+  static const textIcon = "assets/images/txt.png";
+
+  static const videosIcon = "assets/images/videos.png";
+
+  static const spreadsheetIcon = "assets/images/xls.png";
 }

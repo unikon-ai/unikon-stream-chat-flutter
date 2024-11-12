@@ -1044,6 +1044,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                                       channel: channel,
                                       preMessageCallBack:
                                           widget.preMessageCallBack,
+                                      sendOrUpdateMessage: _sendOrUpdateMessage,
                                     ),
                                   ),
                                 );
@@ -1062,6 +1063,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                                   mainContext: context,
                                   effectiveController: _effectiveController,
                                   preMessageCallBack: widget.preMessageCallBack,
+                                  sendOrUpdateMessage: _sendOrUpdateMessage,
                                 );
                               },
                               icon: const Icon(
