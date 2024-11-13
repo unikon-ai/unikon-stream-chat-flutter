@@ -173,7 +173,7 @@ class _StreamMessageTextState extends State<StreamMessageText> {
                     });
                   },
                   child: Text(
-                    'Read more',
+                    'Read more...',
                     style: TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 14,
