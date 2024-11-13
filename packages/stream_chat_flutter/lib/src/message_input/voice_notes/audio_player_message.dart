@@ -114,8 +114,8 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: widget.isMyMessage
-                          ? UnikonColorTheme.whiteHintTextColor
-                          : UnikonColorTheme.primaryColor,
+                          ? UnikonColorTheme.audioUserProfileColor1
+                          : UnikonColorTheme.replyQuotedMessageBGColor,
                     ),
                     child: Center(
                       child: Text(

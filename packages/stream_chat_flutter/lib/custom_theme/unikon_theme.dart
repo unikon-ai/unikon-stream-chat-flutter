@@ -9,6 +9,8 @@ class UnikonColorTheme {
 
   static const Color replyQuotedMessageBGColor = Color.fromRGBO(49, 49, 49, 1);
 
+  static const Color audioUserProfileColor1 = Color.fromRGBO(47, 72, 69, 1);
+
   static const Color replyQuotedMessageBGColor2 = Color.fromRGBO(47, 72, 69, 1);
 
   static const Color darkGreyColor = Color.fromRGBO(34, 34, 34, 1);
