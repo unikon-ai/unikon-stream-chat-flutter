@@ -53,7 +53,6 @@ class _StreamMessageTextState extends State<StreamMessageText> {
     required String text,
     required double maxWidth,
   }) {
-    final ellipses = "...";
     // Set up the text painter to measure the text
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: widget.messageTheme.messageTextStyle),
@@ -89,7 +88,7 @@ class _StreamMessageTextState extends State<StreamMessageText> {
       }
     }
 
-    return trimmedText + ellipses;
+    return trimmedText;
   }
 
   @override
@@ -164,24 +163,21 @@ class _StreamMessageTextState extends State<StreamMessageText> {
             if (widget.showReadMore &&
                 showFullText != true &&
                 messageText!.length > truncatedMessageText.length)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      showFullText = !showFullText;
-                    });
-                  },
-                  child: Text(
-                    'Read more...',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: widget.isMyMessage == true
-                          ? UnikonColorTheme.messageSentIndicatorColor
-                          : UnikonColorTheme.primaryColor,
-                    ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    showFullText = !showFullText;
+                  });
+                },
+                child: Text(
+                  'Read more...',
+                  style: TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: widget.isMyMessage == true
+                        ? UnikonColorTheme.messageSentIndicatorColor
+                        : UnikonColorTheme.primaryColor,
                   ),
                 ),
               ),

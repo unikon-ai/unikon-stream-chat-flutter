@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 
 class UnikonColorTheme {
   const UnikonColorTheme._();
+
   static const Color messageSentIndicatorColor =
       Color.fromRGBO(255, 255, 255, 1);
 
   static const Color secondaryTextColor = Color.fromRGBO(183, 183, 183, 1);
 
   static const Color replyQuotedMessageBGColor = Color.fromRGBO(49, 49, 49, 1);
+
+  static const Color removeAttachmentButtonBGColor = Color(0xFF333333);
 
   static const Color audioUserProfileColor1 = Color.fromRGBO(47, 72, 69, 1);
 
@@ -88,7 +91,7 @@ class UnikonColorTheme {
 
   static const audioIcon = "assets/images/mp3.png";
 
-  static const pdfIcon = "assets/images/pdf.png";
+  // static const pdfIcon = "assets/images/pdf.png";
 
   static const presentationIcon = "assets/images/ppt.png";
 
@@ -97,4 +100,6 @@ class UnikonColorTheme {
   static const videosIcon = "assets/images/videos.png";
 
   static const spreadsheetIcon = "assets/images/xls.png";
+
+  static const pdfIcon = "assets/images/pdf.png";
 }

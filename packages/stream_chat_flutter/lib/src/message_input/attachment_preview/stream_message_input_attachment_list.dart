@@ -363,13 +363,16 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
                 height: 10,
               ),
               if (attachment.title != null)
-                Text(
-                  attachment.title!,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: UnikonColorTheme.messageSentIndicatorColor,
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                    attachment.title!,
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: UnikonColorTheme.messageSentIndicatorColor,
+                    ),
                   ),
                 ),
               const SizedBox(
@@ -466,22 +469,29 @@ class RemoveAttachmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: RawMaterialButton(
-        elevation: 0,
-        focusElevation: 0,
-        hoverElevation: 0,
-        highlightElevation: 0,
-        onPressed: onPressed,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(
-          Icons.close,
-          size: 24,
-          color: UnikonColorTheme.whiteHintTextColor,
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: const BoxDecoration(
+        color: UnikonColorTheme.removeAttachmentButtonBGColor,
+        shape: BoxShape.circle,
+      ),
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: RawMaterialButton(
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          highlightElevation: 0,
+          onPressed: onPressed,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Icon(
+            Icons.close,
+            size: 18,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -508,6 +518,7 @@ class _StreamVideoMediaAttachmentBuilderState
     extends State<StreamVideoMediaAttachmentBuilder> {
   late final VideoPackage controller;
   bool isPlaying = false;
+
   @override
   void initState() {
     controller = VideoPackage(
