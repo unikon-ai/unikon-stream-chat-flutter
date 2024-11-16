@@ -304,20 +304,29 @@ class _QuotedMessage extends StatelessWidget {
     children = children.insertBetween(const SizedBox(width: 8));
 
     return Container(
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: isMyMessage
             ? UnikonColorTheme.replyQuotedMessageBGColor2
             : UnikonColorTheme.replyQuotedMessageBGColor,
-        border: const Border(
-            left: BorderSide(
-          color: UnikonColorTheme.greyColor,
-          width: 2,
-        )),
+        // border: const Border(
+        //     left: BorderSide(
+        //   color: UnikonColorTheme.greyColor,
+        //   width: 2,
+        // )),
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.only(left: 8),
+      // padding: const EdgeInsets.only(left: 0),
       child: Row(
         children: [
+          LayoutBuilder(
+              builder: (context, constraints) => Container(
+                    height: 70,
+                    width: 3,
+                    decoration: const BoxDecoration(
+                      color: UnikonColorTheme.greyColor,
+                    ),
+                  )),
           Expanded(
             child: Padding(
               padding: padding,
