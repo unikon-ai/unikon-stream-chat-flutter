@@ -272,7 +272,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final double borderRadius = widget.effectiveController.text.isNotEmpty
+    final borderRadius = widget.effectiveController.text.isNotEmpty
         ? UnikonColorTheme.focusTextfieldBorderRadius
         : UnikonColorTheme.unfocusTextfieldBorderRadius;
     return Padding(
@@ -286,7 +286,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: LimitedBox(
-          maxHeight: 120,
+          maxHeight: 100,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [

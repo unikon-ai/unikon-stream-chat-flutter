@@ -8,6 +8,8 @@ import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_loading_
 import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_wave_bars.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+/// A widget that displays an audio message with a play/pause button
+/// and a waveform visualizer.
 class AudioPlayerMessage extends StatefulWidget {
   const AudioPlayerMessage({
     super.key,
@@ -114,8 +116,8 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: widget.isMyMessage
-                          ? UnikonColorTheme.whiteHintTextColor
-                          : UnikonColorTheme.primaryColor,
+                          ? UnikonColorTheme.audioUserProfileColor1
+                          : UnikonColorTheme.replyQuotedMessageBGColor,
                     ),
                     child: Center(
                       child: Text(

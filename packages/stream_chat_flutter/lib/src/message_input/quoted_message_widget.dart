@@ -399,9 +399,20 @@ class _QuotedMessage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 color: UnikonColorTheme.replyAttachmentBGColor,
               ),
-              child: _ParseAttachments(
-                message: message,
-                messageTheme: messageTheme,
+              child: Stack(
+                children: [
+                  _ParseAttachments(
+                    message: message,
+                    messageTheme: messageTheme,
+                  ),
+                  if (message.attachments.first.isVideoAttachment)
+                    const Align(
+                      child: Icon(
+                        Icons.play_circle,
+                        size: 12,
+                      ),
+                    ),
+                ],
               ),
             ),
         ],
