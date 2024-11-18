@@ -10,17 +10,27 @@ import 'package:stream_chat_flutter/src/message_input/voice_notes/offline_audio_
 /// This will handle the recording and the preview of the
 /// voice recording before sending it to the chat server
 class VoiceRecordingWidget extends StatefulWidget {
+  /// Constructor for creating a [VoiceRecordingWidget]
   const VoiceRecordingWidget({
     super.key,
     required this.onRecordingSend,
     required this.onRecordingStarted,
     required this.onRecordingAborted,
+    this.maxDuration,
   });
 
+  /// Callback to be called when the recording is sent
   final Function(String recordedFilePath, List<double>? fileWaveFormData)
       onRecordingSend;
+
+  /// Callback to be called when the recording is started
   final Function() onRecordingStarted;
+
+  /// Callback to be called when the recording is aborted
   final Function() onRecordingAborted;
+
+  /// The maximum duration of the recording
+  final Duration? maxDuration;
 
   @override
   State<VoiceRecordingWidget> createState() => _VoiceRecordingWidgetState();
@@ -43,11 +53,21 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
 
     // Start the recording
     _start();
+
+    if (widget.maxDuration != null) {
+      _controller.onCurrentDuration.listen((duration) {
+        if (duration >= widget.maxDuration!) {
+          _stop();
+        }
+      });
+    }
+
+    ///
     super.initState();
   }
 
   @override
-  dispose() {
+  void dispose() {
     _controller.dispose();
     super.dispose();
   }
@@ -63,7 +83,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
       if (await _controller.checkPermission()) {
         final tempDir = await getTemporaryDirectory();
         await _controller.record(
-            path: "${tempDir.path}/${Random.secure().nextInt(999999)}.m4a");
+            path: '${tempDir.path}/${Random.secure().nextInt(999999)}.m4a');
         if (_controller.isRecording) {
           widget.onRecordingStarted();
         }
@@ -86,7 +106,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
     }
   }
 
-  String formatDuration(Duration duration) {
+  String _formatDuration(Duration duration) {
     String minutes = duration.inMinutes.toString().padLeft(2, '0');
     String seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
@@ -157,7 +177,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Text(
-                          formatDuration(snapshot.data!),
+                          _formatDuration(snapshot.data!),
                           style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,

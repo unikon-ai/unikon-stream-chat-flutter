@@ -8,10 +8,12 @@ import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-Future<void> galleryAndCameraOptionChooser({
+/// This will handle the presentation of the image and video options
+Future<void> imageAndVideoOptionChooser({
   required BuildContext mainContext,
   required StreamMessageInputController effectiveController,
   required Future<bool> Function()? preMessageCallBack,
+  required Duration? videoRecordingMaxDuration,
   required Future<void> Function({
     required Message message,
   }) sendOrUpdateMessage,
@@ -82,7 +84,7 @@ Future<void> galleryAndCameraOptionChooser({
                     );
                   }
                 },
-                child: GalleryOptionChooserWidget(
+                child: IconWidget(
                   imageLink: cameraPickOptionIcon,
                   label: 'Camera',
                 ),
@@ -96,12 +98,13 @@ Future<void> galleryAndCameraOptionChooser({
                   final pickedVideo = await runInPermissionRequestLock(() {
                     return StreamAttachmentHandler.instance.pickVideo(
                       source: image_picker.ImageSource.camera,
+                      maxDuration: videoRecordingMaxDuration,
                       preferredCameraDevice: image_picker.CameraDevice.rear,
                     );
                   });
+
                   if (pickedVideo != null) {
                     final channel = StreamChannel.of(mainContext).channel;
-
                     await attachmentController.addAttachment(pickedVideo);
                     Navigator.pushReplacement(
                       context,
@@ -117,7 +120,7 @@ Future<void> galleryAndCameraOptionChooser({
                     );
                   }
                 },
-                child: GalleryOptionChooserWidget(
+                child: IconWidget(
                   imageLink: videoPost,
                   label: 'Video',
                 ),
@@ -131,11 +134,12 @@ Future<void> galleryAndCameraOptionChooser({
   );
 }
 
-class GalleryOptionChooserWidget extends StatelessWidget {
+/// UI for icon
+class IconWidget extends StatelessWidget {
   final String imageLink;
   final String label;
 
-  const GalleryOptionChooserWidget({
+  const IconWidget({
     super.key,
     required this.imageLink,
     required this.label,

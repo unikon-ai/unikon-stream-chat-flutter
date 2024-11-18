@@ -157,6 +157,8 @@ class StreamMessageInput extends StatefulWidget {
     this.useNativeAttachmentPickerOnMobile = false,
     this.preMessageCallBack,
     this.onFocusChanged,
+    this.videoRecordingMaxDuration,
+    this.audioRecordingMaxDuration,
   });
 
   /// The predicate used to send a message on desktop/web
@@ -356,9 +358,18 @@ class StreamMessageInput extends StatefulWidget {
   /// Stream attachment picker.
   final bool useNativeAttachmentPickerOnMobile;
 
+  /// Max duration for video recording
+  final Duration? videoRecordingMaxDuration;
+
+  /// Max duration for audio recording
+  final Duration? audioRecordingMaxDuration;
+
+  /// Callback to be called just before sending a message.
+  /// If the callback returns false, the message will not be sent.
   final Future<bool> Function()? preMessageCallBack;
 
-  final Function(bool value)? onFocusChanged;
+  /// Callback to be called when the focus of the input changes.
+  final Function({bool hasFocus})? onFocusChanged;
 
   static String? _defaultHintGetter(
     BuildContext context,
@@ -546,7 +557,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
   // ignore: no-empty-block
   void _focusNodeListener() {
     if (widget.onFocusChanged != null) {
-      widget.onFocusChanged!(_effectiveFocusNode.hasFocus);
+      widget.onFocusChanged?.call(hasFocus: _effectiveFocusNode.hasFocus);
     }
   }
 
@@ -584,7 +595,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   @override
   Widget build(BuildContext context) {
-
     return StreamMessageValueListenableBuilder(
       valueListenable: _effectiveController,
       builder: (context, value, _) {
@@ -720,6 +730,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
     );
   }
 
+  /// Value notifier to keep track of the recording state
   final ValueNotifier<bool> isRecordingInProgress = ValueNotifier(false);
 
   Widget _buildTextField(BuildContext context) {
@@ -760,6 +771,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       margin: margin,
       width: MediaQuery.of(context).size.width,
       child: VoiceRecordingWidget(
+        maxDuration: widget.audioRecordingMaxDuration,
         onRecordingSend: (recordedFilePath, fileWebFormData) async {
           if (await widget.preMessageCallBack?.call() == true) {
             final channel = StreamChannel.of(context).channel;
@@ -1059,8 +1071,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               _effectiveController.text.isEmpty)
                             IconButton(
                               onPressed: () {
-                                galleryAndCameraOptionChooser(
+                                imageAndVideoOptionChooser(
                                   mainContext: context,
+                                  videoRecordingMaxDuration:
+                                      widget.videoRecordingMaxDuration,
                                   effectiveController: _effectiveController,
                                   preMessageCallBack: widget.preMessageCallBack,
                                   sendOrUpdateMessage: _sendOrUpdateMessage,
