@@ -57,6 +57,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 
   final VoidCallback? onQuotedMessageCleared;
 
+  /// User is currently replying to the message
   final bool isReplying;
 
   @override
@@ -79,8 +80,8 @@ class StreamQuotedMessageWidget extends StatelessWidget {
         ),
         if (onQuotedMessageCleared != null)
           Positioned(
-            right: 0,
-            top: 0,
+            right: 4,
+            top: 7,
             child: InkWell(
               onTap: onQuotedMessageCleared,
               child: const Padding(
@@ -88,7 +89,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
                 child: Icon(
                   Icons.close,
                   color: UnikonColorTheme.whiteHintTextColor,
-                  size: 16,
+                  size: 14,
                 ),
               ),
             ),
@@ -251,13 +252,13 @@ class _QuotedMessage extends StatelessWidget {
                           ? messageTheme.copyWith(
                               messageTextStyle:
                                   messageTheme.messageTextStyle?.copyWith(
-                                fontSize: 32,
+                                fontSize: 20,
                               ),
                             )
                           : messageTheme.copyWith(
                               messageTextStyle:
                                   messageTheme.messageTextStyle?.copyWith(
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                             ),
                     ),
@@ -276,13 +277,13 @@ class _QuotedMessage extends StatelessWidget {
                         ? messageTheme.copyWith(
                             messageTextStyle:
                                 messageTheme.messageTextStyle?.copyWith(
-                              fontSize: 32,
+                              fontSize: 20,
                             ),
                           )
                         : messageTheme.copyWith(
                             messageTextStyle:
                                 messageTheme.messageTextStyle?.copyWith(
-                              fontSize: 12,
+                              fontSize: 10,
                             ),
                           ),
                   ),
@@ -305,6 +306,7 @@ class _QuotedMessage extends StatelessWidget {
 
     return Container(
       clipBehavior: Clip.hardEdge,
+      margin: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: isMyMessage
             ? UnikonColorTheme.replyQuotedMessageBGColor2
@@ -316,17 +318,18 @@ class _QuotedMessage extends StatelessWidget {
         // )),
         borderRadius: BorderRadius.circular(12),
       ),
-      // padding: const EdgeInsets.only(left: 0),
       child: Row(
         children: [
-          LayoutBuilder(
-              builder: (context, constraints) => Container(
-                    height: 70,
-                    width: 3,
-                    decoration: const BoxDecoration(
-                      color: UnikonColorTheme.greyColor,
-                    ),
-                  )),
+          Container(
+            height: 62,
+            width: 3,
+            decoration: const BoxDecoration(
+              color: UnikonColorTheme.greyColor,
+            ),
+          ),
+          const SizedBox(
+            width: 8,
+          ),
           Expanded(
             child: Padding(
               padding: padding,
@@ -345,51 +348,49 @@ class _QuotedMessage extends StatelessWidget {
                               color: isMyMessage
                                   ? UnikonColorTheme.primaryColor
                                   : UnikonColorTheme.messageSentIndicatorColor,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
                         if (isReplying)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 4),
-                                  child: SizedBox(
-                                    height: 10,
-                                    width: 10,
-                                    child: VerticalDivider(
-                                      color: UnikonColorTheme.dividerColor,
-                                      thickness: 1,
-                                      width: 1,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 4),
-                                  child: Image.asset(
-                                    UnikonColorTheme.replyIcon,
-                                  ),
-                                ),
-                                Text(
-                                  'Replying',
-                                  style:
-                                      messageTheme.messageTextStyle?.copyWith(
+                          Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(left: 4),
+                                child: SizedBox(
+                                  height: 10,
+                                  width: 10,
+                                  child: VerticalDivider(
                                     color: UnikonColorTheme.dividerColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                                    thickness: 1,
+                                    width: 1,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: Image.asset(
+                                  height: 12,
+                                  width: 12,
+                                  UnikonColorTheme.replyIcon,
+                                ),
+                              ),
+                              Text(
+                                'Replying',
+                                style: messageTheme.messageTextStyle?.copyWith(
+                                  color: UnikonColorTheme.dividerColor,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
                           ),
                       ],
                     ),
                   ),
                   SizedBox(
-                    height: 36,
+                    height: 30,
                     child: Center(
                       child: Row(
                         children: children,
@@ -402,8 +403,8 @@ class _QuotedMessage extends StatelessWidget {
           ),
           if (_hasAttachments && message.attachments.first.type != 'voicenote')
             Container(
-              height: 80,
-              width: 60,
+              height: 64,
+              width: 44.21,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: UnikonColorTheme.replyAttachmentBGColor,

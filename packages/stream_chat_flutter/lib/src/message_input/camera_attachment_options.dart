@@ -86,7 +86,7 @@ Future<void> imageAndVideoOptionChooser({
                 },
                 child: IconWidget(
                   imageLink: cameraPickOptionIcon,
-                  label: 'Camera',
+                  label: 'Photo',
                 ),
               ),
               const SizedBox(height: 40, width: 40),

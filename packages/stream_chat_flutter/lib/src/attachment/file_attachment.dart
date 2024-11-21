@@ -63,12 +63,14 @@ class StreamFileAttachment extends StatefulWidget {
   final Future<void> Function()? onDownloadTap;
 
   final EdgeInsetsGeometry internalPadding;
+
   @override
   State<StreamFileAttachment> createState() => _StreamFileAttachmentState();
 }
 
 class _StreamFileAttachmentState extends State<StreamFileAttachment> {
   bool doesFileExists = false;
+
   @override
   void initState() {
     setDoesFileExists();
@@ -130,10 +132,12 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
                 Text(
                   widget.file.title ?? context.translations.fileText,
                   maxLines: 1,
-                  style: textTheme.bodyBold.copyWith(
+                  style: textTheme.body.copyWith(
                     color: isMyMessage
                         ? UnikonColorTheme.messageSentIndicatorColor
                         : colorTheme.textHighEmphasis,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -159,10 +163,19 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
   }
 }
 
+/// Widget for building file attachment thumbnail.
 class FileTypeImage extends StatelessWidget {
-  const FileTypeImage({required this.file});
+  /// Widget for building file attachment thumbnail.
+  const FileTypeImage({super.key, required this.file, this.width, this.height});
 
+  /// The file attachment to build the thumbnail for.
   final Attachment file;
+
+  /// The width of the thumbnail.
+  final double? width;
+
+  /// The height of the thumbnail.
+  final double? height;
 
   // TODO: Improve image memory.
   // This is using the full image instead of a smaller version (thumbnail)
@@ -170,8 +183,8 @@ class FileTypeImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamFileAttachmentThumbnail(
       file: file,
-      width: double.infinity,
-      height: double.infinity,
+      width: width ?? double.infinity,
+      height: width ?? double.infinity,
     );
   }
 }
@@ -278,8 +291,10 @@ class _FileAttachmentSubtitle extends StatelessWidget {
     final theme = StreamChatTheme.of(context);
     final size = attachment.file?.size ?? attachment.extraData['file_size'];
     final textStyle = theme.textTheme.footnote.copyWith(
-      color: Colors.white,
-    );
+        color: Colors.white,
+        fontSize: 8,
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w300);
     return attachment.uploadState.when(
       preparing: () => Text(fileSize(size), style: textStyle),
       inProgress: (sent, total) => StreamUploadProgressIndicator(

@@ -102,7 +102,7 @@ class StreamMessageInput extends StatefulWidget {
     super.key,
     this.onMessageSent,
     this.preMessageSending,
-    this.maxHeight = 120,
+    this.maxHeight = 100,
     this.maxLines,
     this.minLines,
     this.textInputAction,
@@ -1029,10 +1029,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               keyboardType: widget.keyboardType,
                               controller: _effectiveController,
                               focusNode: _effectiveFocusNode,
-                              style:
-                                  _messageInputTheme.inputTextStyle?.copyWith(
-                                color: UnikonColorTheme.messageInputHintColor,
-                              ),
+                              style: _messageInputTheme.inputTextStyle,
                               autofocus: widget.autofocus,
                               textAlignVertical: TextAlignVertical.center,
                               decoration: _getInputDecoration(context),
@@ -1123,6 +1120,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
       hintText: _getHint(context),
       hintStyle: _messageInputTheme.inputTextStyle!.copyWith(
         color: UnikonColorTheme.messageInputHintColor,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
       ),
       border: const OutlineInputBorder(
         borderSide: BorderSide(
@@ -1406,7 +1405,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
     // Otherwise, use the default attachment list builder.
     return LimitedBox(
-      maxHeight: 240,
+      maxHeight: 230,
       child: StreamMessageInputAttachmentList(
         attachments: nonOGAttachments,
         onRemovePressed: _onAttachmentRemovePressed,

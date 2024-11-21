@@ -11,6 +11,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 /// A widget that displays an audio message with a play/pause button
 /// and a waveform visualizer.
 class AudioPlayerMessage extends StatefulWidget {
+  /// Creates an audio player message widget
   const AudioPlayerMessage({
     super.key,
     required this.source,
@@ -21,24 +22,37 @@ class AudioPlayerMessage extends StatefulWidget {
     required this.message,
   });
 
+  /// The audio source to play
   final AudioSource source;
+
+  /// The local file path of the audio file
   final String? localFilePath;
+
+  /// The message id
   final String id;
+
+  /// The waveform data of the audio file
   final List<double>? fileWaveFormData;
+
+  /// If the message is sent by the current user
   final bool isMyMessage;
+
+  /// The message object
   final Message message;
 
   @override
-  AudioPlayerMessageState createState() => AudioPlayerMessageState();
+  _AudioPlayerMessageState createState() => _AudioPlayerMessageState();
 }
 
-class AudioPlayerMessageState extends State<AudioPlayerMessage> {
+class _AudioPlayerMessageState extends State<AudioPlayerMessage> {
   final _audioPlayer = AudioPlayer();
 
   late Future<Duration?> futureDuration;
-  double _progress = 0.0;
+
+  double _progress = 0;
   Duration? _totalDuration;
-  String audioDuration = "0:00";
+  String audioDuration = '0:00';
+
   @override
   void initState() {
     super.initState();
@@ -83,60 +97,15 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
     super.dispose();
   }
 
-  String getInitials(String name) {
+  /// Get the initials of a user
+  String _getInitials(String name) {
     return name.split(' ').map((word) => word[0]).join();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> audioWidget = <Widget>[
-      Padding(
-        padding: const EdgeInsets.only(right: 4.0),
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            if (widget.message.user?.image != null)
-              Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: CachedNetworkImage(
-                    height: 40,
-                    width: 40,
-                    imageUrl: widget.message.user!.image!,
-                  ),
-                ),
-              )
-            else
-              Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: widget.isMyMessage
-                          ? UnikonColorTheme.audioUserProfileColor1
-                          : UnikonColorTheme.replyQuotedMessageBGColor,
-                    ),
-                    child: Center(
-                      child: Text(
-                        getInitials(widget.message.user!.name).toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  )),
-            const Icon(
-              Icons.mic,
-              size: 20,
-              color: UnikonColorTheme.messageSentIndicatorColor,
-            ),
-          ],
-        ),
-      ),
+    final audioWidget = <Widget>[
+      _buildUserProfilePic(),
       if (widget.fileWaveFormData != null)
         Expanded(
           child: Column(
@@ -144,7 +113,6 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   _controlButtons(),
                   AudioWaveBars(
@@ -170,7 +138,7 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: widget.isMyMessage
@@ -181,6 +149,57 @@ class AudioPlayerMessageState extends State<AudioPlayerMessage> {
         }
         return const AudioLoadingMessage();
       },
+    );
+  }
+
+  Padding _buildUserProfilePic() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 4),
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          if (widget.message.user?.image != null)
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: CachedNetworkImage(
+                  height: 40,
+                  width: 40,
+                  fit: BoxFit.cover,
+                  imageUrl: widget.message.user!.image!,
+                ),
+              ),
+            )
+          else
+            Padding(
+                padding: const EdgeInsets.all(4),
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.isMyMessage
+                        ? UnikonColorTheme.audioUserProfileColor1
+                        : UnikonColorTheme.replyQuotedMessageBGColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      _getInitials(widget.message.user!.name).toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )),
+          const Icon(
+            Icons.mic,
+            size: 20,
+            color: UnikonColorTheme.messageSentIndicatorColor,
+          ),
+        ],
+      ),
     );
   }
 

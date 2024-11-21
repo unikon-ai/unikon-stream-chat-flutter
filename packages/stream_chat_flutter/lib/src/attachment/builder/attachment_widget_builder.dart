@@ -79,7 +79,9 @@ abstract class StreamAttachmentWidgetBuilder {
     return [
       ...?customAttachmentBuilders,
 
-      AudioAttachmentBuilder(),
+      // Handles audio attachments.
+      const AudioAttachmentBuilder(),
+
       // Handles a mix of image, gif, video, url and file attachments.
       MixedAttachmentBuilder(
         padding: padding,
@@ -124,6 +126,7 @@ abstract class StreamAttachmentWidgetBuilder {
         onAttachmentTap: onAttachmentTap,
       ),
 
+      // Handles voice recording attachments.
       VoiceRecordingAttachmentBuilder(),
 
       // We don't handle URL attachments if the message is a reply.

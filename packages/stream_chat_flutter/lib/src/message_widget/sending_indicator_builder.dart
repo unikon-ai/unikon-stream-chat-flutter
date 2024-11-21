@@ -58,7 +58,7 @@ class SendingIndicatorBuilder extends StatelessWidget {
                     total: totalAttachments,
                   )
                 : 'Uploading...',
-            style: style,
+            style: style?.copyWith(fontSize: 10),
           ),
         );
       }

@@ -46,6 +46,7 @@ class ParseAttachments extends StatelessWidget {
   /// {@macro attachmentActionsBuilder}
   final AttachmentActionsBuilder? attachmentActionsModalBuilder;
 
+  /// If true, show the sending indicator.
   final bool showSendingIndicator;
 
   @override
