@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meta/meta.dart';
+import 'package:open_file/open_file.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
+import 'package:stream_chat_flutter/src/file_downloader/file_downloader_utils.dart';
 import 'package:stream_chat_flutter/src/indicators/upload_progress_indicator.dart';
 import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
 import 'package:stream_chat_flutter/src/stream_chat.dart';
@@ -73,11 +76,12 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
 
   @override
   void initState() {
-    setDoesFileExists();
+    _setDoesFileExists();
     super.initState();
   }
 
-  setDoesFileExists() async {
+  /// Set the value of [doesFileExists] by calling the provided function.
+  void _setDoesFileExists() async {
     print(await widget.doesFileExists!.call());
     doesFileExists = await widget.doesFileExists!.call() == true;
     setState(() {});
@@ -108,56 +112,89 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
           borderRadius: BorderRadius.circular(12),
         );
 
-    return Container(
-      padding: widget.internalPadding,
-      constraints: widget.constraints,
-      clipBehavior: Clip.hardEdge,
-      decoration: ShapeDecoration(
-        shape: shape,
-        color: backgroundColor,
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 34,
-            height: 40,
-            child: FileTypeImage(file: widget.file),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.file.title ?? context.translations.fileText,
-                  maxLines: 1,
-                  style: textTheme.body.copyWith(
-                    color: isMyMessage
-                        ? UnikonColorTheme.messageSentIndicatorColor
-                        : colorTheme.textHighEmphasis,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 3),
-                _FileAttachmentSubtitle(attachment: widget.file),
-              ],
+    return InkWell(
+      onTap: widget.onDownloadTap ??
+          () async {
+            final assetUrl = widget.file.assetUrl;
+            final title = widget.file.title;
+            if (widget.file.assetUrl != null) {
+              FileDownloaderUtils.doesFileExist(
+                      attachmentTitle: widget.file.title!, messageId: widget.message.id)
+                  .then((value) async {
+                if (value) {
+                  //Open the file
+                  final result = await OpenFile.open(
+                      await FileDownloaderUtils.getSavedFilePath(
+                          title!, widget.file.id));
+                  Fluttertoast.showToast(msg: result.message);
+                } else {
+                  Fluttertoast.showToast(msg: 'File not downloaded yet.');
+                }
+              });
+            }
+          },
+      child: Container(
+        padding: widget.internalPadding,
+        constraints: widget.constraints,
+        clipBehavior: Clip.hardEdge,
+        decoration: ShapeDecoration(
+          shape: shape,
+          color: backgroundColor,
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 34,
+              height: 40,
+              child: FileTypeImage(file: widget.file),
             ),
-          ),
-          const SizedBox(width: 8),
-          if (!doesFileExists)
-            Material(
-              type: MaterialType.transparency,
-              child: widget.trailing ??
-                  _Trailing(
-                    attachment: widget.file,
-                    message: widget.message,
-                    onDownloadTap: widget.onDownloadTap,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.file.title ?? context.translations.fileText,
+                    maxLines: 1,
+                    style: textTheme.body.copyWith(
+                      color: isMyMessage
+                          ? UnikonColorTheme.messageSentIndicatorColor
+                          : colorTheme.textHighEmphasis,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 3),
+                  _FileAttachmentSubtitle(attachment: widget.file),
+                ],
+              ),
             ),
-        ],
+            const SizedBox(width: 8),
+            if (!doesFileExists && !isMyMessage)
+              Material(
+                type: MaterialType.transparency,
+                child: widget.trailing ??
+                    _Trailing(
+                      attachment: widget.file,
+                      message: widget.message,
+                      onDownloadTap: widget.onDownloadTap ??
+                          () async {
+                            FileDownloaderUtils.downloadFile2(
+                                    url: widget.file.assetUrl!,
+                                    title: '${widget.file.title}',
+                                    messageId: widget.message.id)
+                                .then((value) {
+                              setState(() {
+                                doesFileExists = true;
+                              });
+                            });
+                          },
+                    ),
+              ),
+          ],
+        ),
       ),
     );
   }

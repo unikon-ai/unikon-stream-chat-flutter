@@ -57,13 +57,12 @@ Future<void> imageAndVideoOptionChooser({
             children: [
               GestureDetector(
                 onTap: () async {
-                  StreamAttachmentPickerController attachmentController =
+                  final attachmentController =
                       StreamAttachmentPickerController();
 
                   final pickedImage = await runInPermissionRequestLock(() {
                     return StreamAttachmentHandler.instance.pickImage(
                       source: image_picker.ImageSource.camera,
-                      preferredCameraDevice: image_picker.CameraDevice.rear,
                     );
                   });
                   if (pickedImage != null) {
