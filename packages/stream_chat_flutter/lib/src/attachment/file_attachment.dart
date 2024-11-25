@@ -119,16 +119,31 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
             final title = widget.file.title;
             if (widget.file.assetUrl != null) {
               FileDownloaderUtils.doesFileExist(
-                      attachmentTitle: widget.file.title!, messageId: widget.message.id)
+                      attachmentTitle: widget.file.title!,
+                      messageId: widget.message.id)
                   .then((value) async {
                 if (value) {
                   //Open the file
-                  final result = await OpenFile.open(
-                      await FileDownloaderUtils.getSavedFilePath(
-                          title!, widget.file.id));
+                  final filePath = await FileDownloaderUtils.getSavedFilePath(
+                      fileName: title!, messageId: widget.message.id);
+                  final result = await OpenFile.open(filePath);
                   Fluttertoast.showToast(msg: result.message);
                 } else {
-                  Fluttertoast.showToast(msg: 'File not downloaded yet.');
+                  if (!isMyMessage) {
+                    Fluttertoast.showToast(msg: 'File not downloaded yet');
+                    return;
+                  }
+
+                  // Download the file
+                  FileDownloaderUtils.downloadFile2(
+                          url: assetUrl!,
+                          title: title!,
+                          messageId: widget.message.id)
+                      .then((value) {
+                    setState(() {
+                      doesFileExists = true;
+                    });
+                  });
                 }
               });
             }

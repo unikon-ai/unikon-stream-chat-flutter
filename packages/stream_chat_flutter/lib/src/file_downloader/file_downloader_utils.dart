@@ -12,17 +12,18 @@ class FileDownloaderUtils {
       required String title}) async {
     try {
       // Determine the save path
-      Directory saveDir;
+      Directory? saveDir;
 
       // Scoped Storage - Use app-specific directory
-      saveDir = await getApplicationDocumentsDirectory();
 
-      // Ensure the directory exists
-      if (!saveDir.existsSync()) {
-        saveDir.createSync(recursive: true);
+      if (Platform.isAndroid) {
+        saveDir = await getExternalStorageDirectory();
+      }
+      if (Platform.isIOS) {
+        saveDir = await getApplicationDocumentsDirectory();
       }
 
-      String filePath = '${saveDir.path}/${messageId}/$title';
+      final filePath = '${saveDir?.path}/$messageId/$title';
 
       // Download the file
       final dio = Dio();
@@ -51,25 +52,31 @@ class FileDownloaderUtils {
 
   /// Get the saved file path
   static Future<String> getSavedFilePath(
-      String fileName, String messageId) async {
-    final documentsDir = await getApplicationDocumentsDirectory();
-    final filePath = '${documentsDir.path}/${messageId}}/$fileName';
+      {required String fileName, required String messageId}) async {
+    Directory? documentsDir;
+    if (Platform.isAndroid) {
+      documentsDir = await getExternalStorageDirectory();
+    }
+    if (Platform.isIOS) {
+      documentsDir = await getApplicationDocumentsDirectory();
+    }
+    final filePath = '${documentsDir?.path}/$messageId/$fileName';
     return filePath;
   }
-
-  // Get the file extension by splitting the string based on the last period (.)
-  static String _getFileExtension(String title) => title.split('.').last;
-
-  // Get folder name
-  static String _getFolderName(String id) => id.split('-').last;
 
   /// Check if file exists
   static Future<bool> doesFileExist({
     required String attachmentTitle,
     required String messageId,
   }) async {
-    final documentsDir = await getApplicationDocumentsDirectory();
-    final filePath = '${documentsDir.path}/${messageId}/$attachmentTitle';
+    Directory? documentsDir;
+    if (Platform.isAndroid) {
+      documentsDir = await getExternalStorageDirectory();
+    }
+    if (Platform.isIOS) {
+      documentsDir = await getApplicationDocumentsDirectory();
+    }
+    final filePath = '${documentsDir?.path}/$messageId/$attachmentTitle';
     final file = File(filePath);
 
     if (file.existsSync()) {
