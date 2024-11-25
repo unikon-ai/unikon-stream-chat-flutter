@@ -4,8 +4,10 @@ import 'dart:math';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/offline_audio_wave_widget.dart';
+import 'package:stream_chat_flutter/src/utils/permission_helper.dart';
 
 /// This will handle the recording and the preview of the
 /// voice recording before sending it to the chat server
@@ -80,6 +82,15 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
 
   Future<void> _start() async {
     try {
+      final granted = await PermissionHelper.requestMultiplePermissions(
+        permissions: [
+          Permission.microphone,
+        ],
+        context: context,
+      );
+
+      // if (!granted) return;
+
       if (await _controller.checkPermission()) {
         final tempDir = await getTemporaryDirectory();
         await _controller.record(

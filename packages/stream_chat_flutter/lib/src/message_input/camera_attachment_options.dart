@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart' as image_picker;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
+import 'package:stream_chat_flutter/src/utils/permission_helper.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// This will handle the presentation of the image and video options
@@ -60,11 +62,24 @@ Future<void> imageAndVideoOptionChooser({
                   final attachmentController =
                       StreamAttachmentPickerController();
 
-                  final pickedImage = await runInPermissionRequestLock(() {
+                  final pickedImage =
+                      await runInPermissionRequestLock(() async {
+                    final granted =
+                        await PermissionHelper.requestMultiplePermissions(
+                      permissions: [
+                        Permission.camera,
+                      ],
+                      context: context,
+                    );
+
+                    // Permission not granted
+                    if (!granted) return null;
+
                     return StreamAttachmentHandler.instance.pickImage(
                       source: image_picker.ImageSource.camera,
                     );
                   });
+
                   if (pickedImage != null) {
                     final channel = StreamChannel.of(mainContext).channel;
 
@@ -91,15 +106,28 @@ Future<void> imageAndVideoOptionChooser({
               const SizedBox(height: 40, width: 40),
               GestureDetector(
                 onTap: () async {
-                  StreamAttachmentPickerController attachmentController =
+                  final attachmentController =
                       StreamAttachmentPickerController();
 
-                  final pickedVideo = await runInPermissionRequestLock(() {
-                    return StreamAttachmentHandler.instance.pickVideo(
-                      source: image_picker.ImageSource.camera,
-                      maxDuration: videoRecordingMaxDuration,
-                      preferredCameraDevice: image_picker.CameraDevice.rear,
+                  final pickedVideo =
+                      await runInPermissionRequestLock(() async {
+                    final granted =
+                        await PermissionHelper.requestMultiplePermissions(
+                      permissions: [
+                        Permission.camera,
+                        Permission.microphone,
+                      ],
+                      context: context,
                     );
+
+                    if (granted) {
+                      return StreamAttachmentHandler.instance.pickVideo(
+                        source: image_picker.ImageSource.camera,
+                        maxDuration: videoRecordingMaxDuration,
+                      );
+                    }
+
+                    return null;
                   });
 
                   if (pickedVideo != null) {

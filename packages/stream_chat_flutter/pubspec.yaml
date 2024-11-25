@@ -50,6 +50,7 @@ dependencies:
   audio_waveforms: ^1.0.5
   open_file: ^3.5.9
   fluttertoast: ^8.2.8
+  permission_handler: any
 
 flutter:
   plugin:
