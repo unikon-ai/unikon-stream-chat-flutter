@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mime_type/mime_type.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Utility class for downloading files
 class FileDownloaderUtils {
@@ -37,17 +40,66 @@ class FileDownloaderUtils {
       // Validate file existence
       final file = File(filePath);
       if (file.existsSync()) {
-        print('File downloaded successfully: $filePath');
+        // Save the file to external storage
+        _saveFileToExternalStorage(
+            sourceFile: file, fileName: title, messageId: messageId);
         return filePath;
       } else {
-        print('File download failed');
+        ;
         return null;
       }
     } catch (e) {
-      print('Error downloading file: $e');
       Fluttertoast.showToast(msg: 'Failed to download file.');
       return null;
     }
+  }
+
+  /// Get folder uri from shared preferences
+  static Future<String?> _getFolderUriFromSharedPreferences() async {
+    // Get the folderUri from persistent storage (e.g., SharedPreferences or Hive)
+    final pref = await SharedPreferences.getInstance();
+    final folderUri = pref.getString('folderUri');
+    return folderUri;
+  }
+
+  /// Get folder uri from shared preferences
+  static Future<void> _saveFolderUriToSharedPreferences(String value) async {
+    // Get the folderUri from persistent storage (e.g., SharedPreferences or Hive)
+    final pref = await SharedPreferences.getInstance();
+    await pref.setString('folderUri', value);
+  }
+
+  /// Get the folder uri by selecting a folder
+  static Future<void> _saveFileToExternalStorage(
+      {required File sourceFile,
+      required String fileName,
+      required String messageId}) async {
+    var folderUri = await _getFolderUriFromSharedPreferences();
+
+    if (folderUri != null) {
+      FlutterFileDialog.saveFileToDirectory(
+          directory: DirectoryLocation(folderUri),
+          mimeType: mime(sourceFile.path),
+          data: File(sourceFile.path).readAsBytesSync(),
+          fileName: fileName);
+      return;
+    }
+
+    if (!await FlutterFileDialog.isPickDirectorySupported()) {
+      Fluttertoast.showToast(
+          msg: 'This feature is not supported on this device');
+      return;
+    }
+
+    // Select a folder
+    folderUri = (await FlutterFileDialog.pickDirectory())?.toString();
+
+    if (folderUri == null) {
+      return;
+    }
+
+    // Save it to persistent storage
+    await _saveFolderUriToSharedPreferences(folderUri.toString());
   }
 
   /// Get the saved file path
