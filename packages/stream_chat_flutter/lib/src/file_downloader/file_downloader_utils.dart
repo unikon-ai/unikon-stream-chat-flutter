@@ -8,6 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Utility class for downloading files
 class FileDownloaderUtils {
+  /// Key for folder uri in shared preferences
+  static const String _folderUriKey = 'folderAccessUri';
+
   /// Downloads a file with Dio
   static Future<String?> downloadFile2(
       {required String url,
@@ -60,7 +63,7 @@ class FileDownloaderUtils {
   static Future<String?> _getFolderUriFromSharedPreferences() async {
     // Get the folderUri from persistent storage (e.g., SharedPreferences or Hive)
     final pref = await SharedPreferences.getInstance();
-    final folderUri = pref.getString('folderUri');
+    final folderUri = pref.getString(_folderUriKey);
     return folderUri;
   }
 
@@ -68,7 +71,7 @@ class FileDownloaderUtils {
   static Future<void> _saveFolderUriToSharedPreferences(String value) async {
     // Get the folderUri from persistent storage (e.g., SharedPreferences or Hive)
     final pref = await SharedPreferences.getInstance();
-    await pref.setString('folderUri', value);
+    await pref.setString(_folderUriKey, value);
   }
 
   /// Get the folder uri by selecting a folder
@@ -76,6 +79,12 @@ class FileDownloaderUtils {
       {required File sourceFile,
       required String fileName,
       required String messageId}) async {
+    if (!await FlutterFileDialog.isPickDirectorySupported()) {
+      Fluttertoast.showToast(
+          msg: 'This feature is not supported on this device');
+      return;
+    }
+
     var folderUri = await _getFolderUriFromSharedPreferences();
 
     if (folderUri != null) {
@@ -84,12 +93,6 @@ class FileDownloaderUtils {
           mimeType: mime(sourceFile.path),
           data: File(sourceFile.path).readAsBytesSync(),
           fileName: fileName);
-      return;
-    }
-
-    if (!await FlutterFileDialog.isPickDirectorySupported()) {
-      Fluttertoast.showToast(
-          msg: 'This feature is not supported on this device');
       return;
     }
 
