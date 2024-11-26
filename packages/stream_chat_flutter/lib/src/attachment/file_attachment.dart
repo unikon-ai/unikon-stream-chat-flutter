@@ -73,11 +73,18 @@ class StreamFileAttachment extends StatefulWidget {
 
 class _StreamFileAttachmentState extends State<StreamFileAttachment> {
   bool doesFileExists = false;
+  final ValueNotifier<double?> _downloadProgress = ValueNotifier(null);
 
   @override
   void initState() {
     _setDoesFileExists();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _downloadProgress.dispose();
+    super.dispose();
   }
 
   /// Set the value of [doesFileExists] by calling the provided function.
@@ -95,7 +102,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
     final isMyMessage =
         widget.message.user?.id == StreamChat.of(context).currentUser!.id;
 
-    final backgroundColor = this.widget.backgroundColor ??
+    final backgroundColor = widget.backgroundColor ??
         ((widget.message.text?.isNotEmpty == true)
             ? (isMyMessage
                 ? const Color.fromRGBO(20, 127, 114, 1)
@@ -103,7 +110,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
             : (isMyMessage
                 ? chatTheme.ownMessageTheme.messageBackgroundColor
                 : chatTheme.otherMessageTheme.messageBackgroundColor));
-    final shape = this.widget.shape ??
+    final shape = widget.shape ??
         RoundedRectangleBorder(
           side: BorderSide(
             color: colorTheme.borders,
@@ -118,34 +125,43 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
             final assetUrl = widget.file.assetUrl;
             final title = widget.file.title;
             if (widget.file.assetUrl != null) {
-              FileDownloaderUtils.doesFileExist(
-                      attachmentTitle: widget.file.title!,
-                      messageId: widget.message.id)
-                  .then((value) async {
-                if (value) {
-                  //Open the file
-                  final filePath = await FileDownloaderUtils.getSavedFilePath(
-                      fileName: title!, messageId: widget.message.id);
-                  final result = await OpenFile.open(filePath);
-                  Fluttertoast.showToast(msg: result.message);
-                } else {
-                  if (!isMyMessage) {
-                    Fluttertoast.showToast(msg: 'File not downloaded yet');
-                    return;
-                  }
+              // Check if file exists
+              final result = await FileDownloaderUtils.doesFileExist(
+                  attachmentTitle: widget.file.title!,
+                  messageId: widget.message.id);
 
-                  // Download the file
-                  FileDownloaderUtils.downloadFile2(
-                          url: assetUrl!,
-                          title: title!,
-                          messageId: widget.message.id)
-                      .then((value) {
-                    setState(() {
-                      doesFileExists = true;
-                    });
-                  });
-                }
-              });
+              // File exists, open it
+              if (result) {
+                //Open the file
+                final filePath = await FileDownloaderUtils.getSavedFilePath(
+                    fileName: title!, messageId: widget.message.id);
+                final result = await OpenFile.open(filePath);
+                Fluttertoast.showToast(msg: result.message);
+                return;
+              }
+
+              // If not my message, other user has to download it first
+              if (!isMyMessage) {
+                Fluttertoast.showToast(msg: 'File not downloaded yet');
+                return;
+              }
+
+              // Download the file
+              final downloadResult = await FileDownloaderUtils.downloadFile2(
+                url: assetUrl!,
+                title: title!,
+                messageId: widget.message.id,
+                onDownloadProgress: (p0) {
+                  _downloadProgress.value = p0;
+                },
+              );
+
+              // If download was successful, update the state
+              if (downloadResult != null) {
+                setState(() {
+                  doesFileExists = true;
+                });
+              }
             }
           },
       child: Container(
@@ -187,7 +203,13 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
               ),
             ),
             const SizedBox(width: 8),
-            if (!doesFileExists && !isMyMessage)
+            if (!doesFileExists && !isMyMessage) ...[
+              ValueListenableBuilder(
+                valueListenable: _downloadProgress,
+                builder: (context, value, child) => value != null
+                    ? Text('${value.toStringAsFixed(0)}%')
+                    : const SizedBox.shrink(),
+              ),
               Material(
                 type: MaterialType.transparency,
                 child: widget.trailing ??
@@ -199,6 +221,9 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
                             FileDownloaderUtils.downloadFile2(
                                     url: widget.file.assetUrl!,
                                     title: '${widget.file.title}',
+                                    onDownloadProgress: (p0) {
+                                      _downloadProgress.value = p0;
+                                    },
                                     messageId: widget.message.id)
                                 .then((value) {
                               setState(() {
@@ -208,6 +233,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
                           },
                     ),
               ),
+            ],
           ],
         ),
       ),

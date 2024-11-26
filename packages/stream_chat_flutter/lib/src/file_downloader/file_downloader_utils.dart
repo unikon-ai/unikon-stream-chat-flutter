@@ -12,6 +12,7 @@ class FileDownloaderUtils {
   static Future<String?> downloadFile2(
       {required String url,
       required String messageId,
+      required void Function(double?) onDownloadProgress,
       required String title}) async {
     try {
       // Determine the save path
@@ -32,20 +33,21 @@ class FileDownloaderUtils {
       final dio = Dio();
       await dio.download(url, filePath, onReceiveProgress: (received, total) {
         if (total != -1) {
-          print(
-              'Download Progress: ${(received / total * 100).toStringAsFixed(0)}%');
+          onDownloadProgress.call(received / total * 100);
         }
       });
 
       // Validate file existence
       final file = File(filePath);
       if (file.existsSync()) {
-        // Save the file to external storage
-        _saveFileToExternalStorage(
-            sourceFile: file, fileName: title, messageId: messageId);
+        if (Platform.isAndroid) {
+          // Save the file to external storage
+          _saveFileToExternalStorage(
+              sourceFile: file, fileName: title, messageId: messageId);
+        }
+
         return filePath;
       } else {
-        ;
         return null;
       }
     } catch (e) {
