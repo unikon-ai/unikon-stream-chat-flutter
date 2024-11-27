@@ -57,37 +57,40 @@ class StreamQuotedMessageWidget extends StatelessWidget {
 
   final VoidCallback? onQuotedMessageCleared;
 
+  /// User is currently replying to the message
   final bool isReplying;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.topRight,
       children: [
-        Padding(
+        _QuotedMessage(
+          message: message,
+          textLimit: textLimit,
+          messageTheme: messageTheme,
+          showBorder: showBorder,
+          reverse: reverse,
+          textBuilder: textBuilder,
+          onQuotedMessageClear: onQuotedMessageClear,
+          attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+          isMyMessage: isMyMessage,
+          isReplying: isReplying,
           padding: padding,
-          child: _QuotedMessage(
-            message: message,
-            textLimit: textLimit,
-            messageTheme: messageTheme,
-            showBorder: showBorder,
-            reverse: reverse,
-            textBuilder: textBuilder,
-            onQuotedMessageClear: onQuotedMessageClear,
-            attachmentThumbnailBuilders: attachmentThumbnailBuilders,
-            isMyMessage: isMyMessage,
-            isReplying: isReplying,
-          ),
         ),
         if (onQuotedMessageCleared != null)
           Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              onPressed: onQuotedMessageCleared,
-              icon: const Icon(
-                Icons.close,
-                color: UnikonColorTheme.whiteHintTextColor,
-                size: 16,
+            right: 4,
+            top: 7,
+            child: InkWell(
+              onTap: onQuotedMessageCleared,
+              child: const Padding(
+                padding: EdgeInsets.all(4),
+                child: Icon(
+                  Icons.close,
+                  color: UnikonColorTheme.whiteHintTextColor,
+                  size: 14,
+                ),
               ),
             ),
           ),
@@ -108,6 +111,7 @@ class _QuotedMessage extends StatelessWidget {
     this.attachmentThumbnailBuilders,
     required this.isMyMessage,
     this.isReplying = false,
+    this.padding = const EdgeInsets.all(8),
   });
 
   final Message message;
@@ -119,6 +123,7 @@ class _QuotedMessage extends StatelessWidget {
   final Widget Function(BuildContext, Message)? textBuilder;
   final bool isMyMessage;
   final bool isReplying;
+  final EdgeInsetsGeometry padding;
 
   final _Builders? attachmentThumbnailBuilders;
 
@@ -134,20 +139,84 @@ class _QuotedMessage extends StatelessWidget {
 
   bool get _isDeleted => message.isDeleted || message.deletedAt != null;
 
-  @override
-  Widget build(BuildContext context) {
-    final isOnlyEmoji = message.text!.isOnlyEmoji;
-    var msg = _hasAttachments && !_containsText
-        ? message.copyWith(text: message.attachments.last.title ?? '')
-        : message;
-    if (msg.text!.length > textLimit) {
-      msg = msg.copyWith(text: '${msg.text!.substring(0, textLimit - 3)}...');
+  Map<String, String> getAttachmentType(String? title) {
+    if (title == null) return {'title': ''};
+
+    final lowerTitle = title.toLowerCase();
+
+    final imageExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.gif',
+      '.bmp',
+      '.webp',
+      '.tiff',
+      '.svg',
+      '.heic'
+    ];
+    final videoExtensions = [
+      '.mp4',
+      '.mov',
+      '.avi',
+      '.mkv',
+      '.flv',
+      '.wmv',
+      '.webm',
+      '.3gp',
+      '.m4v'
+    ];
+    final audioExtensions = [
+      '.mp3',
+      '.wav',
+      '.aac',
+      '.flac',
+      '.ogg',
+      '.wma',
+      '.m4a',
+      '.alac'
+    ];
+    final documentExtensions = [
+      '.pdf',
+      '.doc',
+      '.docx',
+      '.xls',
+      '.xlsx',
+      '.ppt',
+      '.pptx',
+      '.txt',
+      '.odt',
+      '.ods',
+      '.odp',
+      '.rtf'
+    ];
+
+    if (imageExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Image', 'icon': UnikonColorTheme.imageIcon};
+    }
+    if (videoExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Video', 'icon': UnikonColorTheme.videoIcon};
+    }
+    if (audioExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Voice Message', 'icon': UnikonColorTheme.micIcon};
+    }
+    if (documentExtensions.any(lowerTitle.contains)) {
+      return {'title': 'Document', 'icon': UnikonColorTheme.documentIcon};
     }
 
-    List<Widget> children;
+    return {'title': ''};
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isOnlyEmoji = message.text?.isOnlyEmoji ?? false;
+    Message msg = message;
+
+    List<Widget> children = [];
+
     if (_isDeleted) {
       // Show deleted message text
-      children = [
+      children.add(
         Text(
           context.translations.messageDeletedLabel,
           style: messageTheme.messageTextStyle?.copyWith(
@@ -155,33 +224,73 @@ class _QuotedMessage extends StatelessWidget {
             color: messageTheme.createdAtStyle?.color,
           ),
         ),
-      ];
+      );
     } else {
       // Show quoted message
-      children = [
-        if (msg.text!.isNotEmpty && !_isGiphy)
-          Flexible(
-            child: textBuilder?.call(context, msg) ??
-                StreamMessageText(
-                  maxLines: 2,
-                  message: msg,
-                  showReadMore: false,
-                  messageTheme: isOnlyEmoji && _containsText
-                      ? messageTheme.copyWith(
-                          messageTextStyle:
-                              messageTheme.messageTextStyle?.copyWith(
-                            fontSize: 32,
-                          ),
-                        )
-                      : messageTheme.copyWith(
-                          messageTextStyle:
-                              messageTheme.messageTextStyle?.copyWith(
-                            fontSize: 12,
-                          ),
-                        ),
+      if (!_isGiphy) {
+        if (_hasAttachments && !_containsText) {
+          final Map<String, String> attachmentMessage =
+              getAttachmentType(message.attachments.last.title);
+          msg = message.copyWith(text: attachmentMessage['title']);
+          if (attachmentMessage['icon'] != null) {
+            children
+              ..add(
+                Image.asset(
+                  attachmentMessage['icon']!,
+                  width: 16,
+                  height: 16,
                 ),
-          ),
-      ];
+              )
+              ..add(
+                textBuilder?.call(context, msg) ??
+                    StreamMessageText(
+                      maxWidth: MediaQuery.of(context).size.width * 0.6,
+                      maxLines: 2,
+                      message: msg,
+                      showReadMore: false,
+                      messageTheme: isOnlyEmoji && _containsText
+                          ? messageTheme.copyWith(
+                              messageTextStyle:
+                                  messageTheme.messageTextStyle?.copyWith(
+                                fontSize: 20,
+                              ),
+                            )
+                          : messageTheme.copyWith(
+                              messageTextStyle:
+                                  messageTheme.messageTextStyle?.copyWith(
+                                fontSize: 10,
+                              ),
+                            ),
+                    ),
+              );
+          }
+        } else {
+          children.add(
+            Flexible(
+              child: textBuilder?.call(context, msg) ??
+                  StreamMessageText(
+                    maxWidth: MediaQuery.of(context).size.width * 0.6,
+                    maxLines: 2,
+                    message: msg,
+                    showReadMore: false,
+                    messageTheme: isOnlyEmoji && _containsText
+                        ? messageTheme.copyWith(
+                            messageTextStyle:
+                                messageTheme.messageTextStyle?.copyWith(
+                              fontSize: 20,
+                            ),
+                          )
+                        : messageTheme.copyWith(
+                            messageTextStyle:
+                                messageTheme.messageTextStyle?.copyWith(
+                              fontSize: 10,
+                            ),
+                          ),
+                  ),
+            ),
+          );
+        }
+      }
     }
 
     // Add clear button if needed.
@@ -196,84 +305,124 @@ class _QuotedMessage extends StatelessWidget {
     children = children.insertBetween(const SizedBox(width: 8));
 
     return Container(
+      clipBehavior: Clip.hardEdge,
+      margin: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: isMyMessage
             ? UnikonColorTheme.replyQuotedMessageBGColor2
             : UnikonColorTheme.replyQuotedMessageBGColor,
-        border: const Border(
-            left: BorderSide(
-          color: UnikonColorTheme.greyColor,
-          width: 2,
-        )),
+        // border: const Border(
+        //     left: BorderSide(
+        //   color: UnikonColorTheme.greyColor,
+        //   width: 2,
+        // )),
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.all(8),
       child: Row(
         children: [
+          Container(
+            height: 62,
+            width: 3,
+            decoration: const BoxDecoration(
+              color: UnikonColorTheme.greyColor,
+            ),
+          ),
+          const SizedBox(
+            width: 8,
+          ),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if (message.user != null)
-                      Text(
-                        isMyMessage ? 'You' : message.user!.name,
-                        style: messageTheme.messageTextStyle?.copyWith(
-                          color: isMyMessage
-                              ? UnikonColorTheme.primaryColor
-                              : UnikonColorTheme.messageSentIndicatorColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    if (isReplying)
-                      Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(left: 4),
-                            child: SizedBox(
-                              height: 10,
-                              width: 10,
-                              child: VerticalDivider(
-                                color: UnikonColorTheme.dividerColor,
-                                thickness: 1,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Image.asset(
-                              UnikonColorTheme.replyIcon,
-                            ),
-                          ),
+            child: Padding(
+              padding: padding,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
+                        if (message.user != null)
                           Text(
-                            'Replying',
+                            isMyMessage ? 'You' : message.user!.name,
                             style: messageTheme.messageTextStyle?.copyWith(
-                              color: UnikonColorTheme.dividerColor,
-                              fontWeight: FontWeight.bold,
+                              color: isMyMessage
+                                  ? UnikonColorTheme.primaryColor
+                                  : UnikonColorTheme.messageSentIndicatorColor,
+                              fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
-                        ],
+                        if (isReplying)
+                          Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(left: 4),
+                                child: SizedBox(
+                                  height: 10,
+                                  width: 10,
+                                  child: VerticalDivider(
+                                    color: UnikonColorTheme.dividerColor,
+                                    thickness: 1,
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: Image.asset(
+                                  height: 12,
+                                  width: 12,
+                                  UnikonColorTheme.replyIcon,
+                                ),
+                              ),
+                              Text(
+                                'Replying',
+                                style: messageTheme.messageTextStyle?.copyWith(
+                                  color: UnikonColorTheme.dividerColor,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                    child: Center(
+                      child: Row(
+                        children: children,
                       ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: children,
-                ),
-              ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-          if (_hasAttachments)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: _ParseAttachments(
-                message: message,
-                messageTheme: messageTheme,
-                attachmentThumbnailBuilders: attachmentThumbnailBuilders,
+          if (_hasAttachments && message.attachments.first.type != 'voicenote')
+            Container(
+              height: 64,
+              width: 44.21,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: UnikonColorTheme.replyAttachmentBGColor,
+              ),
+              child: Stack(
+                children: [
+                  _ParseAttachments(
+                    message: message,
+                    messageTheme: messageTheme,
+                  ),
+                  if (message.attachments.first.isVideoAttachment)
+                    const Align(
+                      child: Icon(
+                        Icons.play_circle,
+                        size: 12,
+                      ),
+                    ),
+                ],
               ),
             ),
         ],
@@ -309,29 +458,9 @@ class _ParseAttachments extends StatelessWidget {
     // Return empty container if no attachment widget is returned.
     if (attachmentWidget == null) return const SizedBox.shrink();
 
-    final colorTheme = StreamChatTheme.of(context).colorTheme;
-
-    var clipBehavior = Clip.none;
-    ShapeDecoration? decoration;
-    if (attachment.type != AttachmentType.file) {
-      clipBehavior = Clip.hardEdge;
-      decoration = ShapeDecoration(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: colorTheme.borders,
-            strokeAlign: BorderSide.strokeAlignOutside,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-      );
-    }
-
-    return Container(
-      key: Key(attachment.id),
-      clipBehavior: clipBehavior,
-      decoration: decoration,
-      constraints: const BoxConstraints.tightFor(width: 45, height: 60),
-      child: AbsorbPointer(child: attachmentWidget),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: attachmentWidget,
     );
   }
 
@@ -341,7 +470,7 @@ class _ParseAttachments extends StatelessWidget {
         image: media,
         width: double.infinity,
         height: double.infinity,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
       );
     }
 
@@ -350,39 +479,20 @@ class _ParseAttachments extends StatelessWidget {
         image: media,
         width: double.infinity,
         height: double.infinity,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
       );
     }
 
     Widget _createFileThumbnail(BuildContext context, Attachment file) {
-      Widget thumbnail = StreamFileAttachmentThumbnail(
-        file: file,
-        width: double.infinity,
-        height: double.infinity,
-        fit: BoxFit.cover,
+      return Padding(
+        padding: const EdgeInsets.all(8),
+        child: StreamFileAttachmentThumbnail(
+          file: file,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.contain,
+        ),
       );
-
-      final mediaType = file.title?.mediaType;
-      final isImage = mediaType?.type == AttachmentType.image;
-      final isVideo = mediaType?.type == AttachmentType.video;
-      if (isImage || isVideo) {
-        final colorTheme = StreamChatTheme.of(context).colorTheme;
-        thumbnail = Container(
-          clipBehavior: Clip.hardEdge,
-          decoration: ShapeDecoration(
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: colorTheme.borders,
-                strokeAlign: BorderSide.strokeAlignOutside,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: thumbnail,
-        );
-      }
-
-      return thumbnail;
     }
 
     return {

@@ -201,6 +201,12 @@ extension XFileX on XFile {
   }
 }
 
+/// Useful extension for [ImageSource]
+extension AttachmentX on Attachment {
+  /// is video attachment
+  bool get isVideoAttachment => type == 'video';
+}
+
 /// Extension on [InputDecoration]
 extension InputDecorationX on InputDecoration {
   /// Merges this [InputDecoration] with the [other]

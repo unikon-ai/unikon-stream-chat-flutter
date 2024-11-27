@@ -34,7 +34,7 @@ class QuotedMessage extends StatelessWidget {
     final isMyQuotedMessage =
         message.quotedMessage?.user?.id == streamChat.currentUser?.id;
     return StreamQuotedMessageWidget(
-      isMyMessage: isMyMessage,
+      isMyMessage: isMyQuotedMessage,
       message: message.quotedMessage!,
       messageTheme: isMyMessage
           ? chatThemeData.otherMessageTheme
@@ -42,10 +42,23 @@ class QuotedMessage extends StatelessWidget {
       reverse: !isMyQuotedMessage,
       textBuilder: textBuilder,
       padding: EdgeInsets.only(
-        right: 8,
-        left: 8,
-        top: 8,
-        bottom: hasNonUrlAttachments ? 8 : 0,
+        left: 4,
+        top: (message.text?.isNotEmpty == true &&
+                    (message.quotedMessage?.attachments.isNotEmpty == true &&
+                        message.quotedMessage?.attachments.first.type ==
+                            'voicenote') ||
+                (message.text?.isNotEmpty == true &&
+                    message.quotedMessage?.text?.isNotEmpty == true))
+            ? 8
+            : 0,
+        bottom: (message.text?.isNotEmpty == true &&
+                    (message.quotedMessage?.attachments.isNotEmpty == true &&
+                        message.quotedMessage?.attachments.first.type ==
+                            'voicenote') ||
+                (message.text?.isNotEmpty == true &&
+                    message.quotedMessage?.text?.isNotEmpty == true))
+            ? 4
+            : 0,
       ),
     );
   }

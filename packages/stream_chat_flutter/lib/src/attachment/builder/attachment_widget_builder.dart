@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
+import 'package:stream_chat_flutter/src/file_downloader/file_downloader_utils.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_attachment_builder.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -69,12 +69,14 @@ abstract class StreamAttachmentWidgetBuilder {
     EdgeInsetsGeometry padding = const EdgeInsets.all(4),
     StreamAttachmentWidgetTapCallback? onAttachmentTap,
     List<StreamAttachmentWidgetBuilder>? customAttachmentBuilders,
+    bool showSendingIndicator = true,
   }) {
     return [
       ...?customAttachmentBuilders,
 
-      AudioAttachmentBuilder(
-      ),
+      // Handles audio attachments.
+      const AudioAttachmentBuilder(),
+
       // Handles a mix of image, gif, video, url and file attachments.
       MixedAttachmentBuilder(
         padding: padding,
@@ -95,6 +97,7 @@ abstract class StreamAttachmentWidgetBuilder {
         shape: shape,
         padding: padding,
         onAttachmentTap: onAttachmentTap,
+        showSendingIndicator: showSendingIndicator,
       ),
 
       // Handles giphy attachments.
@@ -118,6 +121,7 @@ abstract class StreamAttachmentWidgetBuilder {
         onAttachmentTap: onAttachmentTap,
       ),
 
+      // Handles voice recording attachments.
       VoiceRecordingAttachmentBuilder(),
 
       // We don't handle URL attachments if the message is a reply.

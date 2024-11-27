@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamMessageText}
@@ -16,6 +17,8 @@ class StreamMessageText extends StatefulWidget {
     this.onLinkTap,
     this.maxLines = 5,
     this.showReadMore = true,
+    this.isMyMessage,
+    this.maxWidth = 250,
   });
 
   /// Message whose text is to be displayed
@@ -33,6 +36,10 @@ class StreamMessageText extends StatefulWidget {
   final int maxLines;
 
   final bool showReadMore;
+
+  final bool? isMyMessage;
+
+  final double maxWidth;
   @override
   State<StreamMessageText> createState() => _StreamMessageTextState();
 }
@@ -42,11 +49,10 @@ class _StreamMessageTextState extends State<StreamMessageText> {
   String truncatedMessageText = '';
   bool showFullText = false;
 
-  String getTruncatedTextWithReadMore({
+  String getTruncatedText({
     required String text,
     required double maxWidth,
   }) {
-    final ellipses = "...";
     // Set up the text painter to measure the text
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: widget.messageTheme.messageTextStyle),
@@ -76,13 +82,13 @@ class _StreamMessageTextState extends State<StreamMessageText> {
       )..layout(maxWidth: maxWidth);
 
       if (testPainter.didExceedMaxLines) {
-        trimmedText = trimmedText.substring(0, trimmedText.length - 1);
+        trimmedText = trimmedText.substring(0, trimmedText.length + 12);
       } else {
         break;
       }
     }
 
-    return trimmedText + ellipses;
+    return trimmedText;
   }
 
   @override
@@ -93,27 +99,23 @@ class _StreamMessageTextState extends State<StreamMessageText> {
       stream: streamChat.currentUserStream.map((it) => it!.language ?? 'en'),
       initialData: streamChat.currentUser!.language ?? 'en',
       builder: (context, language) {
-        messageText = widget.message
-            .translate(language)
-            .replaceMentions()
-            .text
-            ?.replaceAll('\n', '\n\n')
-            .trim();
+        messageText =
+            widget.message.translate(language).replaceMentions().text?.trim();
         if (messageText != null) {
           truncatedMessageText =
-              getTruncatedTextWithReadMore(text: messageText!, maxWidth: 250);
+              getTruncatedText(text: messageText!, maxWidth: widget.maxWidth);
         }
         final themeData = Theme.of(context);
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             MarkdownBody(
               data: messageText != null &&
                       (messageText!.length == truncatedMessageText.length ||
                           showFullText)
-                  ? messageText!
-                  : truncatedMessageText,
+                  ? messageText!.replaceAll('\n', '\n\n')
+                  : truncatedMessageText.replaceAll('\n', '\n\n'),
               selectable: isDesktopDeviceOrWeb,
               onTapText: () {},
               onSelectionChanged: (val, selection, cause) {},
@@ -161,19 +163,21 @@ class _StreamMessageTextState extends State<StreamMessageText> {
             if (widget.showReadMore &&
                 showFullText != true &&
                 messageText!.length > truncatedMessageText.length)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      showFullText = !showFullText;
-                    });
-                  },
-                  child: Text(
-                    'Read more...',
-                    style: widget.messageTheme.messageTextStyle?.copyWith(
-                      color: Colors.black,
-                    ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    showFullText = !showFullText;
+                  });
+                },
+                child: Text(
+                  'Read more...',
+                  style: TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: widget.isMyMessage == true
+                        ? UnikonColorTheme.messageSentIndicatorColor
+                        : UnikonColorTheme.primaryColor,
                   ),
                 ),
               ),

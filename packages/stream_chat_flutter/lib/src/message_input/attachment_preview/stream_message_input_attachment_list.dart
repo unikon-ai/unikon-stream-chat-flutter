@@ -165,7 +165,7 @@ class MessageInputFileAttachments extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.of(context).size.height * 0.7,
       child: PageView(
         reverse: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -255,48 +255,49 @@ class _MessageInputMediaAttachmentsState
         const SizedBox(
           height: 20,
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height *
-              0.1, // Adjust height to make the thumbnails larger
-          child: ListView.separated(
-            shrinkWrap: true,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              final Attachment attachment = widget.attachments[index];
-              return GestureDetector(
-                onTap: () {
-                  pageViewController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: StreamMediaAttachmentThumbnail(
-                        media: attachment,
-                        width: 60, // Adjusted width to be larger
-                        height: 80, // Adjusted height to be larger
-                        fit: BoxFit
-                            .cover, // Fit type can be adjusted as per need
+        if (widget.attachments.length > 1)
+          SizedBox(
+            height: MediaQuery.of(context).size.height *
+                0.1, // Adjust height to make the thumbnails larger
+            child: ListView.separated(
+              itemCount: widget.attachments.length,
+              shrinkWrap: true,
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final Attachment attachment = widget.attachments[index];
+                return GestureDetector(
+                  onTap: () {
+                    pageViewController.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: StreamMediaAttachmentThumbnail(
+                          media: attachment,
+                          width: 60, // Adjusted width to be larger
+                          height: 80, // Adjusted height to be larger
+                          fit: BoxFit
+                              .cover, // Fit type can be adjusted as per need
+                        ),
                       ),
-                    ),
-                    if (attachment.type == AttachmentType.video)
-                      const Icon(
-                        Icons.play_circle,
-                        size: 24,
-                      )
-                  ],
-                ),
-              );
-            },
-            itemCount: widget.attachments.length,
+                      if (attachment.type == AttachmentType.video)
+                        const Icon(
+                          Icons.play_circle,
+                          size: 24,
+                        )
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
@@ -336,67 +337,68 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = StreamChatTheme.of(context).colorTheme;
-    final shape = RoundedRectangleBorder(
-      side: BorderSide(
-        color: colorTheme.borders,
-        strokeAlign: BorderSide.strokeAlignOutside,
-      ),
-      borderRadius: BorderRadius.circular(14),
-    );
-
     return Container(
       key: Key(attachment.id),
+      margin: const EdgeInsets.all(8),
       clipBehavior: Clip.hardEdge,
-      decoration: ShapeDecoration(shape: shape),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: FileTypeImage(
-                    file: attachment,
-                  ),
+      height: MediaQuery.of(context).size.height * 0.7,
+      width: MediaQuery.of(context).size.width * 0.6,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: UnikonColorTheme.darkGreyColor,
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: FileTypeImage(
+                  file: attachment,
+                  height: 120,
+                  width: 120,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                if (attachment.title != null)
-                  Text(
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              if (attachment.title != null)
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
                     attachment.title!,
                     style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
                       color: UnikonColorTheme.messageSentIndicatorColor,
                     ),
                   ),
-                const SizedBox(
-                  height: 4,
                 ),
-                if (attachment.fileSize != null)
-                  Text(
-                    formatFileSize(attachment.fileSize!),
-                    style: const TextStyle(
-                      color: UnikonColorTheme.messageSentIndicatorColor,
-                    ),
-                  )
-              ],
+              if (attachment.fileSize != null)
+                Text(
+                  formatFileSize(attachment.fileSize!),
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 8,
+                    fontWeight: FontWeight.w300,
+                    color: UnikonColorTheme.secondaryTextColor,
+                  ),
+                )
+            ],
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: RemoveAttachmentButton(
+              onPressed: onRemovePressed != null
+                  ? () => onRemovePressed!(attachment)
+                  : null,
             ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: RemoveAttachmentButton(
-                onPressed: onRemovePressed != null
-                    ? () => onRemovePressed!(attachment)
-                    : null,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -466,22 +468,29 @@ class RemoveAttachmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: RawMaterialButton(
-        elevation: 0,
-        focusElevation: 0,
-        hoverElevation: 0,
-        highlightElevation: 0,
-        onPressed: onPressed,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(
-          Icons.close,
-          size: 24,
-          color: UnikonColorTheme.whiteHintTextColor,
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: const BoxDecoration(
+        color: UnikonColorTheme.removeAttachmentButtonBGColor,
+        shape: BoxShape.circle,
+      ),
+      child: SizedBox(
+        width: 18,
+        height: 18,
+        child: RawMaterialButton(
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          highlightElevation: 0,
+          onPressed: onPressed,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Icon(
+            Icons.close,
+            size: 14,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -508,6 +517,7 @@ class _StreamVideoMediaAttachmentBuilderState
     extends State<StreamVideoMediaAttachmentBuilder> {
   late final VideoPackage controller;
   bool isPlaying = false;
+
   @override
   void initState() {
     controller = VideoPackage(

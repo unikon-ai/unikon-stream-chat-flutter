@@ -19,6 +19,7 @@ class ParseAttachments extends StatelessWidget {
     this.onShowMessage,
     this.onReplyTap,
     this.attachmentActionsModalBuilder,
+    this.showSendingIndicator = true,
   });
 
   /// {@macro message}
@@ -44,6 +45,9 @@ class ParseAttachments extends StatelessWidget {
 
   /// {@macro attachmentActionsBuilder}
   final AttachmentActionsBuilder? attachmentActionsModalBuilder;
+
+  /// If true, show the sending indicator.
+  final bool showSendingIndicator;
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +113,7 @@ class ParseAttachments extends StatelessWidget {
       padding: attachmentPadding,
       onAttachmentTap: onAttachmentTap,
       customAttachmentBuilders: attachmentBuilders,
+      showSendingIndicator: showSendingIndicator,
     );
 
     final catalog = AttachmentWidgetCatalog(builders: builders);

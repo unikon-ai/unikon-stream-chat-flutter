@@ -81,50 +81,50 @@ class _StreamGalleryFooterState extends State<StreamGalleryFooter> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (!showShareButton)
-                const SizedBox(width: 48)
-              else
-                IconButton(
-                  key: shareButtonKey,
-                  icon: StreamSvgIcon.iconShare(
-                    size: 24,
-                    color: galleryFooterThemeData.shareIconColor,
-                  ),
-                  onPressed: () async {
-                    final attachment = widget
-                        .mediaAttachmentPackages[widget.currentPage].attachment;
-                    final url = attachment.imageUrl ??
-                        attachment.assetUrl ??
-                        attachment.thumbUrl!;
-                    final type = attachment.type == AttachmentType.image
-                        ? 'jpg'
-                        : url.split('?').first.split('.').last;
-                    final request = await HttpClient().getUrl(Uri.parse(url));
-                    final response = await request.close();
-                    final bytes =
-                        await consolidateHttpClientResponseBytes(response);
-                    final tmpPath = await getTemporaryDirectory();
-                    final filePath = '${tmpPath.path}/${attachment.id}.$type';
-                    final file = File(filePath);
-                    await file.writeAsBytes(bytes);
-                    final box =
-                        shareButtonKey.currentContext?.findRenderObject();
-                    final size = shareButtonKey.currentContext?.size;
-
-                    final position =
-                        (box! as RenderBox).localToGlobal(Offset.zero);
-
-                    await Share.shareXFiles(
-                      [XFile(filePath)],
-                      sharePositionOrigin: Rect.fromLTWH(
-                        position.dx,
-                        position.dy,
-                        size?.width ?? 50,
-                        (size?.height ?? 2) / 2,
-                      ),
-                    );
-                  },
-                ),
+              const SizedBox(width: 48),
+              // if (!showShareButton) const SizedBox(width: 48),
+              // else
+              //   IconButton(
+              //     key: shareButtonKey,
+              //     icon: StreamSvgIcon.iconShare(
+              //       size: 24,
+              //       color: galleryFooterThemeData.shareIconColor,
+              //     ),
+              //     onPressed: () async {
+              //       final attachment = widget
+              //           .mediaAttachmentPackages[widget.currentPage].attachment;
+              //       final url = attachment.imageUrl ??
+              //           attachment.assetUrl ??
+              //           attachment.thumbUrl!;
+              //       final type = attachment.type == AttachmentType.image
+              //           ? 'jpg'
+              //           : url.split('?').first.split('.').last;
+              //       final request = await HttpClient().getUrl(Uri.parse(url));
+              //       final response = await request.close();
+              //       final bytes =
+              //           await consolidateHttpClientResponseBytes(response);
+              //       final tmpPath = await getTemporaryDirectory();
+              //       final filePath = '${tmpPath.path}/${attachment.id}.$type';
+              //       final file = File(filePath);
+              //       await file.writeAsBytes(bytes);
+              //       final box =
+              //           shareButtonKey.currentContext?.findRenderObject();
+              //       final size = shareButtonKey.currentContext?.size;
+              //
+              //       final position =
+              //           (box! as RenderBox).localToGlobal(Offset.zero);
+              //
+              //       await Share.shareXFiles(
+              //         [XFile(filePath)],
+              //         sharePositionOrigin: Rect.fromLTWH(
+              //           position.dx,
+              //           position.dy,
+              //           size?.width ?? 50,
+              //           (size?.height ?? 2) / 2,
+              //         ),
+              //       );
+              //     },
+              //   ),
               InkWell(
                 onTap: widget.onTitleTap,
                 child: SizedBox(

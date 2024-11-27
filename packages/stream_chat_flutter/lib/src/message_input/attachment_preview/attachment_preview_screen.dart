@@ -3,16 +3,25 @@ import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/translucent_scafold.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+/// A screen widget for previewing attachments before sending them.
 class AttachmentPreviewScreen extends StatefulWidget {
+  /// Constructor for creating a [AttachmentPreviewScreen]
   const AttachmentPreviewScreen({
     super.key,
     required this.effectiveController,
     required this.attachmentController,
     required this.channel,
+    required this.preMessageCallBack,
+    required this.sendOrUpdateMessage,
   });
+
   final StreamMessageInputController effectiveController;
   final StreamAttachmentPickerController attachmentController;
   final Channel channel;
+  final Future<bool> Function()? preMessageCallBack;
+  final Future<void> Function({
+    required Message message,
+  }) sendOrUpdateMessage;
 
   /// Callback called when the remove button is pressed.
 
@@ -63,34 +72,44 @@ class _AttachmentPreviewScreenState extends State<AttachmentPreviewScreen> {
         child: TranslucentScaffold(
           resizeToAvoidBottomInset: false,
           body: SafeArea(
-            child: Column(
+            child: Stack(
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                AttachmentPreviewAppbar(widget: widget),
-                const SizedBox(
-                  height: 40,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: StreamMessageInputAttachmentList(
-                      attachments: nonOGAttachments,
-                      onRemovePressed: _onAttachmentRemovePressed,
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
+                    AttachmentPreviewAppbar(widget: widget),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: StreamMessageInputAttachmentList(
+                          attachments: nonOGAttachments,
+                          onRemovePressed: _onAttachmentRemovePressed,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-
                 // Padding ensures the input field doesn't overlap with the keyboard
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: BuildTextInputWidget(
-                    nonOGAttachments: nonOGAttachments,
-                    focusNode: focusNode,
-                    channel: widget.channel,
-                    effectiveController: widget.effectiveController,
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: BuildTextInputWidget(
+                      nonOGAttachments: nonOGAttachments,
+                      focusNode: focusNode,
+                      channel: widget.channel,
+                      effectiveController: widget.effectiveController,
+                      preMessageCallBack: widget.preMessageCallBack,
+                      sendOrUpdateMessage: widget.sendOrUpdateMessage,
+                    ),
                   ),
                 ),
               ],
@@ -122,7 +141,10 @@ class AttachmentPreviewAppbar extends StatelessWidget {
               AttachmentType.file)
             Text(
               '${widget.attachmentController.value.length} media selected',
-              style: const TextStyle(color: UnikonColorTheme.dividerColor),
+              style: const TextStyle(
+                  fontFamily: 'Roboto Flex',
+                  color: UnikonColorTheme.whiteHintTextColor,
+                  fontSize: 12),
             ),
         ],
       ),
@@ -165,19 +187,28 @@ class UnikonBackButton extends StatelessWidget {
   }
 }
 
+/// A widget that builds the text input widget
 class BuildTextInputWidget extends StatefulWidget {
+  /// Constructor for creating a [BuildTextInputWidget]
   const BuildTextInputWidget({
     super.key,
     required this.nonOGAttachments,
     required this.focusNode,
     required this.channel,
     required this.effectiveController,
+    required this.preMessageCallBack,
+    required this.sendOrUpdateMessage,
   });
 
   final List<Attachment> nonOGAttachments;
   final FocusNode focusNode;
   final Channel channel;
   final StreamMessageInputController effectiveController;
+  final Future<bool> Function()? preMessageCallBack;
+  final Future<void> Function({
+    required Message message,
+  }) sendOrUpdateMessage;
+
   @override
   State<BuildTextInputWidget> createState() => _BuildTextInputWidgetState();
 }
@@ -241,24 +272,25 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
   }
 
   Future<void> _sendMessage(List<Attachment> nonOGAttachments) async {
-    widget.channel.sendMessage(
-      Message(
-        text: widget.effectiveController.text.trim().isEmpty
-            ? null
-            : widget.effectiveController.text.trim(),
-        attachments: nonOGAttachments,
-      ),
-    );
-    widget.effectiveController.clear();
-    Navigator.of(context).pop();
+    if (await widget.preMessageCallBack?.call() == true) {
+      widget.sendOrUpdateMessage(
+        message: Message(
+          text: widget.effectiveController.text.trim().isEmpty
+              ? null
+              : widget.effectiveController.text.trim(),
+          attachments: nonOGAttachments,
+        ),
+      );
+      widget.effectiveController.clear();
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final double borderRadius =
-        widget.effectiveController.text.trim().isNotEmpty
-            ? UnikonColorTheme.focusTextfieldBorderRadius
-            : UnikonColorTheme.unfocusTextfieldBorderRadius;
+    final borderRadius = widget.effectiveController.text.isNotEmpty
+        ? UnikonColorTheme.focusTextfieldBorderRadius
+        : UnikonColorTheme.unfocusTextfieldBorderRadius;
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -269,33 +301,37 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
           color: UnikonColorTheme.transparent,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        child: Row(
-          children: [
-            Flexible(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: UnikonColorTheme.messageSentIndicatorColor,
-                  borderRadius: BorderRadius.circular(borderRadius),
-                ),
-                child: StreamMessageTextField(
-                  key: const Key('messageInputText'),
-                  onSubmitted: (_) => _sendMessage(widget.nonOGAttachments),
-                  controller: widget.effectiveController,
-                  focusNode: widget.focusNode,
-                  style: _messageInputTheme.inputTextStyle?.copyWith(
-                    color: UnikonColorTheme.messageInputHintColor,
+        child: LimitedBox(
+          maxHeight: 100,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Flexible(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: UnikonColorTheme.messageSentIndicatorColor,
+                    borderRadius: BorderRadius.circular(borderRadius),
                   ),
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: _getInputDecoration(context),
-                  textCapitalization: TextCapitalization.sentences,
+                  child: StreamMessageTextField(
+                    key: const Key('messageInputText'),
+                    onSubmitted: (_) => _sendMessage(widget.nonOGAttachments),
+                    controller: widget.effectiveController,
+                    focusNode: widget.focusNode,
+                    style: _messageInputTheme.inputTextStyle?.copyWith(
+                      color: UnikonColorTheme.messageInputHintColor,
+                    ),
+                    textAlignVertical: TextAlignVertical.center,
+                    decoration: _getInputDecoration(context),
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
                 ),
               ),
-            ),
-            StreamMessageSendButton(
-              onSendMessage: () => _sendMessage(widget.nonOGAttachments),
-              isIdle: false,
-            )
-          ],
+              StreamMessageSendButton(
+                onSendMessage: () => _sendMessage(widget.nonOGAttachments),
+                isIdle: false,
+              )
+            ],
+          ),
         ),
       ),
     );

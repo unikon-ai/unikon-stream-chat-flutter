@@ -38,10 +38,14 @@ class MessageCard extends StatefulWidget {
     this.onMentionTap,
     this.onQuotedMessageTap,
     required this.showSendingIndicator,
+    required this.isMyMessage,
   });
 
   /// {@macro isFailedState}
   final bool isFailedState;
+
+  /// {@macro myMessage}
+  final bool isMyMessage;
 
   /// {@macro showUserAvatar}
   final DisplayWidget showUserAvatar;
@@ -133,6 +137,15 @@ class _MessageCardState extends State<MessageCard> {
     return widget.hasUrlAttachments || widget.hasNonUrlAttachments;
   }
 
+  bool get hasAudioAttachment {
+    return widget.message.attachments
+        .any((element) => element.type == 'voicenote');
+  }
+
+  bool get hasFileAttachment {
+    return widget.message.attachments.any((element) => element.type == 'file');
+  }
+
   void _updateWidthLimit() {
     final attachmentContext = attachmentsKey.currentContext;
     final renderBox = attachmentContext?.findRenderObject() as RenderBox?;
@@ -160,10 +173,6 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
-    final onQuotedMessageTap = widget.onQuotedMessageTap;
-    final quotedMessageBuilder = widget.quotedMessageBuilder;
-    final streamChat = StreamChat.of(context);
-    final streamChatTheme = StreamChatTheme.of(context);
     return Container(
       constraints: const BoxConstraints().copyWith(maxWidth: widthLimit),
       margin: EdgeInsets.symmetric(
@@ -183,69 +192,195 @@ class _MessageCardState extends State<MessageCard> {
               borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
             ),
       ),
-      child: Stack(
-        alignment: Alignment.bottomRight,
+      child: _decideMessageBody(),
+    );
+  }
+
+  Widget _decideMessageBody() {
+    final onQuotedMessageTap = widget.onQuotedMessageTap;
+    final quotedMessageBuilder = widget.quotedMessageBuilder;
+    final streamChat = StreamChat.of(context);
+    final streamChatTheme = StreamChatTheme.of(context);
+
+    // CASE 1.1 In case of attachments and text,
+    if (hasAttachments && (widget.message.text?.isNotEmpty ?? false)) {
+      return Stack(
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.hasQuotedMessage)
-                InkWell(
-                  onTap: !widget.message.quotedMessage!.isDeleted &&
-                          onQuotedMessageTap != null
-                      ? () => onQuotedMessageTap(widget.message.quotedMessageId)
-                      : null,
-                  child: quotedMessageBuilder?.call(
-                        context,
-                        widget.message.quotedMessage!,
-                      ) ??
-                      QuotedMessage(
-                        message: widget.message,
-                        textBuilder: widget.textBuilder,
-                        hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                      ),
-                ),
-              if (hasAttachments)
-                ParseAttachments(
-                  key: attachmentsKey,
-                  message: widget.message,
-                  attachmentBuilders: widget.attachmentBuilders,
-                  attachmentPadding: widget.attachmentPadding,
-                  attachmentShape: widget.attachmentShape,
-                  onAttachmentTap: widget.onAttachmentTap,
-                  onShowMessage: widget.onShowMessage,
-                  onReplyTap: widget.onReplyTap,
-                  attachmentActionsModalBuilder:
-                      widget.attachmentActionsModalBuilder,
-                ),
-              TextBubble(
-                messageTheme: widget.messageTheme,
-                message: widget.message,
-                textPadding: widget.textPadding,
-                textBuilder: widget.textBuilder,
-                isOnlyEmoji: widget.isOnlyEmoji,
-                hasQuotedMessage: widget.hasQuotedMessage,
-                hasUrlAttachments: widget.hasUrlAttachments,
-                onLinkTap: widget.onLinkTap,
-                onMentionTap: widget.onMentionTap,
-              ),
-            ],
-          ),
+          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
           if (widget.showSendingIndicator)
-            Padding(
-              padding: const EdgeInsets.only(right: 6, bottom: 4),
-              child: SendingIndicatorBuilder(
-                messageTheme: widget.messageTheme,
-                message: widget.message,
-                hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                streamChat: streamChat,
-                streamChatTheme: streamChatTheme,
-              ),
-            ),
+            Positioned(
+                right: 0,
+                bottom: 2,
+                child: _buildSendingIndicator(streamChat, streamChatTheme)),
         ],
+      );
+    }
+
+    // CASE 1.2 In case of only audio attachment and no text,
+    if ((hasFileAttachment || hasAudioAttachment) &&
+        (widget.message.text?.isEmpty ?? true)) {
+      return Stack(
+        children: [
+          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+          if (widget.showSendingIndicator)
+            Positioned(
+                right: 0,
+                bottom: 2,
+                child: _buildSendingIndicator(streamChat, streamChatTheme)),
+        ],
+      );
+    }
+
+    // CASE 1.3 In case of only attachments and no text,
+    if (hasAttachments && (widget.message.text?.isEmpty ?? true)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+          if (widget.showSendingIndicator)
+            _buildSendingIndicator(streamChat, streamChatTheme),
+        ],
+      );
+    }
+
+    // CASE 2.0 In case of no attachments and only text,
+    if (hasAttachments == false && widget.message.text?.isNotEmpty == true) {
+      return Stack(
+        children: [
+          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+          if (widget.showSendingIndicator)
+            Positioned(
+                right: 0,
+                bottom: 2,
+                child: _buildSendingIndicator(streamChat, streamChatTheme)),
+        ],
+      );
+    }
+
+    /// CASE 2.1 In case of no attachments and text,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+        if (widget.showSendingIndicator)
+          _buildSendingIndicator(streamChat, streamChatTheme),
+      ],
+    );
+  }
+
+  Column _buildMsgContent(
+      OnQuotedMessageTap? onQuotedMessageTap,
+      Widget quotedMessageBuilder(BuildContext context, Message message)?,
+      BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.hasQuotedMessage)
+          InkWell(
+            onTap: !widget.message.quotedMessage!.isDeleted &&
+                    onQuotedMessageTap != null
+                ? () => onQuotedMessageTap(widget.message.quotedMessageId)
+                : null,
+            child: quotedMessageBuilder?.call(
+                  context,
+                  widget.message.quotedMessage!,
+                ) ??
+                QuotedMessage(
+                  message: widget.message,
+                  textBuilder: widget.textBuilder,
+                  hasNonUrlAttachments: widget.hasNonUrlAttachments,
+                ),
+          ),
+        if (hasAttachments)
+          Padding(
+            padding: (widget.message.text?.isEmpty ?? true)
+                ? EdgeInsets.zero
+                : const EdgeInsets.only(left: 4, right: 4, top: 4),
+            child: ParseAttachments(
+              key: attachmentsKey,
+              message: widget.message,
+              attachmentBuilders: widget.attachmentBuilders,
+              attachmentPadding: EdgeInsets.only(
+                top: 4,
+                right: 4,
+                left: 4,
+                bottom: widget.showSendingIndicator ? 0 : 4,
+              ),
+              attachmentShape: widget.attachmentShape,
+              onAttachmentTap: widget.onAttachmentTap,
+              onShowMessage: widget.onShowMessage,
+              onReplyTap: widget.onReplyTap,
+              attachmentActionsModalBuilder:
+                  widget.attachmentActionsModalBuilder,
+              showSendingIndicator: widget.showSendingIndicator,
+            ),
+          ),
+        TextBubble(
+          messageTheme: widget.messageTheme,
+          message: (isMessageEmpty(widget.message))
+              ? widget.message.copyWith(
+                  text: 'Cancelled Media Message',
+                )
+              : widget.message,
+          textPadding: EdgeInsets.only(
+            top: 8,
+            right: widget.isMyMessage && widget.showSendingIndicator ? 26 : 12,
+            left: 12,
+            bottom: widget.showSendingIndicator ? 0 : 8,
+          ),
+          textBuilder: widget.textBuilder,
+          isOnlyEmoji: widget.isOnlyEmoji,
+          hasQuotedMessage: widget.hasQuotedMessage,
+          hasUrlAttachments: widget.hasUrlAttachments,
+          onLinkTap: widget.onLinkTap,
+          onMentionTap: widget.onMentionTap,
+        ),
+
+        // In case of text message, show sending indicator
+        if (widget.showSendingIndicator &&
+            (widget.message.text?.isNotEmpty ?? false))
+          SizedBox(
+            height: hasAttachments ? 6 : 8,
+          ),
+
+        // In case of no text message, show sending indicator and only file attachment
+        if (widget.showSendingIndicator &&
+            hasFileAttachment &&
+            (widget.message.text?.isEmpty ?? true))
+          const SizedBox(
+            height: 8,
+          )
+      ],
+    );
+  }
+
+  Padding _buildSendingIndicator(
+      StreamChatState streamChat, StreamChatThemeData streamChatTheme) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: SendingIndicatorBuilder(
+        messageTheme: widget.messageTheme,
+        message: widget.message,
+        hasNonUrlAttachments: widget.hasNonUrlAttachments,
+        streamChat: streamChat,
+        streamChatTheme: streamChatTheme,
       ),
     );
+  }
+
+  bool isMessageEmpty(Message message) {
+    // Check if the message text is null or empty
+    if (message.text == null || message.text!.trim().isEmpty) {
+      // Check if there are no attachments
+      if (message.attachments.isEmpty) {
+        // Check if there are no quoted messages
+        if (message.quotedMessage == null) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   Color? _getBackgroundColor() {
@@ -262,6 +397,10 @@ class _MessageCardState extends State<MessageCard> {
 
     if (widget.isOnlyEmoji) {
       return Colors.transparent;
+    }
+
+    if (isMessageEmpty(widget.message)) {
+      return Colors.red;
     }
 
     return widget.messageTheme.messageBackgroundColor;

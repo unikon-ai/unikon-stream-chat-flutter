@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/misc/flex_grid.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -254,9 +255,10 @@ class StreamGalleryAttachment extends StatelessWidget {
               child: Text(
                 '+$remaining',
                 style: const TextStyle(
-                  fontSize: 26,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  fontFamily: 'Roboto',
+                  color: UnikonColorTheme.whiteHintTextColor,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),

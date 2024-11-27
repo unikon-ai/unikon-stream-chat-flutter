@@ -38,7 +38,7 @@ class SendingIndicatorBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = messageTheme.createdAtStyle;
+    final style = messageTheme.messageTextStyle;
     final channel = this.channel ?? StreamChannel.of(context).channel;
     final memberCount = channel.memberCount ?? 0;
 
@@ -49,12 +49,17 @@ class SendingIndicatorBuilder extends StatelessWidget {
       });
 
       if (attachmentsToUpload.isNotEmpty) {
-        return Text(
-          context.translations.attachmentsUploadProgressText(
-            remaining: attachmentsToUpload.length,
-            total: totalAttachments,
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            totalAttachments > 1
+                ? context.translations.attachmentsUploadProgressText(
+                    remaining: attachmentsToUpload.length,
+                    total: totalAttachments,
+                  )
+                : 'Uploading...',
+            style: style?.copyWith(fontSize: 10),
           ),
-          style: style,
         );
       }
     }

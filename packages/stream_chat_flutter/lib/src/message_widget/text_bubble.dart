@@ -51,13 +51,16 @@ class TextBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (message.text?.trim().isEmpty ?? true) return const Offstage();
+    final client = StreamChat.of(context).client;
+    final isMyMessage = message.user?.id == client.state.currentUser?.id;
     return Padding(
       padding: isOnlyEmoji
           ? EdgeInsets.zero
-          : EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          : textPadding,
       child: textBuilder != null
           ? textBuilder!(context, message)
           : StreamMessageText(
+              isMyMessage: isMyMessage,
               onLinkTap: onLinkTap,
               message: message,
               onMentionTap: onMentionTap,

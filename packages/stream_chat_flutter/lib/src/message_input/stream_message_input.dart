@@ -102,7 +102,7 @@ class StreamMessageInput extends StatefulWidget {
     super.key,
     this.onMessageSent,
     this.preMessageSending,
-    this.maxHeight = 150,
+    this.maxHeight = 100,
     this.maxLines,
     this.minLines,
     this.textInputAction,
@@ -155,8 +155,10 @@ class StreamMessageInput extends StatefulWidget {
     this.hintGetter = _defaultHintGetter,
     this.contentInsertionConfiguration,
     this.useNativeAttachmentPickerOnMobile = false,
-    this.onChatExpired,
+    this.preMessageCallBack,
     this.onFocusChanged,
+    this.videoRecordingMaxDuration,
+    this.audioRecordingMaxDuration,
   });
 
   /// The predicate used to send a message on desktop/web
@@ -356,9 +358,18 @@ class StreamMessageInput extends StatefulWidget {
   /// Stream attachment picker.
   final bool useNativeAttachmentPickerOnMobile;
 
-  final VoidCallback? onChatExpired;
+  /// Max duration for video recording
+  final Duration? videoRecordingMaxDuration;
 
-  final Function(bool value)? onFocusChanged;
+  /// Max duration for audio recording
+  final Duration? audioRecordingMaxDuration;
+
+  /// Callback to be called just before sending a message.
+  /// If the callback returns false, the message will not be sent.
+  final Future<bool> Function()? preMessageCallBack;
+
+  /// Callback to be called when the focus of the input changes.
+  final Function({bool hasFocus})? onFocusChanged;
 
   static String? _defaultHintGetter(
     BuildContext context,
@@ -546,7 +557,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
   // ignore: no-empty-block
   void _focusNodeListener() {
     if (widget.onFocusChanged != null) {
-      widget.onFocusChanged!(_effectiveFocusNode.hasFocus);
+      widget.onFocusChanged?.call(hasFocus: _effectiveFocusNode.hasFocus);
     }
   }
 
@@ -584,7 +595,6 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
   @override
   Widget build(BuildContext context) {
-
     return StreamMessageValueListenableBuilder(
       valueListenable: _effectiveController,
       builder: (context, value, _) {
@@ -720,6 +730,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
     );
   }
 
+  /// Value notifier to keep track of the recording state
   final ValueNotifier<bool> isRecordingInProgress = ValueNotifier(false);
 
   Widget _buildTextField(BuildContext context) {
@@ -733,8 +744,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
                 ? <Widget>[_buildAudioRecordingWidget(context)]
                 : <Widget>[
                     _buildTextInput(context),
-                    if (_hasQuotedMessage &&
-                        _effectiveController.text.trim().isEmpty)
+                    if ((_hasQuotedMessage &&
+                            _effectiveController.text.trim().isEmpty) ||
+                        (_effectiveController.text.isNotEmpty &&
+                            _effectiveController.text.trim().isEmpty))
                       _buildIdleSendButton(
                         context,
                       )
@@ -758,35 +771,34 @@ class StreamMessageInputState extends State<StreamMessageInput>
       margin: margin,
       width: MediaQuery.of(context).size.width,
       child: VoiceRecordingWidget(
-        onRecordingSend: (recordedFilePath, fileWebFormData) {
-          final channel = StreamChannel.of(context).channel;
-          if (channel.frozen) {
-            widget.onChatExpired?.call();
-            return;
-          }
-          final uri = Uri.parse(recordedFilePath);
-          File file = File(uri.path);
-          file.length().then(
-            (fileSize) {
-              channel.sendMessage(
-                Message(
-                  attachments: [
-                    Attachment(
-                      type: 'voicenote',
-                      file: AttachmentFile(
-                        size: fileSize,
-                        path: uri.path,
-                      ),
-                      extraData: {
-                        'waveForm': fileWebFormData,
-                      },
-                    )
-                  ],
-                ),
-              );
-            },
-          );
+        maxDuration: widget.audioRecordingMaxDuration,
+        onRecordingSend: (recordedFilePath, fileWebFormData) async {
+          if (await widget.preMessageCallBack?.call() == true) {
+            final channel = StreamChannel.of(context).channel;
 
+            final uri = Uri.parse(recordedFilePath);
+            File file = File(uri.path);
+            file.length().then(
+              (fileSize) {
+                channel.sendMessage(
+                  Message(
+                    attachments: [
+                      Attachment(
+                        type: 'voicenote',
+                        file: AttachmentFile(
+                          size: fileSize,
+                          path: uri.path,
+                        ),
+                        extraData: {
+                          'waveForm': fileWebFormData,
+                        },
+                      )
+                    ],
+                  ),
+                );
+              },
+            );
+          }
           // Recording is not in progress anymore
           isRecordingInProgress.value = false;
         },
@@ -827,14 +839,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
     if (widget.sendButtonBuilder != null) {
       return widget.sendButtonBuilder!(context, _effectiveController);
     }
-    final channel = StreamChannel.of(context).channel;
     return StreamMessageSendButton(
-      onSendMessage: channel.frozen
-          ? () {
-              widget.onChatExpired?.call();
-              return;
-            }
-          : () {},
+      onSendMessage: () {},
       timeOut: _timeOut,
       isEditEnabled: _isEditing,
     );
@@ -844,14 +850,10 @@ class StreamMessageInputState extends State<StreamMessageInput>
     if (widget.sendButtonBuilder != null) {
       return widget.sendButtonBuilder!(context, _effectiveController);
     }
-    final channel = StreamChannel.of(context).channel;
     return StreamMessageSendButton(
-      onSendMessage: channel.frozen
-          ? () {
-              widget.onChatExpired?.call();
-              return;
-            }
-          : sendMessage,
+      onSendMessage: () async {
+        if (await widget.preMessageCallBack?.call() == true) sendMessage();
+      },
       timeOut: _timeOut,
       isIdle: !widget.validator(_effectiveController.message),
       isEditEnabled: _isEditing,
@@ -965,7 +967,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             ? const EdgeInsets.only(left: 8)
             : EdgeInsets.zero);
 
-    final double borderRadius = _effectiveController.text.trim().isNotEmpty
+    final double borderRadius = _effectiveController.text.isNotEmpty
         ? UnikonColorTheme.focusTextfieldBorderRadius
         : UnikonColorTheme.unfocusTextfieldBorderRadius;
 
@@ -1018,20 +1020,16 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               maxLines: widget.maxLines,
                               minLines: widget.minLines,
                               textInputAction: widget.textInputAction,
-                              onSubmitted: (_) =>
-                                  StreamChannel.of(context).channel.frozen
-                                      ? () {
-                                          widget.onChatExpired?.call();
-                                          return;
-                                        }
-                                      : sendMessage(),
+                              onSubmitted: (_) async {
+                                if (await widget.preMessageCallBack?.call() ==
+                                    true) {
+                                  sendMessage();
+                                }
+                              },
                               keyboardType: widget.keyboardType,
                               controller: _effectiveController,
                               focusNode: _effectiveFocusNode,
-                              style:
-                                  _messageInputTheme.inputTextStyle?.copyWith(
-                                color: UnikonColorTheme.messageInputHintColor,
-                              ),
+                              style: _messageInputTheme.inputTextStyle,
                               autofocus: widget.autofocus,
                               textAlignVertical: TextAlignVertical.center,
                               decoration: _getInputDecoration(context),
@@ -1047,42 +1045,41 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               onPressed: () {
                                 final channel =
                                     StreamChannel.of(context).channel;
-                                if (channel.frozen) {
-                                  widget.onChatExpired?.call();
-                                  return;
-                                }
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => GalleryPickerScreen(
-                                        effectiveController:
-                                            _effectiveController,
-                                        channel: channel,
-                                      ),
-                                    ));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => GalleryPickerScreen(
+                                      effectiveController: _effectiveController,
+                                      channel: channel,
+                                      preMessageCallBack:
+                                          widget.preMessageCallBack,
+                                      sendOrUpdateMessage: _sendOrUpdateMessage,
+                                    ),
+                                  ),
+                                );
                               },
                               icon: const Icon(
                                 Icons.attachment,
-                                color: UnikonColorTheme.darkGreyColor,
+                                color: UnikonColorTheme.dividerColor,
                               ),
                             ),
                           if (_effectiveController.message.quotedMessage ==
                                   null &&
                               _effectiveController.text.isEmpty)
                             IconButton(
-                              onPressed: () =>
-                                  (StreamChannel.of(context).channel.frozen)
-                                      ? () {
-                                          widget.onChatExpired?.call();
-                                          return;
-                                        }
-                                      : galleryAndCameraOptionChooser(
-                                          mainContext: context,
-                                          effectiveController:
-                                              _effectiveController),
+                              onPressed: () {
+                                imageAndVideoOptionChooser(
+                                  mainContext: context,
+                                  videoRecordingMaxDuration:
+                                      widget.videoRecordingMaxDuration,
+                                  effectiveController: _effectiveController,
+                                  preMessageCallBack: widget.preMessageCallBack,
+                                  sendOrUpdateMessage: _sendOrUpdateMessage,
+                                );
+                              },
                               icon: const Icon(
                                 Icons.camera_alt,
-                                color: UnikonColorTheme.darkGreyColor,
+                                color: UnikonColorTheme.dividerColor,
                               ),
                             ),
                         ],
@@ -1123,6 +1120,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
       hintText: _getHint(context),
       hintStyle: _messageInputTheme.inputTextStyle!.copyWith(
         color: UnikonColorTheme.messageInputHintColor,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
       ),
       border: const OutlineInputBorder(
         borderSide: BorderSide(
@@ -1406,7 +1405,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
 
     // Otherwise, use the default attachment list builder.
     return LimitedBox(
-      maxHeight: 240,
+      maxHeight: 230,
       child: StreamMessageInputAttachmentList(
         attachments: nonOGAttachments,
         onRemovePressed: _onAttachmentRemovePressed,

@@ -5,12 +5,13 @@ part of 'attachment_widget_builder.dart';
 /// {@endtemplate}
 class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
   /// {@macro fileAttachmentBuilder}
-  const FileAttachmentBuilder({
+  FileAttachmentBuilder({
     this.shape,
     this.backgroundColor,
     this.constraints = const BoxConstraints(),
     this.padding = const EdgeInsets.all(4),
     this.onAttachmentTap,
+    this.showSendingIndicator = true,
   });
 
   /// The shape of the file attachment.
@@ -27,6 +28,9 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
 
   /// The callback to call when the attachment is tapped.
   final StreamAttachmentWidgetTapCallback? onAttachmentTap;
+
+  /// If true, shows the sending indicator.
+  final bool showSendingIndicator;
 
   @override
   bool canHandle(
@@ -53,14 +57,28 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
         onTap = () => onAttachmentTap!(message, file);
       }
 
-      return InkWell(
-        onTap: onTap,
-        child: StreamFileAttachment(
-          file: file,
-          message: message,
-          shape: shape,
-          constraints: constraints,
-          backgroundColor: backgroundColor,
+      final isMyMessage =
+          message.user?.id == StreamChat.of(context).currentUser!.id;
+
+      return StreamFileAttachment(
+        doesFileExists: () {
+          return FileDownloaderUtils.doesFileExist(
+              attachmentTitle: file.title!, messageId: message.id);
+        },
+        file: file,
+        message: message,
+        shape: shape,
+        constraints: constraints,
+        backgroundColor: backgroundColor,
+        internalPadding: EdgeInsets.only(
+          left: 8,
+          top: 8,
+          right: 8,
+          bottom: !showSendingIndicator ||
+                  !isMyMessage ||
+                  message.text?.isNotEmpty == true
+              ? 10
+              : 0,
         ),
       );
     }
@@ -79,9 +97,6 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
       );
     }
 
-    return Padding(
-      padding: padding,
-      child: child,
-    );
+    return child;
   }
 }
