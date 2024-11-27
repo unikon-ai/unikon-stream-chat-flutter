@@ -293,22 +293,28 @@ class _MessageCardState extends State<MessageCard> {
                 ),
           ),
         if (hasAttachments)
-          ParseAttachments(
-            key: attachmentsKey,
-            message: widget.message,
-            attachmentBuilders: widget.attachmentBuilders,
-            attachmentPadding: EdgeInsets.only(
-              top: 4,
-              right: 4,
-              left: 4,
-              bottom: widget.showSendingIndicator ? 0 : 4,
+          Padding(
+            padding: (widget.message.text?.isEmpty ?? true)
+                ? EdgeInsets.zero
+                : const EdgeInsets.only(left: 4, right: 4, top: 4),
+            child: ParseAttachments(
+              key: attachmentsKey,
+              message: widget.message,
+              attachmentBuilders: widget.attachmentBuilders,
+              attachmentPadding: EdgeInsets.only(
+                top: 4,
+                right: 4,
+                left: 4,
+                bottom: widget.showSendingIndicator ? 0 : 4,
+              ),
+              attachmentShape: widget.attachmentShape,
+              onAttachmentTap: widget.onAttachmentTap,
+              onShowMessage: widget.onShowMessage,
+              onReplyTap: widget.onReplyTap,
+              attachmentActionsModalBuilder:
+                  widget.attachmentActionsModalBuilder,
+              showSendingIndicator: widget.showSendingIndicator,
             ),
-            attachmentShape: widget.attachmentShape,
-            onAttachmentTap: widget.onAttachmentTap,
-            onShowMessage: widget.onShowMessage,
-            onReplyTap: widget.onReplyTap,
-            attachmentActionsModalBuilder: widget.attachmentActionsModalBuilder,
-            showSendingIndicator: widget.showSendingIndicator,
           ),
         TextBubble(
           messageTheme: widget.messageTheme,
@@ -334,8 +340,8 @@ class _MessageCardState extends State<MessageCard> {
         // In case of text message, show sending indicator
         if (widget.showSendingIndicator &&
             (widget.message.text?.isNotEmpty ?? false))
-          const SizedBox(
-            height: 6,
+          SizedBox(
+            height: hasAttachments ? 6 : 8,
           ),
 
         // In case of no text message, show sending indicator and only file attachment

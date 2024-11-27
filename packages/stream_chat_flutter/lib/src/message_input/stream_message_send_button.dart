@@ -111,7 +111,7 @@ class StreamMessageSendButton extends StatelessWidget {
             ),
             icon: const Icon(
               Icons.send,
-              size: 20,
+              size: 24,
               color: UnikonColorTheme.messageSentIndicatorColor,
             )),
       ),

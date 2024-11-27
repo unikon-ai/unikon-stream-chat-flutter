@@ -357,10 +357,12 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 child: FileTypeImage(
                   file: attachment,
+                  height: 120,
+                  width: 120,
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 4,
               ),
               if (attachment.title != null)
                 Padding(
@@ -375,9 +377,6 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(
-                height: 4,
-              ),
               if (attachment.fileSize != null)
                 Text(
                   formatFileSize(attachment.fileSize!),
@@ -470,14 +469,14 @@ class RemoveAttachmentButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(2),
+      padding: const EdgeInsets.all(4),
       decoration: const BoxDecoration(
         color: UnikonColorTheme.removeAttachmentButtonBGColor,
         shape: BoxShape.circle,
       ),
       child: SizedBox(
-        width: 24,
-        height: 24,
+        width: 18,
+        height: 18,
         child: RawMaterialButton(
           elevation: 0,
           focusElevation: 0,
@@ -489,7 +488,7 @@ class RemoveAttachmentButton extends StatelessWidget {
           ),
           child: const Icon(
             Icons.close,
-            size: 18,
+            size: 14,
             color: Colors.white,
           ),
         ),

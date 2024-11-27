@@ -54,12 +54,9 @@ class StreamVideoAttachment extends StatelessWidget {
             height: double.infinity,
             fit: BoxFit.cover,
           ),
-          const Material(
-            shape: CircleBorder(),
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Icon(Icons.play_arrow),
-            ),
+          const Icon(
+            Icons.play_circle,
+            size: 40,
           ),
           Padding(
             padding: const EdgeInsets.all(8),

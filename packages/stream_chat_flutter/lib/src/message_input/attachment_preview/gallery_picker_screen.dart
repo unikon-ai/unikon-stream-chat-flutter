@@ -9,6 +9,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// @author:Shashi
 class GalleryPickerScreen extends StatefulWidget {
+  /// Constructor for creating a [GalleryPickerScreen]
   const GalleryPickerScreen({
     super.key,
     required this.effectiveController,

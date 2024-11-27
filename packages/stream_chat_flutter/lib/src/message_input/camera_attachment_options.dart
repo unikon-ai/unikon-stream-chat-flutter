@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart' as image_picker;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
+import 'package:stream_chat_flutter/src/utils/permission_helper.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-Future<void> galleryAndCameraOptionChooser({
+/// This will handle the presentation of the image and video options
+Future<void> imageAndVideoOptionChooser({
   required BuildContext mainContext,
   required StreamMessageInputController effectiveController,
   required Future<bool> Function()? preMessageCallBack,
+  required Duration? videoRecordingMaxDuration,
   required Future<void> Function({
     required Message message,
   }) sendOrUpdateMessage,
@@ -55,15 +59,27 @@ Future<void> galleryAndCameraOptionChooser({
             children: [
               GestureDetector(
                 onTap: () async {
-                  StreamAttachmentPickerController attachmentController =
+                  final attachmentController =
                       StreamAttachmentPickerController();
 
-                  final pickedImage = await runInPermissionRequestLock(() {
+                  final pickedImage =
+                      await runInPermissionRequestLock(() async {
+                    final granted =
+                        await PermissionHelper.requestMultiplePermissions(
+                      permissions: [
+                        Permission.camera,
+                      ],
+                      context: context,
+                    );
+
+                    // Permission not granted
+                    if (!granted) return null;
+
                     return StreamAttachmentHandler.instance.pickImage(
                       source: image_picker.ImageSource.camera,
-                      preferredCameraDevice: image_picker.CameraDevice.rear,
                     );
                   });
+
                   if (pickedImage != null) {
                     final channel = StreamChannel.of(mainContext).channel;
 
@@ -82,26 +98,40 @@ Future<void> galleryAndCameraOptionChooser({
                     );
                   }
                 },
-                child: GalleryOptionChooserWidget(
+                child: IconWidget(
                   imageLink: cameraPickOptionIcon,
-                  label: 'Camera',
+                  label: 'Photo',
                 ),
               ),
               const SizedBox(height: 40, width: 40),
               GestureDetector(
                 onTap: () async {
-                  StreamAttachmentPickerController attachmentController =
+                  final attachmentController =
                       StreamAttachmentPickerController();
 
-                  final pickedVideo = await runInPermissionRequestLock(() {
-                    return StreamAttachmentHandler.instance.pickVideo(
-                      source: image_picker.ImageSource.camera,
-                      preferredCameraDevice: image_picker.CameraDevice.rear,
+                  final pickedVideo =
+                      await runInPermissionRequestLock(() async {
+                    final granted =
+                        await PermissionHelper.requestMultiplePermissions(
+                      permissions: [
+                        Permission.camera,
+                        Permission.microphone,
+                      ],
+                      context: context,
                     );
+
+                    if (granted) {
+                      return StreamAttachmentHandler.instance.pickVideo(
+                        source: image_picker.ImageSource.camera,
+                        maxDuration: videoRecordingMaxDuration,
+                      );
+                    }
+
+                    return null;
                   });
+
                   if (pickedVideo != null) {
                     final channel = StreamChannel.of(mainContext).channel;
-
                     await attachmentController.addAttachment(pickedVideo);
                     Navigator.pushReplacement(
                       context,
@@ -117,7 +147,7 @@ Future<void> galleryAndCameraOptionChooser({
                     );
                   }
                 },
-                child: GalleryOptionChooserWidget(
+                child: IconWidget(
                   imageLink: videoPost,
                   label: 'Video',
                 ),
@@ -131,11 +161,12 @@ Future<void> galleryAndCameraOptionChooser({
   );
 }
 
-class GalleryOptionChooserWidget extends StatelessWidget {
+/// UI for icon
+class IconWidget extends StatelessWidget {
   final String imageLink;
   final String label;
 
-  const GalleryOptionChooserWidget({
+  const IconWidget({
     super.key,
     required this.imageLink,
     required this.label,

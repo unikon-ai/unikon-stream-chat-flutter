@@ -3,7 +3,9 @@ import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/translucent_scafold.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+/// A screen widget for previewing attachments before sending them.
 class AttachmentPreviewScreen extends StatefulWidget {
+  /// Constructor for creating a [AttachmentPreviewScreen]
   const AttachmentPreviewScreen({
     super.key,
     required this.effectiveController,
@@ -12,6 +14,7 @@ class AttachmentPreviewScreen extends StatefulWidget {
     required this.preMessageCallBack,
     required this.sendOrUpdateMessage,
   });
+
   final StreamMessageInputController effectiveController;
   final StreamAttachmentPickerController attachmentController;
   final Channel channel;
@@ -69,36 +72,44 @@ class _AttachmentPreviewScreenState extends State<AttachmentPreviewScreen> {
         child: TranslucentScaffold(
           resizeToAvoidBottomInset: false,
           body: SafeArea(
-            child: Column(
+            child: Stack(
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                AttachmentPreviewAppbar(widget: widget),
-                const SizedBox(
-                  height: 40,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: StreamMessageInputAttachmentList(
-                      attachments: nonOGAttachments,
-                      onRemovePressed: _onAttachmentRemovePressed,
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
+                    AttachmentPreviewAppbar(widget: widget),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: StreamMessageInputAttachmentList(
+                          attachments: nonOGAttachments,
+                          onRemovePressed: _onAttachmentRemovePressed,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-
                 // Padding ensures the input field doesn't overlap with the keyboard
-                Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: BuildTextInputWidget(
-                    nonOGAttachments: nonOGAttachments,
-                    focusNode: focusNode,
-                    channel: widget.channel,
-                    effectiveController: widget.effectiveController,
-                    preMessageCallBack: widget.preMessageCallBack,
-                    sendOrUpdateMessage: widget.sendOrUpdateMessage,
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: BuildTextInputWidget(
+                      nonOGAttachments: nonOGAttachments,
+                      focusNode: focusNode,
+                      channel: widget.channel,
+                      effectiveController: widget.effectiveController,
+                      preMessageCallBack: widget.preMessageCallBack,
+                      sendOrUpdateMessage: widget.sendOrUpdateMessage,
+                    ),
                   ),
                 ),
               ],
@@ -130,7 +141,10 @@ class AttachmentPreviewAppbar extends StatelessWidget {
               AttachmentType.file)
             Text(
               '${widget.attachmentController.value.length} media selected',
-              style: const TextStyle(color: UnikonColorTheme.dividerColor),
+              style: const TextStyle(
+                  fontFamily: 'Roboto Flex',
+                  color: UnikonColorTheme.whiteHintTextColor,
+                  fontSize: 12),
             ),
         ],
       ),
@@ -173,7 +187,9 @@ class UnikonBackButton extends StatelessWidget {
   }
 }
 
+/// A widget that builds the text input widget
 class BuildTextInputWidget extends StatefulWidget {
+  /// Constructor for creating a [BuildTextInputWidget]
   const BuildTextInputWidget({
     super.key,
     required this.nonOGAttachments,

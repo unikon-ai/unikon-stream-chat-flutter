@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meta/meta.dart';
+import 'package:open_file/open_file.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/stream_attachment_handler.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/file_attachment_thumbnail.dart';
+import 'package:stream_chat_flutter/src/file_downloader/file_downloader_utils.dart';
 import 'package:stream_chat_flutter/src/indicators/upload_progress_indicator.dart';
 import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
 import 'package:stream_chat_flutter/src/stream_chat.dart';
@@ -63,19 +66,29 @@ class StreamFileAttachment extends StatefulWidget {
   final Future<void> Function()? onDownloadTap;
 
   final EdgeInsetsGeometry internalPadding;
+
   @override
   State<StreamFileAttachment> createState() => _StreamFileAttachmentState();
 }
 
 class _StreamFileAttachmentState extends State<StreamFileAttachment> {
   bool doesFileExists = false;
+  final ValueNotifier<double?> _downloadProgress = ValueNotifier(null);
+
   @override
   void initState() {
-    setDoesFileExists();
+    _setDoesFileExists();
     super.initState();
   }
 
-  setDoesFileExists() async {
+  @override
+  void dispose() {
+    _downloadProgress.dispose();
+    super.dispose();
+  }
+
+  /// Set the value of [doesFileExists] by calling the provided function.
+  void _setDoesFileExists() async {
     print(await widget.doesFileExists!.call());
     doesFileExists = await widget.doesFileExists!.call() == true;
     setState(() {});
@@ -89,7 +102,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
     final isMyMessage =
         widget.message.user?.id == StreamChat.of(context).currentUser!.id;
 
-    final backgroundColor = this.widget.backgroundColor ??
+    final backgroundColor = widget.backgroundColor ??
         ((widget.message.text?.isNotEmpty == true)
             ? (isMyMessage
                 ? const Color.fromRGBO(20, 127, 114, 1)
@@ -97,7 +110,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
             : (isMyMessage
                 ? chatTheme.ownMessageTheme.messageBackgroundColor
                 : chatTheme.otherMessageTheme.messageBackgroundColor));
-    final shape = this.widget.shape ??
+    final shape = widget.shape ??
         RoundedRectangleBorder(
           side: BorderSide(
             color: colorTheme.borders,
@@ -106,63 +119,141 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
           borderRadius: BorderRadius.circular(12),
         );
 
-    return Container(
-      padding: widget.internalPadding,
-      constraints: widget.constraints,
-      clipBehavior: Clip.hardEdge,
-      decoration: ShapeDecoration(
-        shape: shape,
-        color: backgroundColor,
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 34,
-            height: 40,
-            child: FileTypeImage(file: widget.file),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.file.title ?? context.translations.fileText,
-                  maxLines: 1,
-                  style: textTheme.bodyBold.copyWith(
-                    color: isMyMessage
-                        ? UnikonColorTheme.messageSentIndicatorColor
-                        : colorTheme.textHighEmphasis,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 3),
-                _FileAttachmentSubtitle(attachment: widget.file),
-              ],
+    return InkWell(
+      onTap: widget.onDownloadTap ??
+          () async {
+            final assetUrl = widget.file.assetUrl;
+            final title = widget.file.title;
+            if (widget.file.assetUrl != null) {
+              // Check if file exists
+              final result = await FileDownloaderUtils.doesFileExist(
+                  attachmentTitle: widget.file.title!,
+                  messageId: widget.message.id);
+
+              // File exists, open it
+              if (result) {
+                //Open the file
+                final filePath = await FileDownloaderUtils.getSavedFilePath(
+                    fileName: title!, messageId: widget.message.id);
+                final result = await OpenFile.open(filePath);
+                Fluttertoast.showToast(msg: result.message);
+                return;
+              }
+
+              // If not my message, other user has to download it first
+              if (!isMyMessage) {
+                Fluttertoast.showToast(msg: 'File not downloaded yet');
+                return;
+              }
+
+              // Download the file
+              final downloadResult = await FileDownloaderUtils.downloadFile2(
+                url: assetUrl!,
+                title: title!,
+                messageId: widget.message.id,
+                onDownloadProgress: (p0) {
+                  _downloadProgress.value = p0;
+                },
+              );
+
+              // If download was successful, update the state
+              if (downloadResult != null) {
+                setState(() {
+                  doesFileExists = true;
+                });
+              }
+            }
+          },
+      child: Container(
+        padding: widget.internalPadding,
+        constraints: widget.constraints,
+        clipBehavior: Clip.hardEdge,
+        decoration: ShapeDecoration(
+          shape: shape,
+          color: backgroundColor,
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 34,
+              height: 40,
+              child: FileTypeImage(file: widget.file),
             ),
-          ),
-          const SizedBox(width: 8),
-          if (!doesFileExists)
-            Material(
-              type: MaterialType.transparency,
-              child: widget.trailing ??
-                  _Trailing(
-                    attachment: widget.file,
-                    message: widget.message,
-                    onDownloadTap: widget.onDownloadTap,
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.file.title ?? context.translations.fileText,
+                    maxLines: 1,
+                    style: textTheme.body.copyWith(
+                      color: isMyMessage
+                          ? UnikonColorTheme.messageSentIndicatorColor
+                          : colorTheme.textHighEmphasis,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 3),
+                  _FileAttachmentSubtitle(attachment: widget.file),
+                ],
+              ),
             ),
-        ],
+            const SizedBox(width: 8),
+            if (!doesFileExists && !isMyMessage) ...[
+              ValueListenableBuilder(
+                valueListenable: _downloadProgress,
+                builder: (context, value, child) => value != null
+                    ? Text('${value.toStringAsFixed(0)}%')
+                    : const SizedBox.shrink(),
+              ),
+              Material(
+                type: MaterialType.transparency,
+                child: widget.trailing ??
+                    _Trailing(
+                      attachment: widget.file,
+                      message: widget.message,
+                      onDownloadTap: widget.onDownloadTap ??
+                          () async {
+                            FileDownloaderUtils.downloadFile2(
+                                    url: widget.file.assetUrl!,
+                                    title: '${widget.file.title}',
+                                    onDownloadProgress: (p0) {
+                                      _downloadProgress.value = p0;
+                                    },
+                                    messageId: widget.message.id)
+                                .then((value) {
+                              setState(() {
+                                doesFileExists = true;
+                              });
+                            });
+                          },
+                    ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
 }
 
+/// Widget for building file attachment thumbnail.
 class FileTypeImage extends StatelessWidget {
-  const FileTypeImage({required this.file});
+  /// Widget for building file attachment thumbnail.
+  const FileTypeImage({super.key, required this.file, this.width, this.height});
 
+  /// The file attachment to build the thumbnail for.
   final Attachment file;
+
+  /// The width of the thumbnail.
+  final double? width;
+
+  /// The height of the thumbnail.
+  final double? height;
 
   // TODO: Improve image memory.
   // This is using the full image instead of a smaller version (thumbnail)
@@ -170,8 +261,8 @@ class FileTypeImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamFileAttachmentThumbnail(
       file: file,
-      width: double.infinity,
-      height: double.infinity,
+      width: width ?? double.infinity,
+      height: width ?? double.infinity,
     );
   }
 }
@@ -278,8 +369,10 @@ class _FileAttachmentSubtitle extends StatelessWidget {
     final theme = StreamChatTheme.of(context);
     final size = attachment.file?.size ?? attachment.extraData['file_size'];
     final textStyle = theme.textTheme.footnote.copyWith(
-      color: Colors.white,
-    );
+        color: Colors.white,
+        fontSize: 8,
+        fontFamily: 'Poppins',
+        fontWeight: FontWeight.w300);
     return attachment.uploadState.when(
       preparing: () => Text(fileSize(size), style: textStyle),
       inProgress: (sent, total) => StreamUploadProgressIndicator(

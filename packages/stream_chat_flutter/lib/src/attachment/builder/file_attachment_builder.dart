@@ -5,7 +5,7 @@ part of 'attachment_widget_builder.dart';
 /// {@endtemplate}
 class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
   /// {@macro fileAttachmentBuilder}
-  const FileAttachmentBuilder({
+  FileAttachmentBuilder({
     this.shape,
     this.backgroundColor,
     this.constraints = const BoxConstraints(),
@@ -29,6 +29,7 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
   /// The callback to call when the attachment is tapped.
   final StreamAttachmentWidgetTapCallback? onAttachmentTap;
 
+  /// If true, shows the sending indicator.
   final bool showSendingIndicator;
 
   @override
@@ -38,46 +39,6 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
   ) {
     final files = attachments[AttachmentType.file];
     return files != null && files.isNotEmpty;
-  }
-
-  Future<bool> doesFileExists(Attachment attachment) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/${attachment.id}_${attachment.title}';
-
-    final fileExists = await File(filePath).exists();
-    return fileExists;
-  }
-
-  Future<void> downloadAndOpenAttachment(
-      BuildContext context, Attachment attachment) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/${attachment.id}_${attachment.title}';
-
-    if (await doesFileExists(attachment)) {
-      final result = await OpenFile.open(filePath);
-      Fluttertoast.showToast(msg: result.message);
-      return;
-    } else {
-      // If the file does not exist, download it
-      final url =
-          attachment.assetUrl ?? attachment.imageUrl ?? attachment.thumbUrl;
-      if (url == null) {
-        Fluttertoast.showToast(msg: 'Attachment URL is not available');
-        return;
-      }
-
-      try {
-        final response = await Dio().download(url, filePath);
-        if (response.statusCode == 200) {
-          final result = await OpenFile.open(filePath);
-          Fluttertoast.showToast(msg: result.message);
-        } else {
-          Fluttertoast.showToast(msg: 'Failed to download attachment');
-        }
-      } catch (e) {
-        Fluttertoast.showToast(msg: 'Error downloading attachment');
-      }
-    }
   }
 
   @override
@@ -99,28 +60,25 @@ class FileAttachmentBuilder extends StreamAttachmentWidgetBuilder {
       final isMyMessage =
           message.user?.id == StreamChat.of(context).currentUser!.id;
 
-      return InkWell(
-        onTap: () => message.attachments.first.assetUrl != null
-            ? downloadAndOpenAttachment(context, file)
-            : onTap,
-        child: StreamFileAttachment(
-          doesFileExists: () => doesFileExists(file),
-          onDownloadTap: () => downloadAndOpenAttachment(context, file),
-          file: file,
-          message: message,
-          shape: shape,
-          constraints: constraints,
-          backgroundColor: backgroundColor,
-          internalPadding: EdgeInsets.only(
-            left: 8,
-            top: 8,
-            right: 8,
-            bottom: !showSendingIndicator ||
-                    !isMyMessage ||
-                    message.text?.isNotEmpty == true
-                ? 10
-                : 0,
-          ),
+      return StreamFileAttachment(
+        doesFileExists: () {
+          return FileDownloaderUtils.doesFileExist(
+              attachmentTitle: file.title!, messageId: message.id);
+        },
+        file: file,
+        message: message,
+        shape: shape,
+        constraints: constraints,
+        backgroundColor: backgroundColor,
+        internalPadding: EdgeInsets.only(
+          left: 8,
+          top: 8,
+          right: 8,
+          bottom: !showSendingIndicator ||
+                  !isMyMessage ||
+                  message.text?.isNotEmpty == true
+              ? 10
+              : 0,
         ),
       );
     }

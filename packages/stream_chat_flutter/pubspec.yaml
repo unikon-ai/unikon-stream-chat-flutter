@@ -50,6 +50,14 @@ dependencies:
   audio_waveforms: ^1.0.5
   open_file: ^3.5.9
   fluttertoast: ^8.2.8
+  permission_handler: any
+  mime_type: any
+  shared_preferences: any
+#  flutter_file_dialog: ^3.0.2
+  flutter_file_dialog:
+    git:
+      url: https://github.com/unikon-ai/flutter_file_dialog.git
+      ref: DhruvinUnikon-patch-1
 
 flutter:
   plugin:
