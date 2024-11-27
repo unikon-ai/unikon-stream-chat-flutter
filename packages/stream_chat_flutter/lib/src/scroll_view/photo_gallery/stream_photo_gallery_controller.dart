@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:stream_chat_flutter/src/utils/picker_constants.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 ///
@@ -14,7 +15,7 @@ class StreamPhotoGalleryController
   final int limit;
 
   Future<AssetPathEntity?> _getRecentAssetPathList({
-    RequestType type = RequestType.common,
+    RequestType type = PickerConstants.allowedRequestTypeForGalleryPicker,
     FilterOptionGroup? filterOption,
   }) {
     return PhotoManager.getAssetPathList(

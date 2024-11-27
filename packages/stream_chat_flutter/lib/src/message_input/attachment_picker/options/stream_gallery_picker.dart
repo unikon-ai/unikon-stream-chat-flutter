@@ -69,7 +69,9 @@ class _StreamGalleryPickerState extends State<StreamGalleryPicker> {
   @override
   void initState() {
     super.initState();
-    _controller = StreamPhotoGalleryController(limit: widget.limit);
+    _controller = StreamPhotoGalleryController(
+      limit: widget.limit,
+    );
     requestPermission = runInPermissionRequestLock(
       PhotoManager.requestPermissionExtend,
     );

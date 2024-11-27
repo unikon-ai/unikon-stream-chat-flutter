@@ -4,19 +4,22 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/src/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_button.dart';
+import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/gallery_picker_screen.dart';
-import 'package:stream_chat_flutter/src/message_input/camera_attachment_options.dart';
 import 'package:stream_chat_flutter/src/message_input/command_button.dart';
 import 'package:stream_chat_flutter/src/message_input/dm_checkbox.dart';
 import 'package:stream_chat_flutter/src/message_input/quoted_message_widget.dart';
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/voice_recording_widget.dart';
+import 'package:stream_chat_flutter/src/utils/permission_helper.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:image_picker/image_picker.dart' as image_picker;
 
 const _kCommandTrigger = '/';
 const _kMentionTrigger = '@';
@@ -1068,14 +1071,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                               _effectiveController.text.isEmpty)
                             IconButton(
                               onPressed: () {
-                                imageAndVideoOptionChooser(
-                                  mainContext: context,
-                                  videoRecordingMaxDuration:
-                                      widget.videoRecordingMaxDuration,
-                                  effectiveController: _effectiveController,
-                                  preMessageCallBack: widget.preMessageCallBack,
-                                  sendOrUpdateMessage: _sendOrUpdateMessage,
-                                );
+                                _openCamera(context);
                               },
                               icon: const Icon(
                                 Icons.camera_alt,
@@ -1604,6 +1600,45 @@ class StreamMessageInputState extends State<StreamMessageInput>
     _onChangedDebounced.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  /// open camera to take picture
+  Future<void> _openCamera(BuildContext context) async {
+    final attachmentController = StreamAttachmentPickerController();
+
+    final pickedImage = await runInPermissionRequestLock(() async {
+      final granted = await PermissionHelper.requestMultiplePermissions(
+        permissions: [
+          Permission.camera,
+        ],
+        context: context,
+      );
+
+      // Permission not granted
+      if (!granted) return null;
+
+      return StreamAttachmentHandler.instance.pickImage(
+        source: image_picker.ImageSource.camera,
+      );
+    });
+
+    if (pickedImage != null) {
+      final channel = StreamChannel.of(context).channel;
+
+      await attachmentController.addAttachment(pickedImage);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AttachmentPreviewScreen(
+            attachmentController: attachmentController,
+            effectiveController: _effectiveController,
+            channel: channel,
+            preMessageCallBack: widget.preMessageCallBack,
+            sendOrUpdateMessage: _sendOrUpdateMessage,
+          ),
+        ),
+      );
+    }
   }
 }
 

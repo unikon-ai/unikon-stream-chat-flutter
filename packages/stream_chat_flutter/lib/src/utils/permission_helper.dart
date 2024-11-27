@@ -184,28 +184,30 @@ class PermissionHelper {
 
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Permissions Permanently Denied'),
-        content: Text(
-          message,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              onPermissionPermanentlyDenied?.call();
-            },
-            child: const Text('Cancel'),
+      builder: (context) => Builder(builder: (context) {
+        return AlertDialog(
+          title: const Text('Permissions Permanently Denied'),
+          content: Text(
+            message,
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              openAppSettings();
-            },
-            child: const Text('Open Settings'),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                onPermissionPermanentlyDenied?.call();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                openAppSettings();
+              },
+              child: const Text('Open Settings'),
+            ),
+          ],
+        );
+      }),
     );
   }
 
