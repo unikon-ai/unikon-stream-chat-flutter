@@ -10,7 +10,9 @@ import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachm
 import 'package:stream_chat_flutter/src/utils/permission_helper.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
-/// This will handle the presentation of the image and video options
+/// @Parked[As this file is of no use as of now]
+/// This will handle the
+/// presentation of the image and video options
 Future<void> imageAndVideoOptionChooser({
   required BuildContext mainContext,
   required StreamMessageInputController effectiveController,

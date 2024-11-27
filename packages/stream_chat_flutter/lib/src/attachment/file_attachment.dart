@@ -61,10 +61,13 @@ class StreamFileAttachment extends StatefulWidget {
   /// (such as a download button)
   final Widget? trailing;
 
+  /// Function to check if the file exists.
   final Future<bool> Function()? doesFileExists;
 
+  /// Callback to call when the download button is tapped.
   final Future<void> Function()? onDownloadTap;
 
+  /// The internal padding of the attachment.
   final EdgeInsetsGeometry internalPadding;
 
   @override

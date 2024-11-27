@@ -5,6 +5,7 @@ import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/gallery_picker_widget.dart';
 import 'package:stream_chat_flutter/src/message_input/translucent_scafold.dart';
+import 'package:stream_chat_flutter/src/utils/picker_constants.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// @author:Shashi
@@ -17,6 +18,7 @@ class GalleryPickerScreen extends StatefulWidget {
     required this.preMessageCallBack,
     required this.sendOrUpdateMessage,
   });
+
   final StreamMessageInputController effectiveController;
   final Channel channel;
   final Future<bool> Function()? preMessageCallBack;
@@ -187,6 +189,7 @@ class BuildMediaAttachment extends StatelessWidget {
     required this.preMessageCallBack,
     required this.sendOrUpdateMessage,
   });
+
   final StreamMessageInputController effectiveController;
   final Channel channel;
   final Future<bool> Function()? preMessageCallBack;
@@ -204,38 +207,7 @@ class BuildMediaAttachment extends StatelessWidget {
         final pickedFile = await StreamAttachmentHandler.instance.pickFile(
           dialogTitle: 'Select file',
           type: FileType.custom,
-          allowedExtensions: [
-            'mp4',
-            'mov',
-            'wmv',
-            'avi',
-            'flv',
-            'mkv',
-            'mpeg',
-            'webm',
-            '3gp',
-            'ogg',
-            'jpeg',
-            'jpg',
-            'png',
-            'gif',
-            'bmp',
-            'tiff',
-            'svg',
-            'pdf',
-            'doc',
-            'docx',
-            'ppt',
-            'pptx',
-            'xls',
-            'xlsx',
-            'txt',
-            'rtf',
-            'odt',
-            'ods',
-            'odp',
-            'epub'
-          ],
+          allowedExtensions: PickerConstants.allowedExtensionsForFilePicker,
         );
         if (pickedFile != null) {
           await attachmentController.addAttachment(pickedFile);
