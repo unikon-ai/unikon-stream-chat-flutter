@@ -155,7 +155,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
                     Padding(
                       padding: const EdgeInsets.all(2.0),
                       child: Image.asset(
-                        UnikonColorTheme.recordingIcon,
+                        UnikonTheme.recordingIcon,
                         width: 40,
                       ),
                     ),
@@ -212,7 +212,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
                       widget.onRecordingAborted();
                     },
                     icon: Image.asset(
-                      UnikonColorTheme.deleteIcon,
+                      UnikonTheme.deleteIcon,
                       width: 24,
                     ),
                   ),
@@ -234,8 +234,8 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _isRecording
-            ? UnikonColorTheme.stopAudioRecordingMessageColor
-            : UnikonColorTheme.primaryColor,
+            ? UnikonTheme.stopAudioRecordingMessageColor
+            : UnikonTheme.primaryColor,
         shape: BoxShape.circle,
       ),
       child: Padding(
@@ -257,21 +257,21 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
           icon: _isRecording
               ? const DecoratedBox(
                   decoration: BoxDecoration(
-                    color: UnikonColorTheme.messageSentIndicatorColor,
+                    color: UnikonTheme.messageSentIndicatorColor,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
                     child: Icon(
                       Icons.stop,
                       size: 20,
-                      color: UnikonColorTheme.stopAudioRecordingMessageColor,
+                      color: UnikonTheme.stopAudioRecordingMessageColor,
                     ),
                   ),
                 )
               : const Icon(
                   Icons.send,
                   size: 20,
-                  color: UnikonColorTheme.messageSentIndicatorColor,
+                  color: UnikonTheme.messageSentIndicatorColor,
                 ),
         ),
       ),

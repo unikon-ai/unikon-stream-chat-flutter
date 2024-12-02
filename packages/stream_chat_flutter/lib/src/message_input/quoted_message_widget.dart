@@ -88,7 +88,7 @@ class StreamQuotedMessageWidget extends StatelessWidget {
                 padding: EdgeInsets.all(4),
                 child: Icon(
                   Icons.close,
-                  color: UnikonColorTheme.whiteHintTextColor,
+                  color: UnikonTheme.whiteHintTextColor,
                   size: 14,
                 ),
               ),
@@ -192,16 +192,16 @@ class _QuotedMessage extends StatelessWidget {
     ];
 
     if (imageExtensions.any(lowerTitle.contains)) {
-      return {'title': 'Image', 'icon': UnikonColorTheme.imageIcon};
+      return {'title': 'Image', 'icon': UnikonTheme.imageIcon};
     }
     if (videoExtensions.any(lowerTitle.contains)) {
-      return {'title': 'Video', 'icon': UnikonColorTheme.videoIcon};
+      return {'title': 'Video', 'icon': UnikonTheme.videoIcon};
     }
     if (audioExtensions.any(lowerTitle.contains)) {
-      return {'title': 'Voice Message', 'icon': UnikonColorTheme.micIcon};
+      return {'title': 'Voice Message', 'icon': UnikonTheme.micIcon};
     }
     if (documentExtensions.any(lowerTitle.contains)) {
-      return {'title': 'Document', 'icon': UnikonColorTheme.documentIcon};
+      return {'title': 'Document', 'icon': UnikonTheme.documentIcon};
     }
 
     return {'title': ''};
@@ -309,8 +309,8 @@ class _QuotedMessage extends StatelessWidget {
       margin: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: isMyMessage
-            ? UnikonColorTheme.replyQuotedMessageBGColor2
-            : UnikonColorTheme.replyQuotedMessageBGColor,
+            ? UnikonTheme.replyQuotedMessageBGColor2
+            : UnikonTheme.replyQuotedMessageBGColor,
         // border: const Border(
         //     left: BorderSide(
         //   color: UnikonColorTheme.greyColor,
@@ -324,7 +324,7 @@ class _QuotedMessage extends StatelessWidget {
             height: 62,
             width: 3,
             decoration: const BoxDecoration(
-              color: UnikonColorTheme.greyColor,
+              color: UnikonTheme.greyColor,
             ),
           ),
           const SizedBox(
@@ -346,8 +346,8 @@ class _QuotedMessage extends StatelessWidget {
                             isMyMessage ? 'You' : message.user!.name,
                             style: messageTheme.messageTextStyle?.copyWith(
                               color: isMyMessage
-                                  ? UnikonColorTheme.primaryColor
-                                  : UnikonColorTheme.messageSentIndicatorColor,
+                                  ? UnikonTheme.primaryColor
+                                  : UnikonTheme.messageSentIndicatorColor,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
@@ -361,7 +361,7 @@ class _QuotedMessage extends StatelessWidget {
                                   height: 10,
                                   width: 10,
                                   child: VerticalDivider(
-                                    color: UnikonColorTheme.dividerColor,
+                                    color: UnikonTheme.dividerColor,
                                     thickness: 1,
                                     width: 1,
                                   ),
@@ -373,13 +373,13 @@ class _QuotedMessage extends StatelessWidget {
                                 child: Image.asset(
                                   height: 12,
                                   width: 12,
-                                  UnikonColorTheme.replyIcon,
+                                  UnikonTheme.replyIcon,
                                 ),
                               ),
                               Text(
                                 'Replying',
                                 style: messageTheme.messageTextStyle?.copyWith(
-                                  color: UnikonColorTheme.dividerColor,
+                                  color: UnikonTheme.dividerColor,
                                   fontWeight: FontWeight.w400,
                                   fontSize: 10,
                                 ),
@@ -407,7 +407,7 @@ class _QuotedMessage extends StatelessWidget {
               width: 44.21,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: UnikonColorTheme.replyAttachmentBGColor,
+                color: UnikonTheme.replyAttachmentBGColor,
               ),
               child: Stack(
                 children: [
@@ -485,7 +485,7 @@ class _ParseAttachments extends StatelessWidget {
 
     Widget _createFileThumbnail(BuildContext context, Attachment file) {
       return Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(2),
         child: StreamFileAttachmentThumbnail(
           file: file,
           width: double.infinity,

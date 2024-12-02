@@ -901,7 +901,7 @@ class MessageInputWidgetState extends State<MessageInputWidget>
       isDense: true,
       hintText: _getHint(context),
       hintStyle: _messageInputTheme.inputTextStyle!.copyWith(
-        color: UnikonColorTheme.messageInputHintColor,
+        color: UnikonTheme.messageInputHintColor,
       ),
       border: const OutlineInputBorder(
         borderSide: BorderSide(

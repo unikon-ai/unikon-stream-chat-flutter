@@ -315,8 +315,6 @@ class MessageWidgetContent extends StatelessWidget {
                                       )
                                     : MessageCard(
                                         message: message,
-                                        isMyMessage: message.user?.id ==
-                                            streamChat.currentUser?.id,
                                         isFailedState: isFailedState,
                                         showUserAvatar: showUserAvatar,
                                         messageTheme: messageTheme,

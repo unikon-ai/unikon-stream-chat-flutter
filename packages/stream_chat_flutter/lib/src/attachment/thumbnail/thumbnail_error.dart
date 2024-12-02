@@ -45,7 +45,7 @@ class ThumbnailError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      UnikonColorTheme.placeholder,
+      UnikonTheme.placeholder,
       width: width,
       height: height,
       fit: fit,

@@ -98,7 +98,7 @@ void main() {
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
                     image: AssetImage(
-                      UnikonColorTheme.placeholder,
+                      UnikonTheme.placeholder,
                     ),
                     fit: BoxFit.none,
                   ),
@@ -166,7 +166,7 @@ void main() {
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
                     image: AssetImage(
-                      UnikonColorTheme.placeholder,
+                      UnikonTheme.placeholder,
                     ),
                     fit: BoxFit.none,
                   ),
@@ -212,7 +212,7 @@ void main() {
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
                     image: AssetImage(
-                      UnikonColorTheme.placeholder,
+                      UnikonTheme.placeholder,
                     ),
                     fit: BoxFit.none,
                   ),

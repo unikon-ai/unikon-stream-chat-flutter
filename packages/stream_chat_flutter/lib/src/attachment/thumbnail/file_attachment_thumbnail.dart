@@ -57,7 +57,7 @@ class StreamFileAttachmentThumbnail extends StatelessWidget {
     return Image.asset(
       getIconForFile(mediaTitle),
       width: width,
-      height: width,
+      height: height,
     );
   }
 }

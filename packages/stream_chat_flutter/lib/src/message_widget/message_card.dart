@@ -38,14 +38,10 @@ class MessageCard extends StatefulWidget {
     this.onMentionTap,
     this.onQuotedMessageTap,
     required this.showSendingIndicator,
-    required this.isMyMessage,
   });
 
   /// {@macro isFailedState}
   final bool isFailedState;
-
-  /// {@macro myMessage}
-  final bool isMyMessage;
 
   /// {@macro showUserAvatar}
   final DisplayWidget showUserAvatar;
@@ -206,7 +202,8 @@ class _MessageCardState extends State<MessageCard> {
     if (hasAttachments && (widget.message.text?.isNotEmpty ?? false)) {
       return Stack(
         children: [
-          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+          _buildMsgContent(
+              streamChat, onQuotedMessageTap, quotedMessageBuilder, context),
           if (widget.showSendingIndicator)
             Positioned(
                 right: 0,
@@ -221,7 +218,8 @@ class _MessageCardState extends State<MessageCard> {
         (widget.message.text?.isEmpty ?? true)) {
       return Stack(
         children: [
-          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+          _buildMsgContent(
+              streamChat, onQuotedMessageTap, quotedMessageBuilder, context),
           if (widget.showSendingIndicator)
             Positioned(
                 right: 0,
@@ -236,18 +234,20 @@ class _MessageCardState extends State<MessageCard> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+          _buildMsgContent(
+              streamChat, onQuotedMessageTap, quotedMessageBuilder, context),
           if (widget.showSendingIndicator)
             _buildSendingIndicator(streamChat, streamChatTheme),
         ],
       );
     }
 
-    // CASE 2.0 In case of no attachments and only text,
+    // CASE 2.0 In case of only text,
     if (hasAttachments == false && widget.message.text?.isNotEmpty == true) {
       return Stack(
         children: [
-          _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+          _buildMsgContent(
+              streamChat, onQuotedMessageTap, quotedMessageBuilder, context),
           if (widget.showSendingIndicator)
             Positioned(
                 right: 0,
@@ -257,11 +257,12 @@ class _MessageCardState extends State<MessageCard> {
       );
     }
 
-    /// CASE 2.1 In case of no attachments and text,
+    //CASE 2.1 In case of no attachments and text,
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildMsgContent(onQuotedMessageTap, quotedMessageBuilder, context),
+        _buildMsgContent(
+            streamChat, onQuotedMessageTap, quotedMessageBuilder, context),
         if (widget.showSendingIndicator)
           _buildSendingIndicator(streamChat, streamChatTheme),
       ],
@@ -269,9 +270,12 @@ class _MessageCardState extends State<MessageCard> {
   }
 
   Column _buildMsgContent(
+      StreamChatState streamChat,
       OnQuotedMessageTap? onQuotedMessageTap,
       Widget quotedMessageBuilder(BuildContext context, Message message)?,
       BuildContext context) {
+    final isMyMessage = widget.message.user?.id == streamChat.currentUser?.id;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,13 +296,14 @@ class _MessageCardState extends State<MessageCard> {
                   hasNonUrlAttachments: widget.hasNonUrlAttachments,
                 ),
           ),
+
         if (hasAttachments)
           Padding(
+            key: attachmentsKey,
             padding: (widget.message.text?.isEmpty ?? true)
                 ? EdgeInsets.zero
                 : const EdgeInsets.only(left: 4, right: 4, top: 4),
             child: ParseAttachments(
-              key: attachmentsKey,
               message: widget.message,
               attachmentBuilders: widget.attachmentBuilders,
               attachmentPadding: EdgeInsets.only(
@@ -316,16 +321,17 @@ class _MessageCardState extends State<MessageCard> {
               showSendingIndicator: widget.showSendingIndicator,
             ),
           ),
+
         TextBubble(
           messageTheme: widget.messageTheme,
-          message: (isMessageEmpty(widget.message))
+          message: _isMessageEmpty()
               ? widget.message.copyWith(
                   text: 'Cancelled Media Message',
                 )
               : widget.message,
           textPadding: EdgeInsets.only(
-            top: 8,
-            right: widget.isMyMessage && widget.showSendingIndicator ? 26 : 12,
+            top: 5,
+            right: isMyMessage && widget.showSendingIndicator ? 26 : 12,
             left: 12,
             bottom: widget.showSendingIndicator ? 0 : 8,
           ),
@@ -369,7 +375,9 @@ class _MessageCardState extends State<MessageCard> {
     );
   }
 
-  bool isMessageEmpty(Message message) {
+  /// Check if the message is empty
+  bool _isMessageEmpty() {
+    final message = widget.message;
     // Check if the message text is null or empty
     if (message.text == null || message.text!.trim().isEmpty) {
       // Check if there are no attachments
@@ -399,7 +407,7 @@ class _MessageCardState extends State<MessageCard> {
       return Colors.transparent;
     }
 
-    if (isMessageEmpty(widget.message)) {
+    if (_isMessageEmpty()) {
       return Colors.red;
     }
 

@@ -28,20 +28,20 @@ class StreamSendingIndicator extends StatelessWidget {
     if (isMessageRead) {
       return StreamSvgIcon.checkAll(
         size: size,
-        color: UnikonColorTheme.messageSentIndicatorColor,
+        color: UnikonTheme.messageSentIndicatorColor,
       );
     }
     if (message.state.isCompleted) {
       return StreamSvgIcon.check(
         size: size,
-        color: UnikonColorTheme.messageSentIndicatorColor,
+        color: UnikonTheme.messageSentIndicatorColor,
       );
     }
     if (message.state.isOutgoing) {
       return Icon(
         Icons.access_time,
         size: size,
-        color: UnikonColorTheme.messageSentIndicatorColor,
+        color: UnikonTheme.messageSentIndicatorColor,
       );
     }
     return const SizedBox();

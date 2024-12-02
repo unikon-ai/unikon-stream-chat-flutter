@@ -257,7 +257,7 @@ class StreamGalleryAttachment extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 24,
                   fontFamily: 'Roboto',
-                  color: UnikonColorTheme.whiteHintTextColor,
+                  color: UnikonTheme.whiteHintTextColor,
                   fontWeight: FontWeight.w400,
                 ),
               ),

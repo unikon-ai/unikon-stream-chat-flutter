@@ -28,7 +28,7 @@ Future<void> imageAndVideoOptionChooser({
       "https://application-assets-app-and-web.s3.ap-south-1.amazonaws.com/videoPostIcon.svg";
 
   showModalBottomSheet(
-    backgroundColor: UnikonColorTheme.bottomSheetBGColor,
+    backgroundColor: UnikonTheme.bottomSheetBGColor,
     context: mainContext,
     builder: (context) {
       return Column(
@@ -39,7 +39,7 @@ Future<void> imageAndVideoOptionChooser({
             width: 40,
             height: 4,
             decoration: ShapeDecoration(
-              color: UnikonColorTheme.whiteHintTextColor,
+              color: UnikonTheme.whiteHintTextColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -182,8 +182,8 @@ class IconWidget extends StatelessWidget {
       alignment: Alignment.center,
       decoration: ShapeDecoration(
         gradient: const LinearGradient(colors: [
-          UnikonColorTheme.bottomSheetLinearGradientColor1,
-          UnikonColorTheme.bottomSheetLinearGradientColor2,
+          UnikonTheme.bottomSheetLinearGradientColor1,
+          UnikonTheme.bottomSheetLinearGradientColor2,
         ]),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

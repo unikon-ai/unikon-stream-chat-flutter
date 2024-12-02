@@ -143,7 +143,7 @@ class AttachmentPreviewAppbar extends StatelessWidget {
               '${widget.attachmentController.value.length} media selected',
               style: const TextStyle(
                   fontFamily: 'Roboto Flex',
-                  color: UnikonColorTheme.whiteHintTextColor,
+                  color: UnikonTheme.whiteHintTextColor,
                   fontSize: 12),
             ),
         ],
@@ -171,8 +171,8 @@ class UnikonBackButton extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
-              UnikonColorTheme.backButtonLinearGradientColor1,
-              UnikonColorTheme.backButtonLinearGradientColor2
+              UnikonTheme.backButtonLinearGradientColor1,
+              UnikonTheme.backButtonLinearGradientColor2
             ],
           ),
           borderRadius: BorderRadius.circular(12),
@@ -238,7 +238,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
       isDense: true,
       hintText: 'Type your message...',
       hintStyle: _messageInputTheme.inputTextStyle!.copyWith(
-        color: UnikonColorTheme.messageInputHintColor,
+        color: UnikonTheme.messageInputHintColor,
       ),
       border: const OutlineInputBorder(
         borderSide: BorderSide(
@@ -289,8 +289,8 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
   @override
   Widget build(BuildContext context) {
     final borderRadius = widget.effectiveController.text.isNotEmpty
-        ? UnikonColorTheme.focusTextfieldBorderRadius
-        : UnikonColorTheme.unfocusTextfieldBorderRadius;
+        ? UnikonTheme.focusTextfieldBorderRadius
+        : UnikonTheme.unfocusTextfieldBorderRadius;
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -298,7 +298,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: UnikonColorTheme.transparent,
+          color: UnikonTheme.transparent,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: LimitedBox(
@@ -309,7 +309,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
               Flexible(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: UnikonColorTheme.messageSentIndicatorColor,
+                    color: UnikonTheme.messageSentIndicatorColor,
                     borderRadius: BorderRadius.circular(borderRadius),
                   ),
                   child: StreamMessageTextField(
@@ -318,7 +318,7 @@ class _BuildTextInputWidgetState extends State<BuildTextInputWidget> {
                     controller: widget.effectiveController,
                     focusNode: widget.focusNode,
                     style: _messageInputTheme.inputTextStyle?.copyWith(
-                      color: UnikonColorTheme.messageInputHintColor,
+                      color: UnikonTheme.messageInputHintColor,
                     ),
                     textAlignVertical: TextAlignVertical.center,
                     decoration: _getInputDecoration(context),

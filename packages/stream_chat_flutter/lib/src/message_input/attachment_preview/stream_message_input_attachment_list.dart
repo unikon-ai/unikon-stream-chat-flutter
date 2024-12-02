@@ -345,7 +345,7 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.6,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: UnikonColorTheme.darkGreyColor,
+        color: UnikonTheme.darkGreyColor,
       ),
       child: Stack(
         alignment: Alignment.center,
@@ -373,7 +373,7 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
                       fontFamily: 'Poppins',
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: UnikonColorTheme.messageSentIndicatorColor,
+                      color: UnikonTheme.messageSentIndicatorColor,
                     ),
                   ),
                 ),
@@ -384,7 +384,7 @@ class StreamStorageMediaAttachmentBuilder extends StatelessWidget {
                     fontFamily: 'Poppins',
                     fontSize: 8,
                     fontWeight: FontWeight.w300,
-                    color: UnikonColorTheme.secondaryTextColor,
+                    color: UnikonTheme.secondaryTextColor,
                   ),
                 )
             ],
@@ -471,7 +471,7 @@ class RemoveAttachmentButton extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: const BoxDecoration(
-        color: UnikonColorTheme.removeAttachmentButtonBGColor,
+        color: UnikonTheme.removeAttachmentButtonBGColor,
         shape: BoxShape.circle,
       ),
       child: SizedBox(

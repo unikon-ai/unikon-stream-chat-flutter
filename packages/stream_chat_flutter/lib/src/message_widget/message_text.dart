@@ -176,8 +176,8 @@ class _StreamMessageTextState extends State<StreamMessageText> {
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: widget.isMyMessage == true
-                        ? UnikonColorTheme.messageSentIndicatorColor
-                        : UnikonColorTheme.primaryColor,
+                        ? UnikonTheme.messageSentIndicatorColor
+                        : UnikonTheme.primaryColor,
                   ),
                 ),
               ),
