@@ -153,6 +153,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
               final downloadResult = await FileDownloaderUtils.downloadFile2(
                 url: assetUrl!,
                 title: title!,
+                isMyMessage: isMyMessage,
                 messageId: widget.message.id,
                 onDownloadProgress: (p0) {
                   _downloadProgress.value = p0;
@@ -224,6 +225,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
                             FileDownloaderUtils.downloadFile2(
                                     url: widget.file.assetUrl!,
                                     title: '${widget.file.title}',
+                                    isMyMessage: isMyMessage,
                                     onDownloadProgress: (p0) {
                                       _downloadProgress.value = p0;
                                     },

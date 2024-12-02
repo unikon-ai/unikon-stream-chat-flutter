@@ -15,6 +15,7 @@ class FileDownloaderUtils {
   static Future<String?> downloadFile2(
       {required String url,
       required String messageId,
+      required bool isMyMessage,
       required void Function(double?) onDownloadProgress,
       required String title}) async {
     try {
@@ -43,7 +44,7 @@ class FileDownloaderUtils {
       // Validate file existence
       final file = File(filePath);
       if (file.existsSync()) {
-        if (Platform.isAndroid) {
+        if (Platform.isAndroid && !isMyMessage) {
           // Save the file to external storage
           _saveFileToExternalStorage(
               sourceFile: file, fileName: title, messageId: messageId);
