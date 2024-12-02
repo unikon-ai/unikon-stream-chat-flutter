@@ -194,7 +194,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
                     maxLines: 1,
                     style: textTheme.body.copyWith(
                       color: isMyMessage
-                          ? UnikonColorTheme.messageSentIndicatorColor
+                          ? UnikonTheme.messageSentIndicatorColor
                           : colorTheme.textHighEmphasis,
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -210,9 +210,10 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
             if (!doesFileExists && !isMyMessage) ...[
               ValueListenableBuilder(
                 valueListenable: _downloadProgress,
-                builder: (context, value, child) => value != null
-                    ? Text('${value.toStringAsFixed(0)}%')
-                    : const SizedBox.shrink(),
+                builder: (context, value, child) =>
+                    value != null && value > 0 && value < 100
+                        ? Text('${value.toStringAsFixed(0)}%')
+                        : const SizedBox.shrink(),
               ),
               Material(
                 type: MaterialType.transparency,
@@ -222,6 +223,13 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
                       message: widget.message,
                       onDownloadTap: widget.onDownloadTap ??
                           () async {
+                            if (_downloadProgress.value != null &&
+                                _downloadProgress.value! > 0 &&
+                                _downloadProgress.value! < 100) {
+                              // File is already downloading
+                              return;
+                            }
+
                             FileDownloaderUtils.downloadFile2(
                                     url: widget.file.assetUrl!,
                                     title: '${widget.file.title}',
@@ -294,11 +302,11 @@ class _Trailing extends StatelessWidget {
     if (message.state.isCompleted) {
       return IconButton(
         icon: Image.asset(
-          UnikonColorTheme.downloadIcon,
+          UnikonTheme.downloadIcon,
           height: 24,
           color: isMyMessage
-              ? UnikonColorTheme.messageSentIndicatorColor
-              : UnikonColorTheme.primaryColor,
+              ? UnikonTheme.messageSentIndicatorColor
+              : UnikonTheme.primaryColor,
         ),
         visualDensity: VisualDensity.compact,
         splashRadius: 16,

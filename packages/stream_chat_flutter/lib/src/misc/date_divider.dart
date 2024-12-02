@@ -42,13 +42,13 @@ class StreamDateDivider extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
         decoration: BoxDecoration(
-          color: UnikonColorTheme.darkGreyColor,
+          color: UnikonTheme.darkGreyColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           dayInfo,
           style: chatThemeData.textTheme.footnote.copyWith(
-            color: UnikonColorTheme.greyColor,
+            color: UnikonTheme.greyColor,
           ),
         ),
       ),

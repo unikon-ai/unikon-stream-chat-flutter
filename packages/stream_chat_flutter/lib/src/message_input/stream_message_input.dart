@@ -671,7 +671,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             elevation: widget.elevation ??
                 _streamChatTheme.messageInputTheme.elevation ??
                 8,
-            color: UnikonColorTheme.transparent,
+            color: UnikonTheme.transparent,
             child: child,
           );
         }
@@ -819,9 +819,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: UnikonColorTheme.primaryColor,
+          color: UnikonTheme.primaryColor,
           borderRadius: BorderRadius.circular(
-            UnikonColorTheme.unfocusTextfieldBorderRadius,
+            UnikonTheme.unfocusTextfieldBorderRadius,
           ),
         ),
         child: IconButton(
@@ -832,7 +832,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
             icon: const Icon(
               Icons.mic,
               size: 20,
-              color: UnikonColorTheme.messageSentIndicatorColor,
+              color: UnikonTheme.messageSentIndicatorColor,
             )),
       ),
     );
@@ -971,8 +971,8 @@ class StreamMessageInputState extends State<StreamMessageInput>
             : EdgeInsets.zero);
 
     final double borderRadius = _effectiveController.text.isNotEmpty
-        ? UnikonColorTheme.focusTextfieldBorderRadius
-        : UnikonColorTheme.unfocusTextfieldBorderRadius;
+        ? UnikonTheme.focusTextfieldBorderRadius
+        : UnikonTheme.unfocusTextfieldBorderRadius;
 
     return Expanded(
       child: Padding(
@@ -987,7 +987,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
               margin: margin,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(borderRadius),
-                color: UnikonColorTheme.messageSentIndicatorColor,
+                color: UnikonTheme.messageSentIndicatorColor,
                 border: _draggingBorder,
               ),
               child: Padding(
@@ -1044,8 +1044,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
                           ),
                           if (_effectiveController.message.quotedMessage ==
                               null)
-                            IconButton(
-                              onPressed: () {
+                            InkWell(
+                              splashFactory: NoSplash.splashFactory,
+                              onTap: () {
                                 final channel =
                                     StreamChannel.of(context).channel;
                                 Navigator.push(
@@ -1061,21 +1062,31 @@ class StreamMessageInputState extends State<StreamMessageInput>
                                   ),
                                 );
                               },
-                              icon: const Icon(
-                                Icons.attachment,
-                                color: UnikonColorTheme.dividerColor,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Image.asset(
+                                  UnikonTheme.attachmentIcon,
+                                  width: 24,
+                                  height: 24,
+                                ),
                               ),
                             ),
                           if (_effectiveController.message.quotedMessage ==
                                   null &&
                               _effectiveController.text.isEmpty)
-                            IconButton(
-                              onPressed: () {
+                            InkWell(
+                              splashFactory: NoSplash.splashFactory,
+                              onTap: () {
                                 _openCamera(context);
                               },
-                              icon: const Icon(
-                                Icons.camera_alt,
-                                color: UnikonColorTheme.dividerColor,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 8, bottom: 8, right: 12, left: 8),
+                                child: Image.asset(
+                                  UnikonTheme.cameraIcon,
+                                  width: 24,
+                                  height: 24,
+                                ),
                               ),
                             ),
                         ],
@@ -1115,7 +1126,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
       isDense: true,
       hintText: _getHint(context),
       hintStyle: _messageInputTheme.inputTextStyle!.copyWith(
-        color: UnikonColorTheme.messageInputHintColor,
+        color: UnikonTheme.messageInputHintColor,
         fontSize: 12,
         fontWeight: FontWeight.w400,
       ),

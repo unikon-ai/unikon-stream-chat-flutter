@@ -64,7 +64,7 @@ class StreamVideoAttachmentThumbnail extends StatelessWidget {
         fit: fit,
         placeholder: (context, __) {
           final image = Image.asset(
-            UnikonColorTheme.placeholder,
+            UnikonTheme.placeholder,
             width: width,
             height: height,
             fit: BoxFit.cover,
@@ -102,7 +102,7 @@ class StreamVideoAttachmentThumbnail extends StatelessWidget {
           }
 
           final image = Image.asset(
-            UnikonColorTheme.placeholder,
+            UnikonTheme.placeholder,
             width: width,
             height: height,
             fit: BoxFit.cover,

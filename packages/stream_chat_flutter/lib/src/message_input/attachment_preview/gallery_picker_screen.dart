@@ -59,7 +59,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                         Text(
                           'Select your file',
                           style: TextStyle(
-                            color: UnikonColorTheme.messageSentIndicatorColor,
+                            color: UnikonTheme.messageSentIndicatorColor,
                             fontSize: 16,
                           ),
                         ),
@@ -77,7 +77,7 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                               child: Text(
                                 'Choose file from your folder',
                                 style: TextStyle(
-                                  color: UnikonColorTheme.dividerColor,
+                                  color: UnikonTheme.dividerColor,
                                 ),
                               ),
                             ),
@@ -97,13 +97,13 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                                   const Text(
                                     'Select from your phone gallery',
                                     style: TextStyle(
-                                        color: UnikonColorTheme.dividerColor),
+                                        color: UnikonTheme.dividerColor),
                                   ),
                                   const Spacer(),
                                   Text(
                                     '(${selectedIds.length}) Selected',
                                     style: const TextStyle(
-                                        color: UnikonColorTheme.dividerColor),
+                                        color: UnikonTheme.dividerColor),
                                   ),
                                 ],
                               ),
@@ -156,13 +156,13 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 36, vertical: 13),
                                 decoration: BoxDecoration(
-                                    color: UnikonColorTheme.primaryColor,
+                                    color: UnikonTheme.primaryColor,
                                     borderRadius: BorderRadius.circular(100)),
                                 child: const Text(
                                   'Next',
                                   style: TextStyle(
-                                    color: UnikonColorTheme
-                                        .messageSentIndicatorColor,
+                                    color:
+                                        UnikonTheme.messageSentIndicatorColor,
                                   ),
                                 ),
                               ),
@@ -229,7 +229,7 @@ class BuildMediaAttachment extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: UnikonColorTheme.optionsCardBGColor,
+          color: UnikonTheme.optionsCardBGColor,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -237,7 +237,7 @@ class BuildMediaAttachment extends StatelessWidget {
             Row(
               children: [
                 Image.asset(
-                  UnikonColorTheme.folderIcon,
+                  UnikonTheme.folderIcon,
                   width: 32,
                   height: 32,
                 ),
@@ -247,7 +247,7 @@ class BuildMediaAttachment extends StatelessWidget {
                 const Text(
                   'Browse your phone',
                   style: TextStyle(
-                    color: UnikonColorTheme.messageSentIndicatorColor,
+                    color: UnikonTheme.messageSentIndicatorColor,
                   ),
                 ),
               ],
@@ -257,7 +257,7 @@ class BuildMediaAttachment extends StatelessWidget {
                 Text(
                   'View',
                   style: TextStyle(
-                    color: UnikonColorTheme.primaryColor,
+                    color: UnikonTheme.primaryColor,
                   ),
                 ),
                 SizedBox(
@@ -265,7 +265,7 @@ class BuildMediaAttachment extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_forward,
-                  color: UnikonColorTheme.primaryColor,
+                  color: UnikonTheme.primaryColor,
                   size: 16,
                 ),
               ],

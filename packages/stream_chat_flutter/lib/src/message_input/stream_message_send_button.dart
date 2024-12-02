@@ -68,9 +68,9 @@ class StreamMessageSendButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: UnikonColorTheme.sendMessageInactiveStateColor,
+          color: UnikonTheme.sendMessageInactiveStateColor,
           borderRadius: BorderRadius.circular(
-            UnikonColorTheme.unfocusTextfieldBorderRadius,
+            UnikonTheme.unfocusTextfieldBorderRadius,
           ),
         ),
         child: IconButton(
@@ -84,7 +84,7 @@ class StreamMessageSendButton extends StatelessWidget {
           icon: const Icon(
             Icons.send,
             size: 20,
-            color: UnikonColorTheme.messageSentIndicatorColor,
+            color: UnikonTheme.messageSentIndicatorColor,
           ),
         ),
       ),
@@ -96,9 +96,9 @@ class StreamMessageSendButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: UnikonColorTheme.primaryColor,
+          color: UnikonTheme.primaryColor,
           borderRadius: BorderRadius.circular(
-            UnikonColorTheme.unfocusTextfieldBorderRadius,
+            UnikonTheme.unfocusTextfieldBorderRadius,
           ),
         ),
         child: IconButton(
@@ -112,7 +112,7 @@ class StreamMessageSendButton extends StatelessWidget {
             icon: const Icon(
               Icons.send,
               size: 24,
-              color: UnikonColorTheme.messageSentIndicatorColor,
+              color: UnikonTheme.messageSentIndicatorColor,
             )),
       ),
     );

@@ -333,24 +333,24 @@ String getIconForFile(String? fileName) {
 
   if (['mp4', 'mov', 'wmv', 'avi', 'flv', 'mkv', 'mpeg', 'webm', '3gp', 'ogg']
       .contains(extension)) {
-    return UnikonColorTheme.videosIcon;
+    return UnikonTheme.videosIcon;
   } else if (['jpeg', 'jpg', 'png', 'gif', 'bmp', 'tiff', 'svg']
       .contains(extension)) {
-    return UnikonColorTheme.imagesIcon;
+    return UnikonTheme.imagesIcon;
   } else if (['mp3', 'wav', 'flac', 'aac'].contains(extension)) {
-    return UnikonColorTheme.audioIcon;
+    return UnikonTheme.audioIcon;
   } else if (['pdf'].contains(extension)) {
-    return UnikonColorTheme.pdfIcon;
+    return UnikonTheme.pdfIcon;
   } else if (['doc', 'docx', 'odt', 'rtf'].contains(extension)) {
-    return UnikonColorTheme.documentsIcon;
+    return UnikonTheme.documentsIcon;
   } else if (['ppt', 'pptx', 'odp'].contains(extension)) {
-    return UnikonColorTheme.presentationIcon;
+    return UnikonTheme.presentationIcon;
   } else if (['xls', 'xlsx', 'ods'].contains(extension)) {
-    return UnikonColorTheme.spreadsheetIcon;
+    return UnikonTheme.spreadsheetIcon;
   } else if (['txt', 'epub'].contains(extension)) {
-    return UnikonColorTheme.textIcon;
+    return UnikonTheme.textIcon;
   } else {
-    return UnikonColorTheme.folderIcon;
+    return UnikonTheme.folderIcon;
   }
 }
 

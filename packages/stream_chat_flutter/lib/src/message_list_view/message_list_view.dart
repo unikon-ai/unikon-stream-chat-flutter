@@ -1200,7 +1200,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               height: 40,
               decoration: BoxDecoration(
-                color: UnikonColorTheme.darkGreyColor,
+                color: UnikonTheme.darkGreyColor,
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Row(
@@ -1210,7 +1210,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                     context.translations
                         .unreadCountIndicatorLabel(unreadCount: unreadCount),
                     style: TextStyle(
-                      color: UnikonColorTheme.greyColor,
+                      color: UnikonTheme.greyColor,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -1219,7 +1219,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                     child: const Icon(
                       Icons.close,
                       size: 24,
-                      color: UnikonColorTheme.greyColor,
+                      color: UnikonTheme.greyColor,
                     ),
                   ),
                 ],

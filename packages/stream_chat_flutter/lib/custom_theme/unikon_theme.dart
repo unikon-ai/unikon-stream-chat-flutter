@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class UnikonColorTheme {
-  const UnikonColorTheme._();
+class UnikonTheme {
+  const UnikonTheme._();
 
   static const Color messageSentIndicatorColor =
       Color.fromRGBO(255, 255, 255, 1);
@@ -102,4 +102,10 @@ class UnikonColorTheme {
   static const spreadsheetIcon = "assets/images/xls.png";
 
   static const pdfIcon = "assets/images/pdf.png";
+
+  /// Camera Icon
+  static const cameraIcon = 'assets/images/camera.png';
+
+  /// Attachment Icon
+  static const attachmentIcon = 'assets/images/attachment.png';
 }

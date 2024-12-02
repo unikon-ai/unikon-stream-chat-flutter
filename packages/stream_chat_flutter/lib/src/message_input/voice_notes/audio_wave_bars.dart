@@ -2,7 +2,25 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 
+/// A widget that displays a waveform visualizer.
 class AudioWaveBars extends StatelessWidget {
+  /// Creates an audio wave bars widget
+  const AudioWaveBars({
+    super.key,
+    required this.amplitudes,
+    this.barWidth = 2.0,
+    this.barColor = UnikonTheme.audioWaveFormBGColor,
+    this.barColorActive = UnikonTheme.messageSentIndicatorColor,
+    this.backgroundColor = UnikonTheme.transparent,
+    required this.height,
+    this.width,
+    this.barBorderRadius = 0.0,
+    this.barSpacing = 1.0,
+    this.margin,
+    required this.progress,
+    this.minBarHeight = 2.0,
+  });
+
   final List<double> amplitudes;
   final double barWidth;
   final Color barColor;
@@ -15,22 +33,6 @@ class AudioWaveBars extends StatelessWidget {
   final EdgeInsets? margin;
   final double progress;
   final double minBarHeight;
-
-  const AudioWaveBars({
-    super.key,
-    required this.amplitudes,
-    this.barWidth = 2.0,
-    this.barColor = UnikonColorTheme.audioWaveFormBGColor,
-    this.barColorActive = UnikonColorTheme.messageSentIndicatorColor,
-    this.backgroundColor = UnikonColorTheme.transparent,
-    required this.height,
-    this.width,
-    this.barBorderRadius = 0.0,
-    this.barSpacing = 1.0,
-    this.margin,
-    required this.progress,
-    this.minBarHeight = 2.0,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,16 +65,9 @@ class AudioWaveBars extends StatelessWidget {
   }
 }
 
+/// A custom painter that draws the audio wave bars.
 class AudioWaveBarsPainter extends CustomPainter {
-  final List<double> amplitudes;
-  final double barWidth;
-  final Color barColor;
-  final Color barColorActive;
-  final double barBorderRadius;
-  final double barSpacing;
-  final double progress;
-  final double minBarHeight;
-
+  /// Creates an audio wave bars painter
   AudioWaveBarsPainter({
     required this.amplitudes,
     required this.barWidth,
@@ -83,6 +78,15 @@ class AudioWaveBarsPainter extends CustomPainter {
     required this.progress,
     required this.minBarHeight,
   });
+
+  final List<double> amplitudes;
+  final double barWidth;
+  final Color barColor;
+  final Color barColorActive;
+  final double barBorderRadius;
+  final double barSpacing;
+  final double progress;
+  final double minBarHeight;
 
   @override
   void paint(Canvas canvas, Size size) {
