@@ -128,7 +128,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
     return Row(
       children: [
         const SizedBox(
-          width: 7,
+          width: 8,
         ),
         Expanded(
           child: LayoutBuilder(
