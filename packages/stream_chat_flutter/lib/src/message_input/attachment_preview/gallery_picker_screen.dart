@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/attachment_preview/attachment_preview_screen.dart';
@@ -181,7 +182,9 @@ class _GalleryPickerScreenState extends State<GalleryPickerScreen> {
   }
 }
 
+/// A widget that builds the media attachment
 class BuildMediaAttachment extends StatelessWidget {
+  /// Constructor for creating a [BuildMediaAttachment]
   const BuildMediaAttachment({
     super.key,
     required this.effectiveController,
@@ -210,6 +213,12 @@ class BuildMediaAttachment extends StatelessWidget {
           allowedExtensions: PickerConstants.allowedExtensionsForFilePicker,
         );
         if (pickedFile != null) {
+          // Restrict the user to select the video file
+          if (pickedFile.isVideo) {
+            Fluttertoast.showToast(msg: "Can't select video attachment");
+            return;
+          }
+
           await attachmentController.addAttachment(pickedFile);
           Navigator.pushReplacement(
             context,

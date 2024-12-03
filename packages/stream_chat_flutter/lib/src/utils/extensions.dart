@@ -205,6 +205,21 @@ extension XFileX on XFile {
 extension AttachmentX on Attachment {
   /// is video attachment
   bool get isVideoAttachment => type == 'video';
+
+  /// Checks if the attachment is a video based on mime type
+  bool get isVideoMimeType =>
+      (extraData['mime_type'] as String?)?.startsWith('video') ?? false;
+
+  /// Fallback to check if the file name suggests it's a video
+  bool get isVideoFileExtension {
+    final fileName = extraData['file'] as String? ?? '';
+    final videoExtensions = ['mp4', 'mov', 'avi', 'mkv', 'flv'];
+    return videoExtensions.any((ext) => fileName.toLowerCase().endsWith(ext));
+  }
+
+  /// Overall video check
+  bool get isVideo =>
+      isVideoAttachment || isVideoMimeType || isVideoFileExtension;
 }
 
 /// Extension on [InputDecoration]
