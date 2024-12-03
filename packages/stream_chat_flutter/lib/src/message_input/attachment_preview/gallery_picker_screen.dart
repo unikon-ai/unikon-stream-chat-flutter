@@ -215,7 +215,7 @@ class BuildMediaAttachment extends StatelessWidget {
         if (pickedFile != null) {
           // Restrict the user to select the video file
           if (pickedFile.isVideo) {
-            Fluttertoast.showToast(msg: 'Cant send video attachment');
+            Fluttertoast.showToast(msg: "Can't select video attachment");
             return;
           }
 
