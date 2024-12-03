@@ -125,107 +125,110 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Row(
-        children: [
-          const SizedBox(width: 16),
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) => DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(32.0),
-                  color: Colors.white,
-                ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  if (recordedFilePath != null &&
-                      recordedFilePath!.isNotEmpty &&
-                      !_isRecording) ...[
-                    Expanded(
-                        child: OfflineAudioWaveWidget(
-                      audioPath: recordedFilePath ?? "",
-                      height: 30,
-                      width: constraints.maxWidth,
-                      onWaveformDataExtracted: (value) =>
-                          _fileWaveFormData = value,
-                    )),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                  ] else ...[
-                    Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Image.asset(
-                        UnikonTheme.recordingIcon,
-                        width: 40,
-                      ),
-                    ),
-                    Expanded(
-                      child: AudioWaveforms(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        size: Size(constraints.maxWidth, 30),
-                        recorderController: _controller,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                        ),
-                        enableGesture: true,
-                        waveStyle: const WaveStyle(
-                          showDurationLabel: false,
-                          spacing: 8.0,
-                          showBottom: true,
-                          extendWaveform: true,
-                          showMiddleLine: false,
-                          showTop: true,
-                          waveColor: Colors.teal,
-                          waveCap: StrokeCap.round,
-                        ),
-                      ),
-                    ),
-                  ],
-
-                  // Timer
-                  StreamBuilder<Duration>(
-                    stream: _controller.onCurrentDuration,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(
-                          _formatDuration(snapshot.data!),
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF333333)),
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
-                  // Delete button
-                  IconButton(
-                    onPressed: () async {
-                      if (_isRecording) {
-                        await _stop();
-                        recordedFilePath != null;
-                      } else if (recordedFilePath != null) {
-                        setState(() {
-                          recordedFilePath = null;
-                        });
-                      }
-                      widget.onRecordingAborted();
-                    },
-                    icon: Image.asset(
-                      UnikonTheme.deleteIcon,
-                      width: 24,
-                    ),
-                  ),
-                ]),
+    return Row(
+      children: [
+        const SizedBox(
+          width: 7,
+        ),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) => DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                color: Colors.white,
               ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                if (recordedFilePath != null &&
+                    recordedFilePath!.isNotEmpty &&
+                    !_isRecording) ...[
+                  Expanded(
+                      child: OfflineAudioWaveWidget(
+                    audioPath: recordedFilePath ?? "",
+                    height: 25,
+                    width: constraints.maxWidth,
+                    onWaveformDataExtracted: (value) =>
+                        _fileWaveFormData = value,
+                  )),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                ] else ...[
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Image.asset(
+                      UnikonTheme.recordingIcon,
+                      width: 40,
+                    ),
+                  ),
+                  Expanded(
+                    child: AudioWaveforms(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      size: Size(constraints.maxWidth, 25),
+                      recorderController: _controller,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      enableGesture: true,
+                      waveStyle: const WaveStyle(
+                        showDurationLabel: false,
+                        spacing: 8.0,
+                        showBottom: true,
+                        extendWaveform: true,
+                        showMiddleLine: false,
+                        showTop: true,
+                        waveColor: Colors.teal,
+                        waveCap: StrokeCap.round,
+                      ),
+                    ),
+                  ),
+                ],
+
+                // Timer
+                StreamBuilder<Duration>(
+                  stream: _controller.onCurrentDuration,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        _formatDuration(snapshot.data!),
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF333333)),
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
+                // Delete button
+                IconButton(
+                  onPressed: () async {
+                    if (_isRecording) {
+                      await _stop();
+                      recordedFilePath != null;
+                    } else if (recordedFilePath != null) {
+                      setState(() {
+                        recordedFilePath = null;
+                      });
+                    }
+                    widget.onRecordingAborted();
+                  },
+                  icon: Image.asset(
+                    UnikonTheme.deleteIcon,
+                    width: 24,
+                  ),
+                ),
+              ]),
             ),
           ),
-          const SizedBox(
-            width: 8,
-          ),
-          SizedBox(width: 50, child: _buildStopAndSendButton()),
-        ],
-      ),
+        ),
+        const SizedBox(
+          width: 7,
+        ),
+        SizedBox(width: 50, child: _buildStopAndSendButton()),
+        const SizedBox(
+          width: 7,
+        ),
+      ],
     );
   }
 
