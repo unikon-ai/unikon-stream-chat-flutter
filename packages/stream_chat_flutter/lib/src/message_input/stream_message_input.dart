@@ -17,7 +17,6 @@ import 'package:stream_chat_flutter/src/message_input/quoted_message_widget.dart
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/voice_recording_widget.dart';
-import 'package:stream_chat_flutter/src/utils/permission_helper.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:image_picker/image_picker.dart' as image_picker;
 
@@ -162,6 +161,8 @@ class StreamMessageInput extends StatefulWidget {
     this.onFocusChanged,
     this.videoRecordingMaxDuration,
     this.audioRecordingMaxDuration,
+    this.cameraPermissionValidator,
+    this.microPhonePermissionValidator,
   });
 
   /// The predicate used to send a message on desktop/web
@@ -373,6 +374,12 @@ class StreamMessageInput extends StatefulWidget {
 
   /// Callback to be called when the focus of the input changes.
   final Function({bool hasFocus})? onFocusChanged;
+
+  /// Camera permission validator
+  final Future<bool> Function()? cameraPermissionValidator;
+
+  /// Microphone permission validator
+  final Future<bool> Function()? microPhonePermissionValidator;
 
   static String? _defaultHintGetter(
     BuildContext context,
@@ -825,8 +832,14 @@ class StreamMessageInputState extends State<StreamMessageInput>
           ),
         ),
         child: IconButton(
-            onPressed: () {
-              isRecordingInProgress.value = true;
+            onPressed: () async {
+              if (widget.microPhonePermissionValidator == null) {
+                final status = await Permission.microphone.request();
+                isRecordingInProgress.value = status.isGranted;
+              } else {
+                isRecordingInProgress.value =
+                    await widget.microPhonePermissionValidator!.call();
+              }
             },
             padding: EdgeInsets.zero,
             icon: const Icon(
@@ -1618,12 +1631,13 @@ class StreamMessageInputState extends State<StreamMessageInput>
     final attachmentController = StreamAttachmentPickerController();
 
     final pickedImage = await runInPermissionRequestLock(() async {
-      final granted = await PermissionHelper.requestMultiplePermissions(
-        permissions: [
-          Permission.camera,
-        ],
-        context: context,
-      );
+      bool granted = false;
+
+      if (widget.cameraPermissionValidator == null) {
+        granted = await Permission.camera.request().isGranted;
+      } else {
+        granted = await widget.cameraPermissionValidator!.call();
+      }
 
       // Permission not granted
       if (!granted) return null;
