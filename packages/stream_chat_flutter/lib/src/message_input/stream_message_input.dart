@@ -17,7 +17,6 @@ import 'package:stream_chat_flutter/src/message_input/quoted_message_widget.dart
 import 'package:stream_chat_flutter/src/message_input/simple_safe_area.dart';
 import 'package:stream_chat_flutter/src/message_input/tld.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/voice_recording_widget.dart';
-import 'package:stream_chat_flutter/src/utils/permission_helper.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 import 'package:image_picker/image_picker.dart' as image_picker;
 
