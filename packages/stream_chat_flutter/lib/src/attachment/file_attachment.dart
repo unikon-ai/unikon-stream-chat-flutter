@@ -94,6 +94,7 @@ class _StreamFileAttachmentState extends State<StreamFileAttachment> {
   void _setDoesFileExists() async {
     print(await widget.doesFileExists!.call());
     doesFileExists = await widget.doesFileExists!.call() == true;
+    if (!context.mounted) return;
     setState(() {});
   }
 
