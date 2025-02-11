@@ -99,8 +99,8 @@ class _AttachmentPreviewScreenState extends State<AttachmentPreviewScreen> {
                   left: 0,
                   right: 0,
                   child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    padding: const EdgeInsets.only(
+                      bottom: 5,
                     ),
                     child: BuildTextInputWidget(
                       nonOGAttachments: nonOGAttachments,
