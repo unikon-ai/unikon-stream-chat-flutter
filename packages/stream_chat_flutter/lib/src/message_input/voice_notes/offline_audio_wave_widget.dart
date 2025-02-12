@@ -57,8 +57,11 @@ class _OfflineAudioWaveWidgetState extends State<OfflineAudioWaveWidget> {
             if (snapshot.hasData) {
               // When the audio wave data is extracted from the file
               // Fire this callback
-              widget.onWaveformDataExtracted
-                  ?.call(snapshot.data as List<double>);
+              // Move the callback to a microtask to avoid build-time state changes
+              Future.microtask(() {
+                widget.onWaveformDataExtracted
+                    ?.call(snapshot.data as List<double>);
+              });
               return SizedBox(
                 height: widget.height ?? 50,
                 width: widget.width ?? double.infinity,
