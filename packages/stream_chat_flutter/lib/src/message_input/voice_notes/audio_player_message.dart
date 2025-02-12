@@ -102,6 +102,24 @@ class _AudioPlayerMessageState extends State<AudioPlayerMessage> {
     return name.split(' ').map((word) => word[0]).join();
   }
 
+  // Add this helper method to normalize the waveform data
+  List<double> _normalizeAmplitudes(List<double> amplitudes) {
+    // If the list is too long, sample it down to a reasonable size
+    if (amplitudes.length > 100) {
+      final sampledAmplitudes = <double>[];
+      final step = amplitudes.length / 100;
+
+      for (var i = 0; i < 100; i++) {
+        final index = (i * step).floor();
+        if (index < amplitudes.length) {
+          sampledAmplitudes.add(amplitudes[index]);
+        }
+      }
+      return sampledAmplitudes;
+    }
+    return amplitudes;
+  }
+
   @override
   Widget build(BuildContext context) {
     final audioWidget = <Widget>[
@@ -117,7 +135,8 @@ class _AudioPlayerMessageState extends State<AudioPlayerMessage> {
                   _controlButtons(),
                   Expanded(
                     child: AudioWaveBars(
-                      amplitudes: widget.fileWaveFormData!,
+                      amplitudes:
+                          _normalizeAmplitudes(widget.fileWaveFormData!),
                       height: 20,
                       barSpacing: 2,
                       width: MediaQuery.of(context).size.width * 0.36,
