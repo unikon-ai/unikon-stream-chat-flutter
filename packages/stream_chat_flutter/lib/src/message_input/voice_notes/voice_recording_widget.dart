@@ -41,6 +41,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
   bool _isRecording = false;
   String? recordedFilePath;
   List<double>? _fileWaveFormData;
+  ValueNotifier<bool> _hasWavesNotGenerated = ValueNotifier<bool>(true);
 
   @override
   void initState() {
@@ -132,12 +133,13 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
                     !_isRecording) ...[
                   Expanded(
                       child: OfflineAudioWaveWidget(
-                    audioPath: recordedFilePath ?? "",
-                    height: 25,
-                    width: constraints.maxWidth,
-                    onWaveformDataExtracted: (value) =>
-                        _fileWaveFormData = value,
-                  )),
+                          audioPath: recordedFilePath ?? "",
+                          height: 25,
+                          width: constraints.maxWidth,
+                          onWaveformDataExtracted: (value) {
+                            _fileWaveFormData = value;
+                            _hasWavesNotGenerated.value = false;
+                          })),
                   const SizedBox(
                     width: 8,
                   ),
@@ -213,7 +215,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
         const SizedBox(
           width: 7,
         ),
-        SizedBox(width: 50, child: _buildStopAndSendButton()),
+        SizedBox(width: 50, child: _buildStopAndSendButton(context)),
         const SizedBox(
           width: 7,
         ),
@@ -222,7 +224,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
   }
 
   // Stop and send button
-  Widget _buildStopAndSendButton() {
+  Widget _buildStopAndSendButton(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: _isRecording
@@ -236,8 +238,9 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
           onPressed: () async {
             if (_isRecording) {
               await _stop();
-            } else if (recordedFilePath != null) {
+            } else if (recordedFilePath != null && _fileWaveFormData != null) {
               widget.onRecordingSend(recordedFilePath!, _fileWaveFormData);
+              _hasWavesNotGenerated.value = true;
             }
           },
           padding: EdgeInsets.zero,
@@ -260,11 +263,24 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget> {
                     ),
                   ),
                 )
-              : const Icon(
-                  Icons.send,
-                  size: 20,
-                  color: UnikonTheme.messageSentIndicatorColor,
-                ),
+              : ListenableBuilder(
+                  listenable: _hasWavesNotGenerated,
+                  builder: (context, child) {
+                    return _hasWavesNotGenerated.value
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: UnikonTheme.messageSentIndicatorColor,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.send,
+                            size: 20,
+                            color: UnikonTheme.messageSentIndicatorColor,
+                          );
+                  }),
         ),
       ),
     );
