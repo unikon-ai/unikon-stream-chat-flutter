@@ -6,6 +6,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:stream_chat_flutter/custom_theme/unikon_theme.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_loading_message.dart';
 import 'package:stream_chat_flutter/src/message_input/voice_notes/audio_wave_bars.dart';
+import 'package:stream_chat_flutter/src/message_input/voice_notes/voice_notes_utils.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// A widget that displays an audio message with a play/pause button
@@ -106,39 +107,39 @@ class _AudioPlayerMessageState extends State<AudioPlayerMessage> {
   Widget build(BuildContext context) {
     final audioWidget = <Widget>[
       _buildUserProfilePic(),
-      if (widget.fileWaveFormData != null)
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                children: [
-                  _controlButtons(),
-                  Expanded(
-                    child: AudioWaveBars(
-                      amplitudes: widget.fileWaveFormData!,
-                      height: 20,
-                      barSpacing: 2,
-                      width: MediaQuery.of(context).size.width * 0.36,
-                      progress: _progress,
-                      barBorderRadius: 10,
-                    ),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                _controlButtons(),
+                Expanded(
+                  child: AudioWaveBars(
+                    amplitudes: widget.fileWaveFormData ??
+                        WaveformUtils.generateDummyWaveform(),
+                    height: 20,
+                    barSpacing: 2,
+                    width: MediaQuery.of(context).size.width * 0.36,
+                    progress: _progress,
+                    barBorderRadius: 10,
                   ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 8,
                 ),
-                child: Text(
-                  audioDuration,
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 8,
               ),
-            ],
-          ),
+              child: Text(
+                audioDuration,
+                style: const TextStyle(color: Colors.white, fontSize: 10),
+              ),
+            ),
+          ],
         ),
+      ),
     ];
     return FutureBuilder<Duration?>(
       future: futureDuration,
