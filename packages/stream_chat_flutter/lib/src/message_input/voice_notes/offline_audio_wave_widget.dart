@@ -74,7 +74,7 @@ class _OfflineAudioWaveWidgetState extends State<OfflineAudioWaveWidget> {
                           return;
                         }
 
-                        controller.startPlayer(finishMode: FinishMode.pause);
+                        controller.startPlayer();
                       },
                       child: Container(
                         width: 30,
